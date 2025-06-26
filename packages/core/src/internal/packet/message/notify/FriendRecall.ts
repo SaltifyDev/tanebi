@@ -1,4 +1,4 @@
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const FriendRecall = ProtoMessage.of({
     body: ProtoField(1, () => ({

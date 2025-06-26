@@ -1,5 +1,5 @@
 import { MultiMediaReqHead } from '@/internal/packet/oidb/media/request/MultiMediaReqHead';
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 import { UploadReq } from '@/internal/packet/oidb/media/request/UploadReq';
 import { DownloadReq } from '@/internal/packet/oidb/media/request/DownloadReq';
 import { DownloadRKeyReq } from '@/internal/packet/oidb/media/request/DownloadRKeyReq';

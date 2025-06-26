@@ -1,4 +1,4 @@
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const FileUploadExt = ProtoMessage.of({
     unknown1: ProtoField(1, ScalarType.INT32),

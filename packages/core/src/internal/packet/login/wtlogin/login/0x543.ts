@@ -1,5 +1,5 @@
 import { Tlv, TlvVariableField } from '@/internal/util/binary/tlv';
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const TlvLogin0x543 = Tlv.tagged([
     TlvVariableField('protoBody', 'bytes', 'none', false),

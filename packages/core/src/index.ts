@@ -1,4 +1,16 @@
-import { BotFriend, BotFriendMessage, BotFriendRequest, BotGroup, BotGroupInvitationRequest, BotGroupInvitedJoinRequest, BotGroupJoinRequest, BotGroupMember, BotGroupMessage, eventsFDX, eventsGDX } from '@/entity';
+import {
+    BotFriend,
+    BotFriendMessage,
+    BotFriendRequest,
+    BotGroup,
+    BotGroupInvitationRequest,
+    BotGroupInvitedJoinRequest,
+    BotGroupJoinRequest,
+    BotGroupMember,
+    BotGroupMessage,
+    eventsFDX,
+    eventsGDX,
+} from '@/entity';
 import { MessageDispatcher } from '@/message';
 import { BotCacheService } from '@/util';
 import { BotIdentityService } from '@/util/identity';

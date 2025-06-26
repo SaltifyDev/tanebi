@@ -3,7 +3,7 @@ import { GroupEssenceMessageChange } from '@/internal/packet/message/notify/Grou
 import { GroupReaction } from '@/internal/packet/message/notify/GroupReaction';
 import { GroupRecall } from '@/internal/packet/message/notify/GroupRecall';
 import { Tlv, TlvScalarField, TlvVariableField } from '@/internal/util/binary/tlv';
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const GroupGeneral0x2DC = Tlv.plain([
     TlvScalarField('groupUin', 'uint32'),

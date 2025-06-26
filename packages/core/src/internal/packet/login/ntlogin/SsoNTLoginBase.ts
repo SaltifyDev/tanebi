@@ -1,4 +1,4 @@
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const SsoNTLoginWrapper = ProtoMessage.of({
     sign: ProtoField(1, ScalarType.BYTES, true),

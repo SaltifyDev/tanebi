@@ -1,5 +1,5 @@
 import { FileInfo } from './FileInfo';
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const IndexNode = ProtoMessage.of({
     info: ProtoField(1, () => FileInfo.fields, true, false),

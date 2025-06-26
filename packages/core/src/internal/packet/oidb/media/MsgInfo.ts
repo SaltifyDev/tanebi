@@ -1,6 +1,6 @@
 import { ExtBizInfo } from '@/internal/packet/oidb/media/ExtBizInfo';
 import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const MsgInfo = ProtoMessage.of({
     msgInfoBody: ProtoField(1, () => MsgInfoBody.fields, false, true),

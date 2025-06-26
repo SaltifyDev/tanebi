@@ -1,4 +1,4 @@
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const SsoC2CRecallMsg = ProtoMessage.of({
     type: ProtoField(1, ScalarType.UINT32),

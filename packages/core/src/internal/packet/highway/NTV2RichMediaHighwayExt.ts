@@ -1,5 +1,5 @@
 import { MsgInfoBody } from '@/internal/packet/oidb/media/MsgInfo';
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const NTV2RichMediaHighwayExt = ProtoMessage.of({
     fileUuid: ProtoField(1, ScalarType.STRING),

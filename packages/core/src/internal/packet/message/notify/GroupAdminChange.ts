@@ -1,4 +1,4 @@
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const GroupAdminChange = ProtoMessage.of({
     groupUin: ProtoField(1, ScalarType.UINT32),

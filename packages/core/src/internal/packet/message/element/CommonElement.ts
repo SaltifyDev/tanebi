@@ -1,4 +1,4 @@
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const CommonElement = ProtoMessage.of({
     serviceType: ProtoField(1, ScalarType.INT32, false, false),

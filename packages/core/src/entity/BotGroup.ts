@@ -9,7 +9,6 @@ import { IncreaseType } from '@/internal/packet/message/notify/GroupMemberChange
 import { FetchGroupMembersOperation } from '@/internal/operation/group/FetchGroupMembersOperation';
 import { SendMessageOperation } from '@/internal/operation/message/SendMessageOperation';
 import { RecallGroupMessageOperation } from '@/internal/operation/message/RecallGroupMessageOperation';
-import { SetGroupName } from '@/internal/packet/oidb/0x89a_15';
 import { SetGroupNameOperation } from '@/internal/operation/group/SetGroupNameOperation';
 import { MuteAllMembersOperation } from '@/internal/operation/group/MuteAllMembersOperation';
 import { AddGroupReactionOperation } from '@/internal/operation/group/AddGroupReactionOperation';

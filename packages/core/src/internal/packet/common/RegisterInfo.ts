@@ -1,5 +1,5 @@
 import { RegisterDeviceInfo } from '@/internal/packet/common/RegisterDeviceInfo';
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const RegisterInfo = ProtoMessage.of({
     guid: ProtoField(1, ScalarType.STRING, true),

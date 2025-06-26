@@ -1,4 +1,4 @@
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 import { RegisterInfo, RegisterInfoResponse } from '@/internal/packet/common/RegisterInfo';
 
 export const SsoInfoSync = ProtoMessage.of({

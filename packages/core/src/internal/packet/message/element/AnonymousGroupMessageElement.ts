@@ -1,4 +1,4 @@
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const AnonymousGroupMessageElement = ProtoMessage.of({
     flags: ProtoField(1, ScalarType.INT32, false, false),

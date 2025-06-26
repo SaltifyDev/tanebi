@@ -1,5 +1,5 @@
 import { CommonHead } from '@/internal/packet/oidb/media/CommonHead';
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const MultiMediaRespHead = ProtoMessage.of({
     common: ProtoField(1, () => CommonHead.fields, true, false),

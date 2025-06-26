@@ -1,5 +1,5 @@
 import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const DeleteReq = ProtoMessage.of({
     index: ProtoField(1, () => IndexNode.fields, false, true),

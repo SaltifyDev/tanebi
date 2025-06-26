@@ -1,5 +1,5 @@
 import { OidbSvcContract } from '@/internal/util/binary/oidb';
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export enum GroupRequestOperation {
     Accept = 1,

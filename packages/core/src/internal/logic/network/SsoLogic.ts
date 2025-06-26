@@ -4,14 +4,18 @@ import { BotContext } from '@/internal';
 import { Mutex } from 'async-mutex';
 import { LogicBase } from '@/internal/logic/LogicBase';
 import { SignResult } from '@/common';
-import { EncryptionType, IncomingSsoPacketWrapper, IncomingSsoPacket, CompressionType } from '@/internal/packet/common/IncomingSsoPacket';
+import {
+    CompressionType,
+    EncryptionType,
+    IncomingSsoPacket,
+    IncomingSsoPacketWrapper,
+} from '@/internal/packet/common/IncomingSsoPacket';
 import { OutgoingSsoPacket, OutgoingSsoPacketWrapper } from '@/internal/packet/common/OutgoingSsoPacket';
 import { SsoReserveFields } from '@/internal/packet/common/SsoReserveFields';
-import { encryptTea, decryptTea } from '@/internal/util/crypto/tea';
+import { decryptTea, encryptTea } from '@/internal/util/crypto/tea';
 import { generateTrace } from '@/internal/util/format';
 import { unzipSync } from 'node:zlib';
 import { Operation } from '@/internal/operation/OperationBase';
-import { infer } from 'zod';
 
 export type IncomingSsoPacket = {
     command: string;

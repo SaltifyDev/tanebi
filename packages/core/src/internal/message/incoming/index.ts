@@ -1,7 +1,11 @@
 import { PushMsgBody, PushMsgType } from '@/internal/packet/message/PushMsg';
 import { MessageType } from '@/internal/message';
 import { IncomingSegmentCollection } from '@/internal/message/incoming/segment-base';
-import { imageCommonParser, imageNotOnlineParser, imageCustomFaceParser } from '@/internal/message/incoming/segment/image';
+import {
+    imageCommonParser,
+    imageCustomFaceParser,
+    imageNotOnlineParser,
+} from '@/internal/message/incoming/segment/image';
 import { mentionParser } from '@/internal/message/incoming/segment/mention';
 import { textParser } from '@/internal/message/incoming/segment/text';
 import { InferProtoModel } from '@tanebijs/protobuf';

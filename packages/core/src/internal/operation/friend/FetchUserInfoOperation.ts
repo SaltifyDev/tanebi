@@ -1,6 +1,11 @@
 import { defineOperation } from '@/internal/operation/OperationBase';
 import { UserInfoAvatar, UserInfoBusiness, UserInfoGender } from '@/internal/packet/common/UserInfo';
-import { FetchUserInfoByUid, FetchUserInfoByUin, FetchUserInfoKey, FetchUserInfoResponse } from '@/internal/packet/oidb/0xfe1_2';
+import {
+    FetchUserInfoByUid,
+    FetchUserInfoByUin,
+    FetchUserInfoKey,
+    FetchUserInfoResponse,
+} from '@/internal/packet/oidb/0xfe1_2';
 
 export type EnumToStringKey = {
     [FetchUserInfoKey.Avatar]: 'avatar';

@@ -1,5 +1,5 @@
 import { LongMessageSettings } from '@/internal/packet/message/forward/LongMessageSettings';
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const SsoSendLongMsg = ProtoMessage.of({
     info: ProtoField(2, () => ({

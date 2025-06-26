@@ -1,4 +1,4 @@
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 import { Attribute } from '@/internal/packet/message/Attribute';
 import { NotOnlineFile } from '@/internal/packet/message/NotOnlineFile';
 import { Ptt } from '@/internal/packet/message/Ptt';

@@ -6,7 +6,6 @@ import { OutgoingPrivateMessage } from '@/internal/message/outgoing';
 import { PrivateMessage } from '@/internal/message/incoming';
 import { SendMessageOperation } from '@/internal/operation/message/SendMessageOperation';
 import { RecallFriendMessageOperation } from '@/internal/operation/message/RecallFriendMessageOperation';
-import { SendGrayTipPoke } from '@/internal/packet/oidb/0xed3_1';
 import { SendGrayTipPokeOperation } from '@/internal/operation/message/SendGrayTipPokeOperation';
 
 interface BotFriendDataBinding {

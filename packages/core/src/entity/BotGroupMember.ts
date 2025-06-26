@@ -5,7 +5,6 @@ import { SetMemberAdminOperation } from '@/internal/operation/group/SetMemberAdm
 import { SetMemberCardOperation } from '@/internal/operation/group/SetMemberCardOperation';
 import { MuteMemberOperation } from '@/internal/operation/group/MuteMemberOperation';
 import { SetMemberSpecialTitleOperation } from '@/internal/operation/group/SetMemberSpecialTitleOperation';
-import { SendGrayTipPoke } from '@/internal/packet/oidb/0xed3_1';
 import { SendGrayTipPokeOperation } from '@/internal/operation/message/SendGrayTipPokeOperation';
 import { KickMemberOperation } from '@/internal/operation/group/KickMemberOperation';
 

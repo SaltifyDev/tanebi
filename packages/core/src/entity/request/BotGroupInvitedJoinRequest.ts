@@ -1,6 +1,6 @@
 import { Bot, ctx, identityService, log } from '@/index';
 import { BotGroupMember, GroupRequestOperation } from '@/entity';
-import { FetchGroupFilteredNotifies, GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
+import { GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
 import { FetchGroupNotifiesOperation } from '@/internal/operation/group/FetchGroupNotifiesOperation';
 import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/FetchGroupFilteredNotifies';
 import { HandleGroupRequestOperation } from '@/internal/operation/group/HandleGroupRequestOperation';

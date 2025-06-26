@@ -7,9 +7,15 @@ import { GroupAdminChange } from '@/internal/packet/message/notify/GroupAdminCha
 import { GroupInvitation } from '@/internal/packet/message/notify/GroupInvitation';
 import { GroupInvitationRequest } from '@/internal/packet/message/notify/GroupInvitedJoinRequest';
 import { GroupJoinRequest } from '@/internal/packet/message/notify/GroupJoinRequest';
-import { GroupMemberChange, DecreaseType, OperatorInfo } from '@/internal/packet/message/notify/GroupMemberChange';
+import { DecreaseType, GroupMemberChange, OperatorInfo } from '@/internal/packet/message/notify/GroupMemberChange';
 import { GroupMute } from '@/internal/packet/message/notify/GroupMute';
-import { Event0x210SubType, Event0x2DCSubType, Event0x2DCSubType16Field13, PushMsgBody, PushMsgType } from '@/internal/packet/message/PushMsg';
+import {
+    Event0x210SubType,
+    Event0x2DCSubType,
+    Event0x2DCSubType16Field13,
+    PushMsgBody,
+    PushMsgType,
+} from '@/internal/packet/message/PushMsg';
 import { InferProtoModel } from '@tanebijs/protobuf';
 import { GroupEssenceMessageChangeSetFlag } from '@/internal/packet/message/notify/GroupEssenceMessageChange';
 

@@ -1,6 +1,6 @@
 import { DataHighwayHead } from '@/internal/packet/highway/DataHighwayHead';
 import { SegHead } from './SegHead';
-import { ProtoMessage, ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
 export const ReqDataHighwayHead = ProtoMessage.of({
     msgBaseHead: ProtoField(1, () => DataHighwayHead.fields, true),

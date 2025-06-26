@@ -1,23 +1,23 @@
 <div align="center">
 
-![tanebi](https://socialify.git.ci/SaltifyDev/tanebi/image?description=1&font=Bitter&forks=1&issues=1&language=1&name=1&owner=1&pulls=1&stargazers=1&theme=Light)
+<h1>tanebi</h1>
+
+PC NTQQ 协议的 TypeScript 实现
 
 </div>
 
-NTQQ Protocol Implementation with Pure TypeScript.
-
-The word "tanebi" is from Japanese and means "tinder" in English or "火种" in Chinese. The name is in respect of previous and contemporary QQ protocol implementation projects. No matter they are alive or not, they are the "tanebi" of today's QQ bot development.
-
 ## Packages
 
-- [`core`](packages/core) ([npm](https://www.npmjs.com/package/tanebi)): Core library of the project, which provides the basic functions and stable runtime API of the QQ protocol.
-- [`examples`](packages/examples): Examples of using various APIs provided by the core library.
-- [`protobuf`](https://github.com/SaltifyDev/tanebi-protobuf) ([npm](https://www.npmjs.com/package/@tanebijs/protobuf)): Protobuf infrastructure for the project, which provides efficient serialization and deserialization of protocol packets.
+- [`core`](packages/core) ([npm](https://www.npmjs.com/package/tanebi)) - 项目的核心模块，实现基础功能并提供 API
+- [`examples`](packages/examples) - Core API 的使用示例
+- [`protobuf`](https://github.com/SaltifyDev/tanebi-protobuf) ([npm](https://www.npmjs.com/package/@tanebijs/protobuf)) - 高效的 ProtoBuf 基础设施
 
 ## Special Thanks
 
-This project could not exist without the following projects and their contributors:
-- [LagrangeDev/Lagrange.Core](https://github.com/LagrangeDev/Lagrange.Core), providing basic project structure and most protocol packets.
-- [LagrangeDev/lagrangejs](https://github.com/LagrangeDev/lagrangejs), providing JavaScript implementation of NTQQ protocol crypto and authentication.
-- [takayama-lily/oicq](https://github.com/takayama-lily/oicq), the initial QQ protocol implementation in JavaScript, and of course, the parent project of lagrangejs.
-- @pk5ls20 for writing JavaScript implementation of Highway logic, which is essential to uploading media.
+tanebi 离不开以下前辈项目及贡献者：
+- [LagrangeDev/Lagrange.Core](https://github.com/LagrangeDev/Lagrange.Core) - 提供了项目的基础架构和绝大多数协议包定义
+- [LagrangeDev/lagrangejs](https://github.com/LagrangeDev/lagrangejs) - 提供了 NTQQ 的加密算法和认证流程的 JavaScript 实现
+- [takayama-lily/oicq](https://github.com/takayama-lily/oicq) - QQ 协议最初的 JavaScript 实现
+- [@pk5ls20](https://github.com/pk5ls20) - 编写了 Highway (媒体文件上传）逻辑的 JavaScript 实现
+
+> 项目名称源自日语「種火」(たねび)，意为火种，向所有先前与当下的 QQ 协议实现致敬。无论是否还在活跃维护，这些项目都是点亮了今天的 QQ Bot 开发的当之无愧的“火种”。

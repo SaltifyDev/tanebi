@@ -23,5 +23,5 @@
       "tanebi": "workspace:*"
     }
   },
-  "packageManager": "pnpm@10.8.0"
+  "packageManager": "pnpm@10.12.3"
 }

@@ -40,7 +40,6 @@ export interface FetchUserInfoGeneralReturn {
 }
 
 export const FetchUserInfoOperation = defineOperation(
-    'fetchUserInfo',
     'OidbSvcTrpcTcp.0xfe1_2',
     (ctx, uinOrUid: number | string, keys: FetchUserInfoKey[] = [
         FetchUserInfoKey.Avatar,

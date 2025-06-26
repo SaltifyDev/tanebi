@@ -10,6 +10,8 @@ import { SsoReserveFields } from '@/internal/packet/common/SsoReserveFields';
 import { encryptTea, decryptTea } from '@/internal/util/crypto/tea';
 import { generateTrace } from '@/internal/util/format';
 import { unzipSync } from 'node:zlib';
+import { Operation } from '@/internal/operation/OperationBase';
+import { infer } from 'zod';
 
 export type IncomingSsoPacket = {
     command: string;
@@ -36,6 +38,9 @@ export class SsoLogic extends LogicBase {
     private outgoingDataMutex = new Mutex();
     private incomingDataMutex = new Mutex();
     private handlePacketMutex = new Mutex();
+
+    private atomicSeq = 4000;
+    private seqMutex = new Mutex();
 
     constructor(public ctx: BotContext) {
         super(ctx);
@@ -195,6 +200,29 @@ export class SsoLogic extends LogicBase {
         });
     }
 
+    async callOperation<Args extends unknown[], Ret>(
+        op: Operation<Args, Ret>,
+        ...args: Args
+    ): Promise<Ret> {
+        const buf = op.build(this.ctx, ...args);
+        if (op.postOnly) {
+            await this.ctx.ssoLogic.postSsoPacket(op.command, buf, await this.nextSeq());
+            return undefined as ReturnType<
+                // @ts-ignore
+                OperationMap<T>[OpName]['parse']>;
+        } else {
+            const seq = await this.nextSeq();
+            const retPacket = await this.sendSsoPacket(op.command, buf, seq);
+            if ('body' in retPacket) {
+                return op.parse(this.ctx, retPacket.body) as any;
+            } else {
+                throw new Error(
+                    `Action call failed (cmd=${op.command} seq=${seq} retcode=${retPacket.retcode}): ${retPacket.extra}`
+                );
+            }
+        }
+    }
+
     resolveIncomingSsoPacket(packet: Buffer): IncomingSsoPacket {
         const wrapped = IncomingSsoPacketWrapper.decode(packet);
         if (wrapped.protocol !== 12) {
@@ -238,6 +266,10 @@ export class SsoLogic extends LogicBase {
                 body,
             };
         }
+    }
+
+    private async nextSeq() {
+        return this.seqMutex.runExclusive(() => this.atomicSeq++);
     }
 
     private handlePacket(packet: Buffer) {

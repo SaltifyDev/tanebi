@@ -1,6 +1,13 @@
 import { Bot, ctx, log } from '@/index';
 import { BotEntity, BotGroup } from '@/entity';
 import { GroupMemberPermission } from '@/internal/packet/oidb/0xfe7_3';
+import { SetMemberAdminOperation } from '@/internal/operation/group/SetMemberAdminOperation';
+import { SetMemberCardOperation } from '@/internal/operation/group/SetMemberCardOperation';
+import { MuteMemberOperation } from '@/internal/operation/group/MuteMemberOperation';
+import { SetMemberSpecialTitleOperation } from '@/internal/operation/group/SetMemberSpecialTitleOperation';
+import { SendGrayTipPoke } from '@/internal/packet/oidb/0xed3_1';
+import { SendGrayTipPokeOperation } from '@/internal/operation/message/SendGrayTipPokeOperation';
+import { KickMemberOperation } from '@/internal/operation/group/KickMemberOperation';
 
 interface BotGroupMemberDataBinding {
     uin: number;
@@ -75,7 +82,7 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> {
      */
     async setAdmin(isAdmin: boolean) {
         this.bot[log].emit('trace', this.moduleName, `Set admin to ${isAdmin}`);
-        await this.bot[ctx].ops.call('setMemberAdmin', this.group.uin, this.uid, isAdmin);
+        await this.bot[ctx].call(SetMemberAdminOperation, this.group.uin, this.uid, isAdmin);
         this.data.permission = isAdmin ?
             GroupMemberPermission.Admin : GroupMemberPermission.Member;
     }
@@ -86,7 +93,7 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> {
      */
     async setCard(card: string) {
         this.bot[log].emit('trace', this.moduleName, `Set card to ${card}`);
-        await this.bot[ctx].ops.call('setMemberCard', this.group.uin, this.uid, card);
+        await this.bot[ctx].call(SetMemberCardOperation, this.group.uin, this.uid, card);
         this.data.card = card;
     }
 
@@ -96,7 +103,7 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> {
      */
     async mute(duration: number) {
         this.bot[log].emit('trace', this.moduleName, `Mute for ${duration} seconds`);
-        await this.bot[ctx].ops.call('muteMember', this.group.uin, this.uid, duration);
+        await this.bot[ctx].call(MuteMemberOperation, this.group.uin, this.uid, duration);
     }
 
     /**
@@ -105,7 +112,7 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> {
      */
     async unmute() {
         this.bot[log].emit('trace', this.moduleName, 'Unmute');
-        await this.bot[ctx].ops.call('muteMember', this.group.uin, this.uid, 0);
+        await this.bot[ctx].call(MuteMemberOperation, this.group.uin, this.uid, 0);
     }
 
     /**
@@ -120,7 +127,7 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> {
             throw new Error('Special title is too long');
         }
         this.bot[log].emit('trace', this.moduleName, `Set special title to ${specialTitle}`);
-        await this.bot[ctx].ops.call('setMemberSpecialTitle', this.group.uin, this.uid, specialTitle);
+        await this.bot[ctx].call(SetMemberSpecialTitleOperation, this.group.uin, this.uid, specialTitle);
         this.data.specialTitle = specialTitle;
     }
 
@@ -129,7 +136,7 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> {
      */
     async sendGrayTipPoke() {
         this.bot[log].emit('trace', this.moduleName, 'Send gray tip poke');
-        await this.bot[ctx].ops.call('sendGrayTipPoke', this.uin, this.group.uin);
+        await this.bot[ctx].call(SendGrayTipPokeOperation, this.uin, this.group.uin);
     }
 
     /**
@@ -138,7 +145,7 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> {
      */
     async kick(acceptSubsequentRequests: boolean = true, reason: string = '') {
         this.bot[log].emit('trace', this.moduleName, 'Kick');
-        await this.bot[ctx].ops.call('kickMember',
+        await this.bot[ctx].call(KickMemberOperation,
             this.group.uin, this.uid, acceptSubsequentRequests, reason);
     }
 }

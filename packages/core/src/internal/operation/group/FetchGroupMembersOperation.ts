@@ -6,7 +6,6 @@ import { FetchGroupMembers, FetchGroupMembersResponse } from '@/internal/packet/
  * Consider using stable API unless you know what you are doing.
  */
 export const FetchGroupMembersOperation = defineOperation(
-    'fetchGroupMembers',
     'OidbSvcTrpcTcp.0xfe7_3',
     (ctx, groupUin: number, token?: string) => FetchGroupMembers.encode({
         groupUin,

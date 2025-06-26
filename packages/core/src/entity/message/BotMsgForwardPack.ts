@@ -2,6 +2,7 @@ import { IncomingMessage, IncomingSegmentOf } from '@/internal/message/incoming'
 import { BotMsgForwardBubble, BotMsgImage, BotMsgLightApp, BotMsgType, BotMsgVideo } from '.';
 import { Bot, ctx } from '@/index';
 import { MessageType } from '@/internal/message';
+import { DownloadLongMessageOperation } from '@/internal/operation/message/DownloadLongMessageOperation';
 
 export type ForwardedMessageBody = {
     type: 'bubble',
@@ -93,7 +94,7 @@ export class BotMsgForwardPack implements BotMsgType {
     }
 
     async download(): Promise<ForwardedMessage[]> {
-        return await this.bot[ctx].ops.call('downloadLongMessage', this.senderUid, this.segment.resId)
+        return await this.bot[ctx].call(DownloadLongMessageOperation, this.senderUid, this.segment.resId)
             .then(result => Promise
                 .all(result.map(async msg => {
                     const build = await this.build(msg);

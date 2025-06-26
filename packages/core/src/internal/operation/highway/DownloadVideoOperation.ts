@@ -5,7 +5,6 @@ import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
 import { InferProtoModel } from '@tanebijs/protobuf';
 
 export const DownloadVideoOperation = defineOperation(
-    'downloadVideo',
     'OidbSvcTrpcTcp.0x11e9_200',
     (ctx, senderUid: string, node: InferProtoModel<typeof IndexNode.fields>, msgType: MessageType) => DownloadVideo.encode({
         reqHead: {

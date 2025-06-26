@@ -7,7 +7,6 @@ const bytesPbReserve = Buffer.from([0x08, 0x00, 0x38, 0x00]);
 const bytesGeneralFlags = Buffer.from([0x9a, 0x01, 0x07, 0xaa, 0x03, 0x04, 0x08, 0x08, 0x12, 0x00]);
 
 export const UploadGroupRecordOperation = defineOperation(
-    'uploadGroupRecord',
     'OidbSvcTrpcTcp.0x126e_100',
     (ctx, groupUin: number, record: MediaGeneralMetadata, duration: number) => {
         const md5Str = record.md5.toString('hex');

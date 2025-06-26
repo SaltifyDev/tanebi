@@ -4,6 +4,10 @@ import { DispatchedMessage, PrivateMessageBuilder, type rawMessage } from '@/mes
 import EventEmitter from 'node:events';
 import { OutgoingPrivateMessage } from '@/internal/message/outgoing';
 import { PrivateMessage } from '@/internal/message/incoming';
+import { SendMessageOperation } from '@/internal/operation/message/SendMessageOperation';
+import { RecallFriendMessageOperation } from '@/internal/operation/message/RecallFriendMessageOperation';
+import { SendGrayTipPoke } from '@/internal/packet/oidb/0xed3_1';
+import { SendGrayTipPokeOperation } from '@/internal/operation/message/SendGrayTipPokeOperation';
 
 interface BotFriendDataBinding {
     uin: number;
@@ -82,12 +86,12 @@ export class BotFriend extends BotContact<BotFriendDataBinding> {
         const builder = new PrivateMessageBuilder(this.uin, this.uid, this.bot);
         await buildMsg(builder);
         const message = builder.build(this.clientSequence++);
-        const sendResult = await this.bot[ctx].ops.call('sendMessage', message);
+        const sendResult = await this.bot[ctx].call(SendMessageOperation, message);
         return {
             ...sendResult,
             ...message,
             recall: async () => {
-                await this.bot[ctx].ops.call('recallFriendMessage',
+                await this.bot[ctx].call(RecallFriendMessageOperation,
                     this.uid, message.clientSequence, message.random, sendResult.timestamp, sendResult.sequence);
             }
         };
@@ -98,7 +102,7 @@ export class BotFriend extends BotContact<BotFriendDataBinding> {
      */
     async sendGrayTipPoke() {
         this.bot[log].emit('trace', this.moduleName, 'Send gray tip poke');
-        await this.bot[ctx].ops.call('sendGrayTipPoke', this.uin, undefined, this.uin);
+        await this.bot[ctx].call(SendGrayTipPokeOperation, this.uin, undefined, this.uin);
     }
 
     /**

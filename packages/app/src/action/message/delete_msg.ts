@@ -4,6 +4,8 @@ import { zOneBotInputMessageId } from '@app/common/types';
 import { z } from 'zod';
 import { MessageStoreType, OutgoingMessageStore } from '@app/storage/types';
 import { PbSendMsg } from '@/internal/packet/message/PbSendMsg';
+import { RecallFriendMessageOperation } from '@/internal/operation/message/RecallFriendMessageOperation';
+import { RecallGroupMessageOperation } from '@/internal/operation/message/RecallGroupMessageOperation';
 
 export const delete_msg = defineAction(
     'delete_msg',
@@ -24,8 +26,8 @@ export const delete_msg = defineAction(
                 return Failed(404, 'Friend not found');
             }
             const pbSendMsg = PbSendMsg.decode(OutgoingMessageStore.decode(message.body).pbElem);
-            await ctx.bot[internalCtx].ops.call(
-                'recallFriendMessage',
+            await ctx.bot[internalCtx].call(
+                RecallFriendMessageOperation,
                 friend.uid,
                 pbSendMsg.clientSequence!,
                 pbSendMsg.random ?? 0,
@@ -33,7 +35,7 @@ export const delete_msg = defineAction(
                 message.sequence
             );
         } else { // GroupMessage
-            await ctx.bot[internalCtx].ops.call('recallGroupMessage', message.peerUin, message.sequence);
+            await ctx.bot[internalCtx].call(RecallGroupMessageOperation, message.peerUin, message.sequence);
         }
         return Ok();
     }

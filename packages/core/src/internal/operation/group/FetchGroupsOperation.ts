@@ -2,7 +2,6 @@ import { defineOperation } from '@/internal/operation/OperationBase';
 import { FetchGroups, FetchGroupsResponse } from '@/internal/packet/oidb/0xfe5_2';
 
 export const FetchGroupsOperation = defineOperation(
-    'fetchGroups',
     'OidbSvcTrpcTcp.0xfe5_2',
     () => FetchGroups.encode({
         config: {

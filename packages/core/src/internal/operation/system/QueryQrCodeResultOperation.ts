@@ -20,7 +20,6 @@ export type QueryQrCodeResultCallResult = {
 }
 
 export const QueryQrCodeResultOperation = defineOperation(
-    'queryQrCodeResult',
     'wtlogin.trans_emp',
     (ctx) => ctx.wtLoginLogic.buildWtLoginPacket(
         'wtlogin.trans_emp',

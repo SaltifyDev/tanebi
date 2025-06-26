@@ -3,7 +3,6 @@ import { FetchHighwayUrl, FetchHighwayUrlResponse } from '@/internal/packet/http
 import { int32ip2str } from '@/internal/util/format';
 
 export const FetchHighwayUrlOperation = defineOperation(
-    'fetchHighwayUrl',
     'HttpConn.0x6ff_501',
     () => FetchHighwayUrl.encode({
         body: {

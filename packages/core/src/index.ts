@@ -10,8 +10,25 @@ import { InferProtoModel } from '@tanebijs/protobuf';
 import { FaceDetail } from '@/internal/packet/oidb/0x9154_1';
 import { BUF0, BUF16 } from '@/internal/util/constants';
 import { FetchUserInfoKey } from '@/internal/packet/oidb/0xfe1_2';
-import { EnumToStringKey, FetchUserInfoGeneralReturn } from '@/internal/operation/friend/FetchUserInfoOperation';
+import {
+    EnumToStringKey,
+    FetchUserInfoGeneralReturn,
+    FetchUserInfoOperation,
+} from '@/internal/operation/friend/FetchUserInfoOperation';
 import { DecreaseType, IncreaseType } from '@/internal/packet/message/notify/GroupMemberChange';
+import { FetchFriendsOperation } from '@/internal/operation/friend/FetchFriendsOperation';
+import { FetchGroupsOperation } from '@/internal/operation/group/FetchGroupsOperation';
+import { FetchQrCodeOperation } from '@/internal/operation/system/FetchQrCodeOperation';
+import { QueryQrCodeResultOperation } from '@/internal/operation/system/QueryQrCodeResultOperation';
+import { WtLoginOperation } from '@/internal/operation/system/WtLoginOperation';
+import { KeyExchangeOperation } from '@/internal/operation/system/KeyExchangeOperation';
+import { NTEasyLoginOperation } from '@/internal/operation/system/NTEasyLoginOperation';
+import { BotOnlineOperation } from '@/internal/operation/system/BotOnlineOperation';
+import { HeartbeatOperation } from '@/internal/operation/system/HeartbeatOperation';
+import { FetchFaceDetailsOperation } from '@/internal/operation/message/FetchFaceDetailsOperation';
+import { FetchHighwayUrlOperation } from '@/internal/operation/highway/FetchHighwayUrlOperation';
+import { BotOfflineOperation } from '@/internal/operation/system/BotOfflineOperation';
+import { SendProfileLikeOperation } from '@/internal/operation/friend/SendProfileLikeOperation';
 
 /**
  * Symbol of the bot context
@@ -116,10 +133,10 @@ export class Bot {
             async (bot) => {
                 // 全家4完了才能想出来这种分页的逻辑
                 // -- quoted from https://github.com/LagrangeDev/Lagrange.Core/blob/master/Lagrange.Core/Internal/Service/System/FetchFriendsService.cs#L61
-                let data = await bot[ctx].ops.call('fetchFriends');
+                let data = await bot[ctx].call(FetchFriendsOperation);
                 let friends = data.friends;
                 while (data.nextUin) {
-                    data = await bot[ctx].ops.call('fetchFriends', data.nextUin);
+                    data = await bot[ctx].call(FetchFriendsOperation, data.nextUin);
                     friends = friends.concat(data.friends);
                 }
                 friends.forEach(friend => {
@@ -143,7 +160,7 @@ export class Bot {
         this.groupCache = new BotCacheService<number, BotGroup>(
             this,
             async (bot) => {
-                const groupList = (await bot[ctx].ops.call('fetchGroups')).groups;
+                const groupList = (await bot[ctx].call(FetchGroupsOperation)).groups;
                 return new Map(groupList.map(group => [group.groupUin, {
                     uin: group.groupUin,
                     name: group.info!.groupName!,
@@ -464,7 +481,7 @@ export class Bot {
     ) {
         queryQrCodeResultInterval = Math.max(queryQrCodeResultInterval, 2000);
 
-        const qrCodeInfo = await this[ctx].ops.call('fetchQrCode');
+        const qrCodeInfo = await this[ctx].call(FetchQrCodeOperation);
         this[log].emit('trace', 'Bot', `QR code info: ${JSON.stringify(qrCodeInfo)}`);
 
         this[ctx].keystore.session.qrSign = qrCodeInfo.signature;
@@ -475,7 +492,7 @@ export class Bot {
         await new Promise<void>((resolve, reject) => {
             this.qrCodeQueryIntervalRef = setInterval(async () => {
                 try {
-                    const res = await this[ctx].ops.call('queryQrCodeResult');
+                    const res = await this[ctx].call(QueryQrCodeResultOperation);
                     this[log].emit('trace', 'Bot', `Query QR code result: ${res.confirmed ? 'confirmed' : res.state}`);
                     if (res.confirmed) {
                         clearInterval(this.qrCodeQueryIntervalRef);
@@ -499,7 +516,7 @@ export class Bot {
         this[ctx].keystore.uin = await this[ctx].wtLoginLogic.getCorrectUin();
         this[log].emit('info', 'Bot', `User ${this.uin} scanned QR code`);
 
-        const loginResult = await this[ctx].ops.call('wtLogin');
+        const loginResult = await this[ctx].call(WtLoginOperation);
         if (!loginResult.success) {
             throw new Error(`Login failed (state=${loginResult.state} tag=${loginResult.tag} message=${loginResult.message})`);
         }
@@ -550,7 +567,7 @@ export class Bot {
      * Perform key exchange to refresh session
      */
     async keyExchange() {
-        const keyExchangeResult = await this[ctx].ops.call('keyExchange');
+        const keyExchangeResult = await this[ctx].call(KeyExchangeOperation);
         this[ctx].keystore.session.exchangeKey = keyExchangeResult.gcmKey;
         this[ctx].keystore.session.keySign = keyExchangeResult.sign;
     }
@@ -561,7 +578,7 @@ export class Bot {
      * You should always rely on `fastLogin` unless you know what you are doing.
      */
     async ntEasyLogin() {
-        const easyLoginResult = await this[ctx].ops.call('ntEasyLogin');
+        const easyLoginResult = await this[ctx].call(NTEasyLoginOperation);
         if (!easyLoginResult.success) {
             throw new Error(`Login failed (${easyLoginResult.errorCode})`);
         }
@@ -584,7 +601,7 @@ export class Bot {
      * Get online using existing session
      */
     async botOnline() {
-        const onlineResult = await this[ctx].ops.call('botOnline');
+        const onlineResult = await this[ctx].call(BotOnlineOperation);
         if (!(onlineResult?.includes('register success'))) {
             throw new Error(`Failed to go online (${onlineResult})`);
         }
@@ -594,7 +611,7 @@ export class Bot {
 
         this.heartbeatIntervalRef = setInterval(async () => {
             try {
-                await this[ctx].ops.call('heartbeat');
+                await this[ctx].call(HeartbeatOperation);
                 this[log].emit('trace', 'Bot', 'Heartbeat sent');
             } catch(e) {
                 this[log].emit('warning', 'Bot', 'Failed to send heartbeat', e);
@@ -620,7 +637,7 @@ export class Bot {
         });
 
         try {
-            const faceDetails = await this[ctx].ops.call('fetchFaceDetails');
+            const faceDetails = await this[ctx].call(FetchFaceDetailsOperation);
             faceDetails.forEach(face => {
                 this[faceCache].set(face.qSid, face);
             });
@@ -629,7 +646,7 @@ export class Bot {
         }
 
         try {
-            const highwayData = await this[ctx].ops.call('fetchHighwayUrl');
+            const highwayData = await this[ctx].call(FetchHighwayUrlOperation);
             const { ip, port } = highwayData.serverInfo[0];
             this[ctx].highwayLogic.setHighwayUrl(ip, port, highwayData.sigSession);
         } catch (e) {
@@ -649,7 +666,7 @@ export class Bot {
             clearInterval(this.heartbeatIntervalRef);
         }
 
-        await this[ctx].ops.call('botOffline');
+        await this[ctx].call(BotOfflineOperation);
         this[ctx].ssoLogic.socket.destroy();
         this[log].emit('info', 'Bot', `User ${this.uin} is now offline`);
     }
@@ -704,7 +721,7 @@ export class Bot {
         uinOrUid: number | string, keys?: K
     ) {
         this[log].emit('trace', 'Bot', `Getting user info for ${uinOrUid}`);
-        const userInfo = await this[ctx].ops.call('fetchUserInfo', uinOrUid, keys ?? [
+        const userInfo = await this[ctx].call(FetchUserInfoOperation, uinOrUid, keys ?? [
             FetchUserInfoKey.Age // at least one key is required
         ]);
         return userInfo as Pick<
@@ -725,7 +742,7 @@ export class Bot {
         if (!targetUid) {
             throw new Error(`Failed to resolve UID for ${targetUin}`);
         }
-        await this[ctx].ops.call('sendProfileLike', targetUid, count);
+        await this[ctx].call(SendProfileLikeOperation, targetUid, count);
     }
     //#endregion
 

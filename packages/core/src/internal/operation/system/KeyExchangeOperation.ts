@@ -12,7 +12,6 @@ import { sha256 } from '@/internal/util/crypto/digest';
 const gcmCalc2Key = Buffer.from('e2733bf403149913cbf80c7a95168bd4ca6935ee53cd39764beebe2e007e3aee', 'hex');
 
 export const KeyExchangeOperation = defineOperation(
-    'keyExchange',
     'trpc.login.ecdh.EcdhService.SsoKeyExchange',
     (ctx) => {
         const part1 = SsoKeyExchangePart1.encode({

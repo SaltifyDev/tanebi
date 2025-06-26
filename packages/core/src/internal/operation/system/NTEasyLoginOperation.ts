@@ -18,7 +18,6 @@ export type NTEasyLoginResult = {
 }
 
 export const NTEasyLoginOperation = defineOperation(
-    'ntEasyLogin',
     'trpc.login.ecdh.EcdhService.SsoNTLoginEasyLogin',
     (ctx) => ctx.ntLoginLogic.buildNTLoginPacket(ctx.keystore.session.tempPassword!),
     (ctx, payload): NTEasyLoginResult => {

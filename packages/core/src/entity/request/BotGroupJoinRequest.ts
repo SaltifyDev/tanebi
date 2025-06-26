@@ -1,6 +1,10 @@
 import { Bot, ctx, identityService, log } from '@/index';
 import { GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
 import { GroupRequestOperation } from '.';
+import { FetchGroupNotifiesOperation } from '@/internal/operation/group/FetchGroupNotifiesOperation';
+import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/FetchGroupFilteredNotifies';
+import { HandleGroupRequestOperation } from '@/internal/operation/group/HandleGroupRequestOperation';
+import { HandleGroupFilteredRequestOperation } from '@/internal/operation/group/HandleGroupFilteredRequestOperation';
 
 export class BotGroupJoinRequest {
     private constructor(
@@ -18,8 +22,8 @@ export class BotGroupJoinRequest {
     }
 
     async handle(operation: GroupRequestOperation, message?: string) {
-        await this.bot[ctx].ops.call(
-            this.isFiltered ? 'handleGroupRequest' : 'handleGroupFilteredRequest',
+        await this.bot[ctx].call(
+            this.isFiltered ? HandleGroupRequestOperation : HandleGroupFilteredRequestOperation,
             this.groupUin,
             this.sequence,
             GroupNotifyType.JoinRequest,
@@ -29,14 +33,14 @@ export class BotGroupJoinRequest {
     }
 
     static async create(groupUin: number, requestUid: string, bot: Bot) {
-        const latestReqs = await bot[ctx].ops.call('fetchGroupNotifies');
+        const latestReqs = await bot[ctx].call(FetchGroupNotifiesOperation);
         let req = latestReqs.find((req) =>
             req.notifyType === GroupNotifyType.JoinRequest
             && req.group.groupUin === groupUin
             && req.target.uid === requestUid);
         let isFiltered = false;
         if (!req) {
-            const latestFilteredReqs = await bot[ctx].ops.call('fetchGroupFilteredNotifies');
+            const latestFilteredReqs = await bot[ctx].call(FetchGroupFilteredNotifiesOperation);
             req = latestFilteredReqs.find((fReq) =>
                 fReq.notifyType === GroupNotifyType.JoinRequest
                 && fReq.group.groupUin === groupUin

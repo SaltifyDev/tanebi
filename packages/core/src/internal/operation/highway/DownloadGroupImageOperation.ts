@@ -4,7 +4,6 @@ import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
 import { InferProtoModel } from '@tanebijs/protobuf';
 
 export const DownloadGroupImageOperation = defineOperation(
-    'downloadGroupImage',
     'OidbSvcTrpcTcp.0x11c4_200',
     (ctx, groupUin: number, node: InferProtoModel<typeof IndexNode.fields>) => DownloadGroupImage.encode({
         reqHead: {

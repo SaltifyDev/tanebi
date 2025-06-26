@@ -3,7 +3,6 @@ import { RegisterInfoResponse } from '@/internal/packet/common/RegisterInfo';
 import { UnRegisterInfo } from '@/internal/packet/common/UnRegisterInfo';
 
 export const BotOfflineOperation = defineOperation(
-    'botOffline',
     'trpc.qq_new_tech.status_svc.StatusService.UnRegister',
     (ctx) => UnRegisterInfo.encode({
         device: {

@@ -4,7 +4,6 @@ import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
 import { InferProtoModel } from '@tanebijs/protobuf';
 
 export const DownloadPrivateRecordOperation = defineOperation(
-    'downloadPrivateRecord',
     'OidbSvcTrpcTcp.0x126d_200',
     (ctx, senderUid: string, node: InferProtoModel<typeof IndexNode.fields>) => DownloadPrivateRecord.encode({
         reqHead: {

@@ -6,6 +6,15 @@ import EventEmitter from 'node:events';
 import { OutgoingGroupMessage } from '@/internal/message/outgoing';
 import { GroupMessage } from '@/internal/message/incoming';
 import { IncreaseType } from '@/internal/packet/message/notify/GroupMemberChange';
+import { FetchGroupMembersOperation } from '@/internal/operation/group/FetchGroupMembersOperation';
+import { SendMessageOperation } from '@/internal/operation/message/SendMessageOperation';
+import { RecallGroupMessageOperation } from '@/internal/operation/message/RecallGroupMessageOperation';
+import { SetGroupName } from '@/internal/packet/oidb/0x89a_15';
+import { SetGroupNameOperation } from '@/internal/operation/group/SetGroupNameOperation';
+import { MuteAllMembersOperation } from '@/internal/operation/group/MuteAllMembersOperation';
+import { AddGroupReactionOperation } from '@/internal/operation/group/AddGroupReactionOperation';
+import { RemoveGroupReactionOperation } from '@/internal/operation/group/RemoveGroupReactionOperation';
+import { LeaveGroupOperation } from '@/internal/operation/group/LeaveGroupOperation';
 
 interface BotGroupDataBinding {
     uin: number;
@@ -61,10 +70,10 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
         this.groupMemberCache = new BotCacheService<number, BotGroupMember>(
             bot,
             async (bot) => {
-                let data = await bot[ctx].ops.call('fetchGroupMembers', this.data.uin);
+                let data = await bot[ctx].call(FetchGroupMembersOperation, this.data.uin);
                 let members = data.members;
                 while (data.token) {
-                    data = await bot[ctx].ops.call('fetchGroupMembers', this.data.uin, data.token);
+                    data = await bot[ctx].call(FetchGroupMembersOperation, this.data.uin, data.token);
                     members = members.concat(data.members);
                 }
                 members.forEach(member => {
@@ -154,12 +163,12 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
         const builder = new GroupMessageBuilder(this.uin, this.bot);
         await buildMsg(builder);
         const message = builder.build(this.clientSequence++);
-        const sendResult = await this.bot[ctx].ops.call('sendMessage', builder.build(this.clientSequence++));
+        const sendResult = await this.bot[ctx].call(SendMessageOperation, builder.build(this.clientSequence++));
         return {
             ...sendResult,
             ...message,
             recall: async () => {
-                await this.bot[ctx].ops.call('recallGroupMessage', this.uin, sendResult.sequence);
+                await this.bot[ctx].call(RecallGroupMessageOperation, this.uin, sendResult.sequence);
             }
         };
     }
@@ -170,7 +179,7 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
      */
     async recallMsg(sequence: number) {
         this.bot[log].emit('trace', this.moduleName, `Recall message ${sequence}`);
-        await this.bot[ctx].ops.call('recallGroupMessage', this.uin, sequence);
+        await this.bot[ctx].call(RecallGroupMessageOperation, this.uin, sequence);
     }
 
     /**
@@ -179,7 +188,7 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
      */
     async setName(name: string) {
         this.bot[log].emit('trace', this.moduleName, `Set group name to ${name}`);
-        await this.bot[ctx].ops.call('setGroupName', this.uin, name);
+        await this.bot[ctx].call(SetGroupNameOperation, this.uin, name);
         this.data.name = name;
     }
 
@@ -190,7 +199,7 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
      */
     async setMuteAll(isSet: boolean) {
         this.bot[log].emit('trace', this.moduleName, `${isSet ? 'Set' : 'Unset'} mute all`);
-        await this.bot[ctx].ops.call('muteAllMembers', this.uin, isSet ? 1 : 0);
+        await this.bot[ctx].call(MuteAllMembersOperation, this.uin, isSet ? 1 : 0);
     }
 
     /**
@@ -204,9 +213,9 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
     async sendReaction(sequence: number, code: string, type: ReactionType, isAdd: boolean) {
         this.bot[log].emit('trace', this.moduleName, `Send reaction ${isAdd ? 'add' : 'remove'} ${code}`);
         if (isAdd) {
-            await this.bot[ctx].ops.call('addGroupReaction', this.uin, sequence, code, type);
+            await this.bot[ctx].call(AddGroupReactionOperation, this.uin, sequence, code, type);
         } else {
-            await this.bot[ctx].ops.call('removeGroupReaction', this.uin, sequence, code, type);
+            await this.bot[ctx].call(RemoveGroupReactionOperation, this.uin, sequence, code, type);
         }
     }
 
@@ -215,7 +224,7 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
      */
     async leave() {
         this.bot[log].emit('trace', this.moduleName, 'Leave group');
-        await this.bot[ctx].ops.call('leaveGroup', this.uin);
+        await this.bot[ctx].call(LeaveGroupOperation, this.uin);
     }
 
     /**

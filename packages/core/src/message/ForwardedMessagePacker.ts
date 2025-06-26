@@ -1,5 +1,6 @@
 import { Bot, ctx, OutgoingSegmentOf } from '@/index';
 import { ForwardedMessageBuilder, OutgoingForwardedMessage } from '.';
+import { UploadLongMessageOperation } from '@/internal/operation/message/UploadLongMessageOperation';
 
 export class ForwardedMessagePacker {
     private clientSequence = 100000;
@@ -32,7 +33,7 @@ export class ForwardedMessagePacker {
     async pack(): Promise<OutgoingSegmentOf<'forward'>> {
         return {
             type: 'forward',
-            resId: await this.bot[ctx].ops.call('uploadLongMessage', this.messages, this.groupUin),
+            resId: await this.bot[ctx].call(UploadLongMessageOperation, this.messages, this.groupUin),
             preview: this.preview,
             count: this.messages.length
         };

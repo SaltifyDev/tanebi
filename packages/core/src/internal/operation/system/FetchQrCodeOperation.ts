@@ -11,7 +11,6 @@ const FetchQrCodeSubCommand = 0x31;
 const BUF_0x30_0x01 = Buffer.from([0x30, 0x01]);
 
 export const FetchQrCodeOperation = defineOperation(
-    'fetchQrCode',
     'wtlogin.trans_emp',
     (ctx) => ctx.wtLoginLogic.buildWtLoginPacket(
         'wtlogin.trans_emp',

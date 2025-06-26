@@ -1,6 +1,10 @@
 import { Bot, ctx, identityService, log } from '@/index';
 import { BotGroupMember, GroupRequestOperation } from '@/entity';
-import { GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
+import { FetchGroupFilteredNotifies, GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
+import { FetchGroupNotifiesOperation } from '@/internal/operation/group/FetchGroupNotifiesOperation';
+import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/FetchGroupFilteredNotifies';
+import { HandleGroupRequestOperation } from '@/internal/operation/group/HandleGroupRequestOperation';
+import { HandleGroupFilteredRequestOperation } from '@/internal/operation/group/HandleGroupFilteredRequestOperation';
 
 export class BotGroupInvitedJoinRequest {
     private constructor(
@@ -18,8 +22,8 @@ export class BotGroupInvitedJoinRequest {
     }
 
     async handle(operation: GroupRequestOperation, message?: string) {
-        await this.bot[ctx].ops.call(
-            this.isFiltered ? 'handleGroupRequest' : 'handleGroupFilteredRequest',
+        await this.bot[ctx].call(
+            this.isFiltered ? HandleGroupRequestOperation : HandleGroupFilteredRequestOperation,
             this.groupUin,
             this.sequence,
             GroupNotifyType.InvitedJoinRequest,
@@ -29,7 +33,7 @@ export class BotGroupInvitedJoinRequest {
     }
 
     static async create(groupUin: number, targetUid: string, invitorUid: string, bot: Bot) {
-        const latestReqs = await bot[ctx].ops.call('fetchGroupNotifies');
+        const latestReqs = await bot[ctx].call(FetchGroupNotifiesOperation);
         let req = latestReqs.find((req) =>
             req.notifyType === GroupNotifyType.InvitedJoinRequest
                     && req.group.groupUin === groupUin
@@ -37,7 +41,7 @@ export class BotGroupInvitedJoinRequest {
                     && req.invitor?.uid === invitorUid);
         let isFiltered = false;
         if (!req) {
-            const latestFilteredReqs = await bot[ctx].ops.call('fetchGroupFilteredNotifies');
+            const latestFilteredReqs = await bot[ctx].call(FetchGroupFilteredNotifiesOperation);
             req = latestFilteredReqs.find((req) =>
                 req.notifyType === GroupNotifyType.InvitedJoinRequest
                         && req.group.groupUin === groupUin

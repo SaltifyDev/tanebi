@@ -2,7 +2,6 @@ import { defineOperation } from '@/internal/operation/OperationBase';
 import { SsoC2CRecallMsg } from '@/internal/packet/message/action/SsoC2CRecallMsg';
 
 export const RecallFriendMessageOperation = defineOperation(
-    'recallFriendMessage',
     'trpc.msg.msg_svc.MsgService.SsoC2CRecallMsg',
     (ctx, friendUid: string, clientSequence: number, random: number, timestamp: number, ntMsgSeq: number) =>
         SsoC2CRecallMsg.encode({

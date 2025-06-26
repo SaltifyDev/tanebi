@@ -5,7 +5,6 @@ import { InferProtoModel } from '@tanebijs/protobuf';
 export type FaceDetail = InferProtoModel<typeof aFaceDetail.fields>;
 
 export const FetchFaceDetailsOperation = defineOperation(
-    'fetchFaceDetails',
     'OidbSvcTrpcTcp.0x9154_1',
     () => FetchFaceDetails.encode({
         field1: 0,

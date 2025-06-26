@@ -5,7 +5,6 @@ import { LongMessagePayload } from '@/internal/packet/message/forward/LongMessag
 import { gunzipSync } from 'node:zlib';
 
 export const DownloadLongMessageOperation = defineOperation(
-    'downloadLongMessage',
     'trpc.group.long_msg_interface.MsgService.SsoRecvLongMsg',
     (ctx, senderUid: string, resId: string) => SsoRecvLongMsg.encode({
         info: {

@@ -1,4 +1,5 @@
 import { Bot, ctx } from '@/index';
+import { HandleFriendRequestOperation } from '@/internal/operation/friend/HandleFriendRequestOperation';
 
 export class BotFriendRequest {
     constructor(
@@ -18,6 +19,6 @@ export class BotFriendRequest {
     }
 
     async handle(isAccept: boolean) {
-        await this.bot[ctx].ops.call('handleFriendRequest', isAccept, this.fromUid);
+        await this.bot[ctx].call(HandleFriendRequestOperation, isAccept, this.fromUid);
     }
 }

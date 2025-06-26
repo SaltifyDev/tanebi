@@ -1,6 +1,8 @@
 import { Bot, BotMsgType, ctx, ImageSubType } from '@/index';
 import { MessageType } from '@/internal/message';
 import { IncomingMessage, IncomingSegmentOf } from '@/internal/message/incoming';
+import { DownloadPrivateImageOperation } from '@/internal/operation/highway/DownloadPrivateImageOperation';
+import { DownloadGroupImageOperation } from '@/internal/operation/highway/DownloadGroupImageOperation';
 
 export class BotMsgImage implements BotMsgType {
     private constructor(
@@ -25,8 +27,8 @@ export class BotMsgImage implements BotMsgType {
         if (data.indexNode) {
             return new BotMsgImage(
                 msg.type === MessageType.PrivateMessage ?
-                    await bot[ctx].ops.call('downloadPrivateImage', msg.senderUid!, data.indexNode) :
-                    await bot[ctx].ops.call('downloadGroupImage', msg.groupUin, data.indexNode),
+                    await bot[ctx].call(DownloadPrivateImageOperation, msg.senderUid!, data.indexNode) :
+                    await bot[ctx].call(DownloadGroupImageOperation, msg.groupUin, data.indexNode),
                 data.width,
                 data.height,
                 data.subType,
@@ -51,8 +53,8 @@ export class BotMsgImage implements BotMsgType {
         if (data.indexNode) {
             return new BotMsgImage(
                 messageType === MessageType.PrivateMessage ?
-                    await bot[ctx].ops.call('downloadPrivateImage', 'u_B-xbHgFtPzMTjvfvZNVuqw', data.indexNode) :
-                    await bot[ctx].ops.call('downloadGroupImage', 0, data.indexNode),
+                    await bot[ctx].call(DownloadPrivateImageOperation, 'u_B-xbHgFtPzMTjvfvZNVuqw', data.indexNode) :
+                    await bot[ctx].call(DownloadGroupImageOperation, 0, data.indexNode),
                 data.width,
                 data.height,
                 data.subType,

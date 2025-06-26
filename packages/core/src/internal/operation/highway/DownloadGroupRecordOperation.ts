@@ -4,7 +4,6 @@ import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
 import { InferProtoModel } from '@tanebijs/protobuf';
 
 export const DownloadGroupRecordOperation = defineOperation(
-    'downloadGroupRecord',
     'OidbSvcTrpcTcp.0x126e_200',
     (ctx, groupUin: number, node: InferProtoModel<typeof IndexNode.fields>) => DownloadGroupRecord.encode({
         reqHead: {

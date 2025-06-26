@@ -3,7 +3,6 @@ import { PbSendMsgResponse } from '@/internal/packet/message/PbSendMsg';
 import { buildPbSendMsg, OutgoingMessage } from '@/internal/message/outgoing';
 
 export const SendMessageOperation = defineOperation(
-    'sendMessage',
     'MessageSvc.PbSendMsg',
     (ctx, params: OutgoingMessage) => buildPbSendMsg(params),
     (ctx, payload) => {

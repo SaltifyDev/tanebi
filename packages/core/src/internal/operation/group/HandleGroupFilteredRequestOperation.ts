@@ -3,7 +3,6 @@ import { GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
 import { GroupRequestOperation, HandleGroupFilteredRequest } from '@/internal/packet/oidb/0x10c8';
 
 export const HandleGroupFilteredRequestOperation = defineOperation(
-    'handleGroupFilteredRequest',
     'OidbSvcTrpcTcp.0x10c8_2',
     (
         ctx,

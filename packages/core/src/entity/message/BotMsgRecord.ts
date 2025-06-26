@@ -2,6 +2,8 @@ import { BotMsgType } from '.';
 import { Bot, ctx } from '@/index';
 import { MessageType } from '@/internal/message';
 import { IncomingMessage, IncomingSegmentOf } from '@/internal/message/incoming';
+import { DownloadPrivateRecordOperation } from '@/internal/operation/highway/DownloadPrivateRecordOperation';
+import { DownloadGroupRecordOperation } from '@/internal/operation/highway/DownloadGroupRecordOperation';
 
 export class BotMsgRecord implements BotMsgType {
     private constructor(
@@ -13,8 +15,8 @@ export class BotMsgRecord implements BotMsgType {
         return new BotMsgRecord(
             data.indexNode?.info?.time ?? 0,
             msg.type === MessageType.PrivateMessage ?
-                await bot[ctx].ops.call('downloadPrivateRecord', msg.senderUid!, data.indexNode) :
-                await bot[ctx].ops.call('downloadGroupRecord', msg.groupUin, data.indexNode),
+                await bot[ctx].call(DownloadPrivateRecordOperation, msg.senderUid!, data.indexNode) :
+                await bot[ctx].call(DownloadGroupRecordOperation, msg.groupUin, data.indexNode),
         );
     }
 

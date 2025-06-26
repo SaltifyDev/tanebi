@@ -7,7 +7,6 @@ import { randomBytes } from 'node:crypto';
 const bytesPbReserveC2C = Buffer.from('0800180020004200500062009201009a0100a2010c080012001800200028003a00', 'hex');
 
 export const UploadPrivateImageOperation = defineOperation(
-    'uploadPrivateImage',
     'OidbSvcTrpcTcp.0x11c5_100',
     (ctx, uid: string, img: ImageMetadata, subType: ImageSubType, summary?: string) => {
         const md5Str = img.md5.toString('hex');

@@ -9,7 +9,6 @@ import { AppInfo, CoreConfig, DeviceInfo, Keystore, SignProvider } from '@/commo
 import { SsoLogic } from '@/internal/logic/network/SsoLogic';
 import { NotifyLogic } from '@/internal/logic/NotifyLogic';
 import { HighwayLogic } from '@/internal/logic/network/HighwayLogic';
-import { OperationCollection } from '@/internal/operation/OperationBase';
 import { KeyExchangeOperation } from '@/internal/operation/system/KeyExchangeOperation';
 import { WtLoginOperation } from '@/internal/operation/system/WtLoginOperation';
 import { FetchQrCodeOperation } from '@/internal/operation/system/FetchQrCodeOperation';
@@ -76,57 +75,7 @@ export class BotContext {
         warning: [string, string, unknown?]; // module, message, error
     }>();
 
-    ops = new OperationCollection(this, [
-        FetchFriendsOperation,
-        FetchUserInfoOperation,
-        HandleFriendRequestOperation,
-        SendProfileLikeOperation,
-
-        AddGroupReactionOperation,
-        FetchGroupFilteredNotifiesOperation,
-        FetchGroupMembersOperation,
-        FetchGroupNotifiesOperation,
-        FetchGroupsOperation,
-        HandleGroupFilteredRequestOperation,
-        HandleGroupRequestOperation,
-        KickMemberOperation,
-        LeaveGroupOperation,
-        MuteAllMembersOperation,
-        MuteMemberOperation,
-        RemoveGroupReactionOperation,
-        SetGroupNameOperation,
-        SetMemberAdminOperation,
-        SetMemberCardOperation,
-        SetMemberSpecialTitleOperation,
-
-        DownloadGroupImageOperation,
-        DownloadGroupRecordOperation,
-        DownloadPrivateImageOperation,
-        DownloadPrivateRecordOperation,
-        DownloadVideoOperation,
-        FetchHighwayUrlOperation,
-        UploadGroupImageOperation,
-        UploadGroupRecordOperation,
-        UploadPrivateImageOperation,
-        UploadPrivateRecordOperation,
-
-        DownloadLongMessageOperation,
-        FetchFaceDetailsOperation,
-        RecallFriendMessageOperation,
-        RecallGroupMessageOperation,
-        SendGrayTipPokeOperation,
-        SendMessageOperation,
-        UploadLongMessageOperation,
-
-        BotOfflineOperation,
-        BotOnlineOperation,
-        FetchQrCodeOperation,
-        HeartbeatOperation,
-        KeyExchangeOperation,
-        NTEasyLoginOperation,
-        QueryQrCodeResultOperation,
-        WtLoginOperation,
-    ]);
+    call = this.ssoLogic.callOperation.bind(this.ssoLogic)
 
     events = new EventChannel(this, [
         MessagePushEvent,

@@ -10,6 +10,8 @@ import { rawElems } from '@/internal/message/incoming';
 import { randomInt } from 'crypto';
 import { getGeneralMetadata } from '@/internal/util/media/common';
 import { NotOnlineImageElement } from '@/internal/packet/message/element/NotOnlineImageElement';
+import { UploadPrivateRecordOperation } from '@/internal/operation/highway/UploadPrivateRecordOperation';
+import { UploadPrivateImageOperation } from '@/internal/operation/highway/UploadPrivateImageOperation';
 
 export class PrivateMessageBuilder extends AbstractMessageBuilder {
     replyInfo?: ReplyInfo;
@@ -33,8 +35,8 @@ export class PrivateMessageBuilder extends AbstractMessageBuilder {
     override async image(data: Buffer, subType?: ImageSubType, summary?: string): Promise<void> {
         const imageMeta = getImageMetadata(data);
         this.bot[log].emit('trace', 'PrivateMessageBuilder', `Prepare to upload image ${JSON.stringify(imageMeta)}`);
-        const uploadResp = await this.bot[ctx].ops.call(
-            'uploadPrivateImage',
+        const uploadResp = await this.bot[ctx].call(
+            UploadPrivateImageOperation,
             this.friendUid,
             imageMeta,
             subType ?? ImageSubType.Picture,
@@ -53,7 +55,7 @@ export class PrivateMessageBuilder extends AbstractMessageBuilder {
     override async record(data: Buffer, duration: number): Promise<void> {
         const recordMeta = getGeneralMetadata(data);
         this.bot[log].emit('trace', 'PrivateMessageBuilder', `Prepare to upload record ${JSON.stringify(recordMeta)}`);
-        const uploadResp = await this.bot[ctx].ops.call('uploadPrivateRecord', this.friendUid, recordMeta, duration);
+        const uploadResp = await this.bot[ctx].call(UploadPrivateRecordOperation, this.friendUid, recordMeta, duration);
         await this.bot[ctx].highwayLogic.uploadRecord(data, recordMeta, uploadResp);
         this.segments.push({
             type: 'record',

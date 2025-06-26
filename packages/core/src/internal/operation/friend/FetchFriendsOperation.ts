@@ -13,7 +13,6 @@ export enum FetchFriendsQueryField {
  * Consider using stable API unless you know what you are doing.
  */
 export const FetchFriendsOperation = defineOperation(
-    'fetchFriends',
     'OidbSvcTrpcTcp.0xfd4_1',
     (ctx, nextUin?: number, friendCount?: number) =>
         FetchFriends.encode({

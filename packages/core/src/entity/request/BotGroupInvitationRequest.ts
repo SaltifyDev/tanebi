@@ -4,6 +4,7 @@ import { IncomingSegmentOf } from '@/internal/message/incoming';
 import { GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
 import { URL } from 'node:url';
 import { z } from 'zod';
+import { HandleGroupRequestOperation } from '@/internal/operation/group/HandleGroupRequestOperation';
 
 const lightAppGroupInvitationPattern = z.object({
     meta: z.object({
@@ -26,8 +27,8 @@ export class BotGroupInvitationRequest {
     }
 
     async handle(isAccept: boolean, message?: string) {
-        await this.bot[ctx].ops.call(
-            'handleGroupRequest',
+        await this.bot[ctx].call(
+            HandleGroupRequestOperation,
             this.groupUin,
             this.sequence,
             GroupNotifyType.Invitation,

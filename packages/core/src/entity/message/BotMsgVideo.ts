@@ -2,6 +2,7 @@ import { BotMsgType } from '.';
 import { Bot, ctx } from '@/index';
 import { MessageType } from '@/internal/message';
 import { IncomingMessage, IncomingSegmentOf } from '@/internal/message/incoming';
+import { DownloadVideoOperation } from '@/internal/operation/highway/DownloadVideoOperation';
 
 export class BotMsgVideo implements BotMsgType {
     private constructor(
@@ -16,7 +17,7 @@ export class BotMsgVideo implements BotMsgType {
             data.indexNode.info?.width ?? 0,
             data.indexNode.info?.height ?? 0,
             data.indexNode.info?.fileSize ?? 0,
-            await bot[ctx].ops.call('downloadVideo', msg.senderUid!, data.indexNode, msg.type),
+            await bot[ctx].call(DownloadVideoOperation, msg.senderUid!, data.indexNode, msg.type),
         );
     }
 
@@ -25,7 +26,7 @@ export class BotMsgVideo implements BotMsgType {
             data.indexNode.info?.width ?? 0,
             data.indexNode.info?.height ?? 0,
             data.indexNode.info?.fileSize ?? 0,
-            await bot[ctx].ops.call('downloadVideo', 'u_B-xbHgFtPzMTjvfvZNVuqw', data.indexNode, messageType),
+            await bot[ctx].call(DownloadVideoOperation, 'u_B-xbHgFtPzMTjvfvZNVuqw', data.indexNode, messageType),
         );
     }
 

@@ -10,6 +10,8 @@ import { randomInt } from 'crypto';
 import { getGeneralMetadata } from '@/internal/util/media/common';
 import { CustomFaceElement } from '@/internal/packet/message/element/CustomFaceElement';
 import { rawElems } from '@/internal/message/incoming';
+import { UploadGroupRecordOperation } from '@/internal/operation/highway/UploadGroupRecordOperation';
+import { UploadGroupImageOperation } from '@/internal/operation/highway/UploadGroupImageOperation';
 
 export class GroupMessageBuilder extends AbstractMessageBuilder {
     replyInfo?: ReplyInfo;
@@ -62,8 +64,8 @@ export class GroupMessageBuilder extends AbstractMessageBuilder {
     override async image(data: Buffer, subType?: ImageSubType, summary?: string): Promise<void> {
         const imageMeta = getImageMetadata(data);
         this.bot[log].emit('trace', 'GroupMessageBuilder', `Prepare to upload image ${JSON.stringify(imageMeta)}`);
-        const uploadResp = await this.bot[ctx].ops.call(
-            'uploadGroupImage',
+        const uploadResp = await this.bot[ctx].call(
+            UploadGroupImageOperation,
             this.groupUin,
             imageMeta,
             subType ?? ImageSubType.Picture,
@@ -82,7 +84,7 @@ export class GroupMessageBuilder extends AbstractMessageBuilder {
     override async record(data: Buffer, duration: number): Promise<void> {
         const recordMeta = getGeneralMetadata(data);
         this.bot[log].emit('trace', 'GroupMessageBuilder', `Prepare to upload record ${JSON.stringify(recordMeta)}`);
-        const uploadResp = await this.bot[ctx].ops.call('uploadGroupRecord', this.groupUin, recordMeta, duration);
+        const uploadResp = await this.bot[ctx].call(UploadGroupRecordOperation, this.groupUin, recordMeta, duration);
         await this.bot[ctx].highwayLogic.uploadRecord(data, recordMeta, uploadResp);
         this.segments.push({
             type: 'record',

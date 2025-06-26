@@ -2,7 +2,6 @@ import { defineOperation } from '@/internal/operation/OperationBase';
 import { SsoInfoSync, SsoInfoSyncResponse } from '@/internal/packet/common/SsoInfoSync';
 
 export const BotOnlineOperation = defineOperation(
-    'botOnline',
     'trpc.msg.register_proxy.RegisterProxy.SsoInfoSync',
     (ctx) => SsoInfoSync.encode({
         syncFlag: 735,

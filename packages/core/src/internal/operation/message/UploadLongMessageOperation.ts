@@ -6,7 +6,6 @@ import { PushMsgBody } from '@/internal/packet/message/PushMsg';
 import { gzipSync } from 'node:zlib';
 
 export const UploadLongMessageOperation = defineOperation(
-    'uploadLongMessage',
     'trpc.group.long_msg_interface.MsgService.SsoSendLongMsg',
     (ctx, msgs: OutgoingForwardedMessage[], groupUin?: number) => {
         const payload = LongMessagePayload.encode({

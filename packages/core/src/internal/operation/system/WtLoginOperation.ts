@@ -30,7 +30,6 @@ export type WtLoginCallResult = {
 };
 
 export const WtLoginOperation = defineOperation(
-    'wtLogin',
     'wtlogin.login',
     (ctx) => ctx.wtLoginLogic
         .buildWtLoginPacket('wtlogin.login', new SmartBuffer()

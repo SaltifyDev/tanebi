@@ -12,7 +12,7 @@ The word "tanebi" is from Japanese and means "tinder" in English or "火种" in 
 
 - [`core`](packages/core) ([npm](https://www.npmjs.com/package/tanebi)): Core library of the project, which provides the basic functions and stable runtime API of the QQ protocol.
 - [`examples`](packages/examples): Examples of using various APIs provided by the core library.
-- [`protobuf`](https://github.com/tanebijs/protobuf) ([npm](https://www.npmjs.com/package/@tanebijs/protobuf)): Protobuf infrastructure for the project, which provides efficient serialization and deserialization of protocol packets.
+- [`protobuf`](https://github.com/SaltifyDev/tanebi-protobuf) ([npm](https://www.npmjs.com/package/@tanebijs/protobuf)): Protobuf infrastructure for the project, which provides efficient serialization and deserialization of protocol packets.
 
 ## Special Thanks
 

@@ -80,11 +80,11 @@ export class BotFriend extends BotContact<BotFriendDataBinding> {
      * @param buildMsg Use this function to add segments to the message
      * @returns The message sequence number and timestamp
      */
-    async sendMsg(buildMsg: (b: PrivateMessageBuilder) => void | Promise<void>): Promise<BotFriendSendMsgRef> {
+    async sendMsg(buildMsg: (b: PrivateMessageBuilder) => void): Promise<BotFriendSendMsgRef> {
         this.bot[log].emit('trace', this.moduleName, 'Send message');
         const builder = new PrivateMessageBuilder(this.uin, this.uid, this.bot);
-        await buildMsg(builder);
-        const message = builder.build(this.clientSequence++);
+        buildMsg(builder);
+        const message = await builder.build(this.clientSequence++);
         const sendResult = await this.bot[ctx].call(SendMessageOperation, message);
         return {
             ...sendResult,

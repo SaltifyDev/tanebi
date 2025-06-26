@@ -4,7 +4,7 @@ import { UploadLongMessageOperation } from '@/internal/operation/message/UploadL
 
 export class ForwardedMessagePacker {
     private clientSequence = 100000;
-    private messages: OutgoingForwardedMessage[] = [];
+    private messages: Promise<OutgoingForwardedMessage>[] = [];
     private preview: string[] = [];
 
     constructor(private readonly bot: Bot, private readonly groupUin?: number) {}
@@ -16,15 +16,17 @@ export class ForwardedMessagePacker {
      * @param nick The nickname of the sender.
      * @param buildMsg A callback that builds the message.
      */
-    async fake(uin: number, nick: string, buildMsg: (b: ForwardedMessageBuilder) => void | Promise<void>) {
-        const builder = new ForwardedMessageBuilder(uin, nick, this.bot);
-        // When uploading resources, use the bot itself's uid.
-        await buildMsg(builder);
-        const msg = builder.build(this.clientSequence++);
-        this.messages.push(msg);
-        if (this.preview.length < 4) {
-            this.preview.push(generatePreview(msg));
-        }
+    fake(uin: number, nick: string, buildMsg: (b: ForwardedMessageBuilder) => void) {
+        this.messages.push((async () => {
+            const builder = new ForwardedMessageBuilder(uin, nick, this.bot);
+            // When uploading resources, use the bot itself's uid.
+            buildMsg(builder);
+            const msg = await builder.build(this.clientSequence++);
+            if (this.preview.length < 4) {
+                this.preview.push(generatePreview(msg));
+            }
+            return msg;
+        })());
     }
 
     /**
@@ -33,7 +35,11 @@ export class ForwardedMessagePacker {
     async pack(): Promise<OutgoingSegmentOf<'forward'>> {
         return {
             type: 'forward',
-            resId: await this.bot[ctx].call(UploadLongMessageOperation, this.messages, this.groupUin),
+            resId: await this.bot[ctx].call(
+                UploadLongMessageOperation,
+                await Promise.all(this.messages),
+                this.groupUin
+            ),
             preview: this.preview,
             count: this.messages.length
         };

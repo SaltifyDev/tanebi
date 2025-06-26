@@ -2,7 +2,7 @@ import { BotGroupMember, BotGroupMessage } from '@/entity';
 import { AbstractMessageBuilder } from './AbstractMessageBuilder';
 import { MessageType } from '@/internal/message';
 import { ImageSubType } from '@/internal/message/incoming/segment/image';
-import { OutgoingGroupMessage, OutgoingSegmentOf, ReplyInfo } from '@/internal/message/outgoing';
+import { OutgoingGroupMessage, ReplyInfo } from '@/internal/message/outgoing';
 import { getImageMetadata } from '@/internal/util/media/image';
 import { ForwardedMessagePacker, rawMessage } from '@/message';
 import { Bot, ctx, log } from '@/index';
@@ -25,24 +25,24 @@ export class GroupMessageBuilder extends AbstractMessageBuilder {
      * @param member The member to mention
      */
     mention(member: BotGroupMember) {
-        this.segments.push({
+        this.segments.push(Promise.resolve({
             type: 'mention',
             uin: member.uin,
             uid: member.uid,
             name: '@' + (member.card || member.nickname),
-        });
+        }));
     }
 
     /**
      * Mention all members in the group
      */
     mentionAll() {
-        this.segments.push({
+        this.segments.push(Promise.resolve({
             type: 'mention',
             uin: 0,
             uid: '',
             name: '@全体成员',
-        });
+        }));
     }
 
     /**
@@ -61,54 +61,56 @@ export class GroupMessageBuilder extends AbstractMessageBuilder {
         };
     }
 
-    override async image(data: Buffer, subType?: ImageSubType, summary?: string): Promise<void> {
-        const imageMeta = getImageMetadata(data);
-        this.bot[log].emit('trace', 'GroupMessageBuilder', `Prepare to upload image ${JSON.stringify(imageMeta)}`);
-        const uploadResp = await this.bot[ctx].call(
-            UploadGroupImageOperation,
-            this.groupUin,
-            imageMeta,
-            subType ?? ImageSubType.Picture,
-            summary
-        );
-        await this.bot[ctx].highwayLogic.uploadImage(data, imageMeta, uploadResp, MessageType.GroupMessage);
-        this.segments.push({
-            type: 'image',
-            msgInfo: uploadResp.upload!.msgInfo!,
-            compatFace: uploadResp.upload?.compatQMsg
-                ? CustomFaceElement.decode(uploadResp.upload.compatQMsg)
-                : undefined,
-        });
+    override image(data: Buffer, subType?: ImageSubType, summary?: string) {
+        this.segments.push((async () => {
+            const imageMeta = getImageMetadata(data);
+            this.bot[log].emit('trace', 'GroupMessageBuilder', `Prepare to upload image ${JSON.stringify(imageMeta)}`);
+            const uploadResp = await this.bot[ctx].call(
+                UploadGroupImageOperation,
+                this.groupUin,
+                imageMeta,
+                subType ?? ImageSubType.Picture,
+                summary
+            );
+            await this.bot[ctx].highwayLogic.uploadImage(data, imageMeta, uploadResp, MessageType.GroupMessage);
+            return {
+                type: 'image',
+                msgInfo: uploadResp.upload!.msgInfo!,
+                compatFace: uploadResp.upload?.compatQMsg
+                    ? CustomFaceElement.decode(uploadResp.upload.compatQMsg)
+                    : undefined,
+            };
+        })());
     }
 
     override async record(data: Buffer, duration: number): Promise<void> {
-        const recordMeta = getGeneralMetadata(data);
-        this.bot[log].emit('trace', 'GroupMessageBuilder', `Prepare to upload record ${JSON.stringify(recordMeta)}`);
-        const uploadResp = await this.bot[ctx].call(UploadGroupRecordOperation, this.groupUin, recordMeta, duration);
-        await this.bot[ctx].highwayLogic.uploadRecord(data, recordMeta, uploadResp);
-        this.segments.push({
-            type: 'record',
-            msgInfo: uploadResp.upload!.msgInfo!,
-        });
+        this.segments.push((async () => {
+            const recordMeta = getGeneralMetadata(data);
+            this.bot[log].emit('trace', 'GroupMessageBuilder', `Prepare to upload record ${JSON.stringify(recordMeta)}`);
+            const uploadResp = await this.bot[ctx].call(UploadGroupRecordOperation, this.groupUin, recordMeta, duration);
+            await this.bot[ctx].highwayLogic.uploadRecord(data, recordMeta, uploadResp);
+            return {
+                type: 'record',
+                msgInfo: uploadResp.upload!.msgInfo!,
+            };
+        })());
     }
 
-    override async forward(
-        packMsg: (p: ForwardedMessagePacker) => void | Promise<void>
-    ): Promise<OutgoingSegmentOf<'forward'>> {
-        const packer = new ForwardedMessagePacker(this.bot, this.groupUin);
-        await packMsg(packer);
-        const pack = await packer.pack();
-        this.segments.push(pack);
-        return pack;
+    override forward(packMsg: (p: ForwardedMessagePacker) => void | Promise<void>) {
+        this.segments.push((async () => {
+            const packer = new ForwardedMessagePacker(this.bot, this.groupUin);
+            await packMsg(packer);
+            return await packer.pack();
+        })());
     }
 
-    override build(clientSequence: number): OutgoingGroupMessage {
+    override async build(clientSequence: number): Promise<OutgoingGroupMessage> {
         return {
             type: MessageType.GroupMessage,
             groupUin: this.groupUin,
             clientSequence,
             random: randomInt(0, 0xffffffff),
-            segments: this.segments,
+            segments: await Promise.all(this.segments),
             reply: this.replyInfo,
         };
     }

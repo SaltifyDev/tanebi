@@ -1,9 +1,9 @@
 import { ImageSubType, OutgoingSegment } from '@/entity';
 import { Bot, faceCache, ForwardedMessagePacker, log } from '@/index';
-import { OutgoingMessage, OutgoingSegmentOf } from '@/internal/message/outgoing';
+import { OutgoingMessage } from '@/internal/message/outgoing';
 
 export abstract class AbstractMessageBuilder {
-    protected segments: OutgoingSegment[] = [];
+    protected segments: Promise<OutgoingSegment>[] = [];
 
     protected constructor(protected readonly bot: Bot) { }
 
@@ -11,7 +11,7 @@ export abstract class AbstractMessageBuilder {
      * Append a text segment to the message
      */
     text(content: string) {
-        this.segments.push({ type: 'text', content });
+        this.segments.push(Promise.resolve({ type: 'text', content }));
     }
 
     /**
@@ -28,7 +28,7 @@ export abstract class AbstractMessageBuilder {
             return;
         }
         if (detail.aniStickerPackId) { // Is large face
-            this.segments.push({
+            this.segments.push(Promise.resolve({
                 type: 'face',
                 largeFaceInfo: {
                     aniStickerPackId: String(detail.aniStickerPackId),
@@ -40,47 +40,47 @@ export abstract class AbstractMessageBuilder {
                     preview: detail.qDes,
                     field9: 1,
                 }
-            });
-            return;
-        }
-        
-        if (numberFaceId < 260) { // Is old face
-            this.segments.push({
-                type: 'face',
-                oldFaceId: numberFaceId,
-            });
+            }));
             return;
         }
 
-        this.segments.push({
+        if (numberFaceId < 260) { // Is old face
+            this.segments.push(Promise.resolve({
+                type: 'face',
+                oldFaceId: numberFaceId,
+            }));
+            return;
+        }
+
+        this.segments.push(Promise.resolve({
             type: 'face',
             smallExtraFaceInfo: {
                 faceId: numberFaceId,
                 text1: detail.qDes,
                 text2: detail.qDes,
             }
-        });
+        }));
     }
 
     /**
      * Append an image segment to the message
      */
-    abstract image(data: Buffer, subType?: ImageSubType, summary?: string): Promise<void>;
+    abstract image(data: Buffer, subType?: ImageSubType, summary?: string): void;
 
     /**
      * Append a record segment to the message
      */
-    abstract record(data: Buffer, duration: number): Promise<void>;
+    abstract record(data: Buffer, duration: number): void;
 
     /**
      * Append a forward segment to the message
      */
-    abstract forward(packMsg: (p: ForwardedMessagePacker) => void | Promise<void>): Promise<OutgoingSegmentOf<'forward'>>;
+    abstract forward(packMsg: (p: ForwardedMessagePacker) => void): void;
 
     /**
      * Build the message
      */
-    abstract build(clientSequence: number): OutgoingMessage;
+    abstract build(clientSequence: number): Promise<OutgoingMessage>;
 }
 
 export { sendBlob } from '@/internal/message/outgoing';

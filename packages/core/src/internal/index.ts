@@ -10,6 +10,25 @@ import { SsoLogic } from '@/internal/logic/network/SsoLogic';
 import { NotifyLogic } from '@/internal/logic/NotifyLogic';
 import { HighwayLogic } from '@/internal/logic/network/HighwayLogic';
 import { DecreaseType, IncreaseType } from '@/internal/packet/message/notify/GroupMemberChange';
+import TypedEventEmitter from 'typed-emitter';
+
+type InternalEventEmitter = TypedEventEmitter<{
+    friendRequest: (fromUin: number, fromUid: string, message: string, via: string) => void;
+    friendPoke: (fromUin: number, toUin: number, action: string, actionImgUrl: string, suffix?: string) => void;
+    friendRecall: (fromUid: string, clientSequence: number, tip: string) => void;
+    groupJoinRequest: (groupUin: number, memberUid: string) => void;
+    groupInvitedJoinRequest: (groupUin: number, targetUid: string, invitorUid: string) => void;
+    groupInvitationRequest: (groupUin: number, invitorUid: string) => void;
+    groupAdminChange: (groupUin: number, targetUid: string, isPromote: boolean) => void;
+    groupMemberIncrease: (groupUin: number, memberUid: string, type: IncreaseType, operatorUid?: string) => void;
+    groupMemberDecrease: (groupUin: number, memberUid: string, type: DecreaseType, operatorUid?: string) => void;
+    groupMute: (groupUin: number, operatorUid: string, targetUid: string, duration: number) => void;
+    groupMuteAll: (groupUin: number, operatorUid: string, isSet: boolean) => void;
+    groupPoke: (groupUin: number, fromUin: number, toUin: number, actionStr: string, actionImgUrl: string, suffix?: string) => void;
+    groupEssenceMessageChange: (groupUin: number, sequence: number, operatorUin: number, isAdd: boolean, tip?: string) => void;
+    groupRecall: (groupUin: number, sequence: number, tip: string, operatorUid: string) => void;
+    groupReaction: (groupUin: number, sequence: number, operatorUid: string, reactionCode: string, isAdd: boolean, count: number) => void;
+}>;
 
 /**
  * The internal context of the bot
@@ -30,7 +49,7 @@ export class BotContext {
         warning: [string, string, unknown?]; // module, message, error
     }>();
 
-    call = this.ssoLogic.callOperation.bind(this.ssoLogic)
+    call = this.ssoLogic.callOperation.bind(this.ssoLogic);
 
     events = new EventChannel(this, [
         MessagePushEvent,
@@ -38,24 +57,7 @@ export class BotContext {
         KickNTEvent,
     ]);
 
-    eventsDX = new EventEmitter<{
-        friendRequest: [number, string, string, string]; // fromUin, fromUid, message, via
-        friendPoke: [number, number, string, string, string?]; // fromUin, toUin, actionStr, actionImgUrl, suffix,
-        friendRecall: [string, number, string] // fromUid, clientSequence, tip
-
-        groupJoinRequest: [number, string]; // groupUin, memberUid
-        groupInvitedJoinRequest: [number, string, string]; // groupUin, targetUid, invitorUid
-        groupInvitationRequest: [number, string]; // groupUin, invitorUid
-        groupAdminChange: [number, string, boolean]; // groupUin, targetUid, isPromote
-        groupMemberIncrease: [number, string, IncreaseType, string?]; // groupUin, memberUid, type, operatorUid?
-        groupMemberDecrease: [number, string, DecreaseType, string?]; // groupUin, memberUid, type, operatorUid?
-        groupMute: [number, string, string, number]; // groupUin, operatorUid, targetUid, duration
-        groupMuteAll: [number, string, boolean]; // groupUin, operatorUid, isSet
-        groupPoke: [number, number, number, string, string, string?]; // groupUin, fromUin, toUin, actionStr, actionImgUrl, suffix
-        groupEssenceMessageChange: [number, number, number, boolean]; // groupUin, sequence, operatorUin, isAdd
-        groupRecall: [number, number, string, string]; // groupUin, sequence, tip, operatorUid
-        groupReaction: [number, number, string, string, boolean, number]; // groupUin, sequence, operatorUid, reactionCode, isAdd, count
-    }>();
+    eventsDX = new EventEmitter() as InternalEventEmitter;
 
     constructor(
         public appInfo: AppInfo,

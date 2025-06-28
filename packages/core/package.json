@@ -31,6 +31,7 @@
     "fast-xml-parser": "^5.0.8",
     "image-size": "^2.0.0",
     "smart-buffer": "^4.2.0",
+    "typed-emitter": "^2.1.0",
     "zod": "^3.24.2"
   }
 }

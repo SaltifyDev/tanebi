@@ -1,11 +1,9 @@
 import { Bot, ctx, identityService, log } from '@/index';
-import { BotContact, BotGroupInvitedJoinRequest, BotGroupJoinRequest, BotGroupMember, ReactionType } from '@/entity';
+import { BotContact, BotGroupMember, ReactionType } from '@/entity';
 import { DispatchedMessage, GroupMessageBuilder, type rawMessage } from '@/message';
 import { BotCacheService } from '@/util';
-import EventEmitter from 'node:events';
 import { OutgoingGroupMessage } from '@/internal/message/outgoing';
 import { GroupMessage } from '@/internal/message/incoming';
-import { IncreaseType } from '@/internal/packet/message/notify/GroupMemberChange';
 import { FetchGroupMembersOperation } from '@/internal/operation/group/FetchGroupMembersOperation';
 import { SendMessageOperation } from '@/internal/operation/message/SendMessageOperation';
 import { RecallGroupMessageOperation } from '@/internal/operation/message/RecallGroupMessageOperation';
@@ -37,29 +35,7 @@ export type BotGroupSendMsgRef = {
     recall: () => Promise<void>;
 } & OutgoingGroupMessage;
 
-export const eventsGDX = Symbol('Group internal events');
-
 export class BotGroup extends BotContact<BotGroupDataBinding> {
-    [eventsGDX]: EventEmitter<{
-        message:                [BotGroupMessage];
-        joinRequest:            [BotGroupJoinRequest];
-        invitedJoinRequest:     [BotGroupInvitedJoinRequest];
-        adminChange:            [BotGroupMember, boolean]; // member, isPromote
-        memberIncrease:         [BotGroupMember, IncreaseType, BotGroupMember?]; // member, operator
-        memberLeave:            [number]; // uin
-        memberCardChange:       [BotGroupMember, string, string]; // member, oldCard, newCard
-        memberKick:             [number, BotGroupMember?]; // uin, operator
-        mute:                   [BotGroupMember, BotGroupMember, number]; // member, operator, duration
-        unmute:                 [BotGroupMember, BotGroupMember]; // member, operator
-        muteAll:                [BotGroupMember, boolean]; // operator, isSet
-        poke:                   [BotGroupMember, BotGroupMember, string, string, string?];
-                                // sender, receiver, actionStr, actionImgUrl, suffix
-        essenceMessageChange:   [number, BotGroupMember, boolean]; // sequence, operator, isAdd
-        recall:                 [number, string, BotGroupMember]; // clientSequence, tip, operator
-        reaction:               [number, BotGroupMember, string, boolean, number];
-                                // sequence, member, reactionCode, isAdd, count
-    }> = new EventEmitter();
-
     private clientSequence = 100000;
     private readonly groupMemberCache;
 
@@ -224,111 +200,6 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
     async leave() {
         this.bot[log].emit('trace', this.moduleName, 'Leave group');
         await this.bot[ctx].call(LeaveGroupOperation, this.uin);
-    }
-
-    /**
-     * Listen to messages in this group
-     */
-    onMessage(listener: (message: BotGroupMessage) => void) {
-        this[eventsGDX].on('message', listener);
-    }
-
-    /**
-     * Listen to join requests in this group
-     */
-    onJoinRequest(listener: (request: BotGroupJoinRequest) => void) {
-        this[eventsGDX].on('joinRequest', listener);
-    }
-
-    /**
-     * Listen to invited join requests in this group
-     */
-    onInvitedJoinRequest(listener: (request: BotGroupInvitedJoinRequest) => void) {
-        this[eventsGDX].on('invitedJoinRequest', listener);
-    }
-
-    /**
-     * Listen to admin changes in this group
-     */
-    onAdminChange(listener: (member: BotGroupMember, isPromote: boolean) => void) {
-        this[eventsGDX].on('adminChange', listener);
-    }
-
-    /**
-     * Listen to member increase events in this group
-     */
-    onMemberIncrease(listener: (member: BotGroupMember, type: IncreaseType, operator?: BotGroupMember) => void) {
-        this[eventsGDX].on('memberIncrease', listener);
-    }
-
-    /**
-     * Listen to member leave events in this group
-     */
-    onMemberLeave(listener: (uin: number) => void) {
-        this[eventsGDX].on('memberLeave', listener);
-    }
-
-    /**
-     * Listen to member card change events in this group
-     */
-    onMemberCardChange(listener: (member: BotGroupMember, oldCard: string, newCard: string) => void) {
-        this[eventsGDX].on('memberCardChange', listener);
-    }
-
-    /**
-     * Listen to member kick events in this group
-     */
-    onMemberKick(listener: (uin: number, operator?: BotGroupMember) => void) {
-        this[eventsGDX].on('memberKick', listener);
-    }
-
-    /**
-     * Listen to mute events in this group
-     */
-    onMute(listener: (member: BotGroupMember, operator: BotGroupMember, duration: number) => void) {
-        this[eventsGDX].on('mute', listener);
-    }
-
-    /**
-     * Listen to unmute events in this group
-     */
-    onUnmute(listener: (member: BotGroupMember, operator: BotGroupMember) => void) {
-        this[eventsGDX].on('unmute', listener);
-    }
-
-    /**
-     * Listen to mute all events in this group
-     */
-    onMuteAll(listener: (operator: BotGroupMember, isSet: boolean) => void) {
-        this[eventsGDX].on('muteAll', listener);
-    }
-
-    /**
-     * Listen to poke events in this group
-     */
-    onPoke(listener: (sender: BotGroupMember, receiver: BotGroupMember, actionStr: string, actionImgUrl: string, suffix?: string) => void) {
-        this[eventsGDX].on('poke', listener);
-    }
-
-    /**
-     * Listen to essence message change events in this group
-     */
-    onEssenceMessageChange(listener: (sequence: number, operator: BotGroupMember, isAdd: boolean) => void) {
-        this[eventsGDX].on('essenceMessageChange', listener);
-    }
-
-    /**
-     * Listen to recall events in this group
-     */
-    onRecall(listener: (sequence: number, tip: string, operator: BotGroupMember) => void) {
-        this[eventsGDX].on('recall', listener);
-    }
-
-    /**
-     * Listen to reaction events in this group
-     */
-    onReaction(listener: (sequence: number, member: BotGroupMember, reactionCode: string, isAdd: boolean, count: number) => void) {
-        this[eventsGDX].on('reaction', listener);
     }
 }
 

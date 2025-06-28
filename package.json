@@ -9,14 +9,14 @@
     "build:examples": "cd packages/examples && pnpm run build"
   },
   "devDependencies": {
-    "@eslint/js": "^9.17.0",
+    "@eslint/js": "^9.30.0",
     "@types/node": "^20.17.12",
-    "eslint": "^9.17.0",
-    "globals": "^15.14.0",
-    "tsup": "^8.4.0",
-    "tsx": "^4.19.3",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.19.1"
+    "eslint": "^9.30.0",
+    "globals": "^16.2.0",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.35.0"
   },
   "pnpm": {
     "overrides": {

@@ -1,11 +1,13 @@
 import {
     BotFriend,
+    BotFriendMessage,
     BotFriendRequest,
     BotGroup,
     BotGroupInvitationRequest,
     BotGroupInvitedJoinRequest,
     BotGroupJoinRequest,
     BotGroupMember,
+    BotGroupMessage,
 } from '@/entity';
 import { MessageDispatcher } from '@/message';
 import { BotCacheService } from '@/util';
@@ -733,9 +735,25 @@ export class Bot {
     }
     //#endregion
 
-    onEvent = this[eventsDX].on.bind(this[eventsDX]);
+    // #region Event
+    /**
+     * Listen to private messages
+     */
+    onPrivateMessage(listener: (friend: BotFriend, message: BotFriendMessage) => void) {
+        this.globalMsg.on('private', listener);
+    }
 
-    //#endregion Logging
+    /**
+     * Listen to group messages
+     */
+    onGroupMessage(listener: (group: BotGroup, member: BotGroupMember, message: BotGroupMessage) => void) {
+        this.globalMsg.on('group', listener);
+    }
+
+    onEvent = this[eventsDX].on.bind(this[eventsDX]);
+    //#endregion
+
+    //#region Logging
     /**
      * Listen to trace logs
      */

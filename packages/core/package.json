@@ -16,11 +16,8 @@
   "license": "GPL-3.0-or-later",
   "author": "Young",
   "type": "module",
-  "main": "src/index.ts",
-  "publishConfig": {
-    "main": "dist/index.js",
-    "typings": "dist/index.d.ts"
-  },
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "build": "tsup",
     "prepack": "npm run build"

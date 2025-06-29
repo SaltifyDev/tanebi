@@ -1,8 +1,8 @@
 import { ReactionType } from 'tanebi';
 import bot from '../login/fast';
 
-const group = await bot.getGroup(0);
-group?.onReaction(async (sequence, member, reactionCode, isAdd) => {
+bot.onEvent('groupReaction', async (group, sequence, member, reactionCode, isAdd) => {
+    if (group.uin !== 0) return;
     if (member.uin === bot.uin) return;
     group?.sendReaction(
         sequence - 1,

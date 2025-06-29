@@ -1,7 +1,7 @@
 import { GroupRequestOperation } from 'tanebi';
 import bot from '../login/fast';
 
-bot.onGroupJoinRequest((grp, req) => {
+bot.onEvent('groupJoinRequest', (grp, req) => {
     console.log(req);
     if (req.comment.includes('accept')) {
         req.handle(GroupRequestOperation.Accept);
@@ -11,7 +11,7 @@ bot.onGroupJoinRequest((grp, req) => {
     }
 });
 
-bot.onGroupInvitationRequest((req) => {
+bot.onEvent('groupInvitationRequest', (req) => {
     console.log(req);
     if (req.invitor.uin === 0) { // Substitute with some uin
         req.handle(true);
@@ -20,7 +20,7 @@ bot.onGroupInvitationRequest((req) => {
     }
 });
 
-bot.onGroupInvitedJoinRequest((grp, req) => {
+bot.onEvent('groupInvitedJoinRequest', (grp, req) => {
     console.log(req);
     if (req.invitor.uin === 0) { // Substitute with some uin
         req.handle(GroupRequestOperation.Accept);

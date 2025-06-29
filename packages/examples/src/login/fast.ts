@@ -23,7 +23,7 @@ const bot = await Bot.create(
     UrlSignProvider(signUrl),
 );
 
-bot.onKeystoreChange((keystore) => {
+bot.onEvent('keystoreChange', (keystore) => {
     console.log('Keystore changed, saving...');
     fs.writeFileSync('temp/keystore.json', JSON.stringify(serializeKeystore(keystore)));
 });

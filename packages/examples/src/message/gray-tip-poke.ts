@@ -1,9 +1,11 @@
 import bot from '../login/fast';
 
-const friend = await bot.getFriend(0); // Substitute with your friend's Uin
-friend?.onMessage(() => friend.sendGrayTipPoke());
+bot.onPrivateMessage((friend) => {
+    if (friend.uin !== 0) return;
+    friend.sendGrayTipPoke();
+});
 
-const group = await bot.getGroup(0); // Substitute with your group's Uin
-group?.onMessage((msg) => {
-    msg.sender.sendGrayTipPoke();
+bot.onGroupMessage((grp, member) => {
+    if (grp.uin !== 0) return;
+    member.sendGrayTipPoke();
 });

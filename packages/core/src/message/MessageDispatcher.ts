@@ -13,8 +13,6 @@ import {
     BotMsgLightApp,
     BotMsgRecord,
     BotMsgVideo,
-    eventsFDX,
-    eventsGDX,
 } from '@/entity';
 import { MessageType } from '@/internal/message';
 import { blob, GroupMessage, IncomingMessage, msgUid, PrivateMessage, rawElems } from '@/internal/message/incoming';
@@ -149,7 +147,6 @@ export class MessageDispatcher {
                 messageUid: raw[msgUid],
                 ...message,
             };
-            contact[eventsFDX].emit('message', friendMessage);
             this.global.emit('private', contact, friendMessage);
         } else if (contact instanceof BotGroup) {
             const sender = await contact.getMember(raw.senderUin);
@@ -176,12 +173,6 @@ export class MessageDispatcher {
                                 oldCard ?? '',
                                 bindingUpdate.card
                             );
-                            contact[eventsGDX].emit(
-                                'memberCardChange',
-                                sender,
-                                oldCard ?? '',
-                                bindingUpdate.card
-                            );
                         }
                     }
                     if (bindingUpdate.nickname) {
@@ -203,7 +194,6 @@ export class MessageDispatcher {
                         }
                     }
                 }
-                contact[eventsGDX].emit('message', groupMessage);
                 this.global.emit('group', contact, sender, groupMessage);
             }
         }

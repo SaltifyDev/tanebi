@@ -1,99 +1,72 @@
 <div align="center">
 
-![tanebi](https://socialify.git.ci/tanebijs/tanebi/image?description=1&font=Bitter&forks=1&issues=1&language=1&name=1&owner=1&pulls=1&stargazers=1&theme=Light)
+<h1>tanebi</h1>
 
-[GitHub Homepage](https://github.com/tanebijs/tanebi)
+PC NTQQ 协议的 TypeScript 实现
 
 </div>
 
-This is the core library of the project. It provides the basic functions of the QQ protocol, such as login, message sending, and so on.
+## 使用方法
 
-## Features
+项目仓库的 [examples 部分](https://github.com/SaltifyDev/tanebi/tree/v2/packages/examples)提供了一些 tanebi 的使用实例，以下是一些常见的场景：
 
-<details>
-<summary> Protocol </summary>
+### 登录
 
-- [x] Windows[^1]
-- [x] macOS[^1]
-- [x] Linux
+参见 [login 文件夹](https://github.com/SaltifyDev/tanebi/tree/v2/packages/examples/src/login)。登录方式有扫码登录和快速登录两种，其中快速登录需要已经登录过的账号的 Keystore。
 
-[^1]: Theoretically. You need to find a sign server yourself.
-</details>
+### 获取联系人
 
-<details>
-<summary> Login </summary>
+参见 [contact/fetch.ts](https://github.com/SaltifyDev/tanebi/blob/v2/packages/examples/src/contact/fetch.ts)。
 
-- [x] QRCode
-- [x] NTEasyLogin
-- [ ] Password[^2]
+```typescript
+const friends = await bot.getFriends();
+for (const friend of friends) {
+    console.log(`Friend ${friend.remark || friend.nickname} (Uin: ${friend.uin})`);
+}
 
-[^2]: Deprecated and not planned.
-</details>
+const groups = await bot.getGroups();
+for (const group of groups) {
+    console.log(`Group ${group.name} (Uin: ${group.uin})`);
+    if (group.uin === 0) {
+        // Substitute with your group's Uin
+        const members = await group.getMembers();
+        for (const member of members) {
+            console.log(`  Member ${member.card || member.nickname}[${member.specialTitle}] (Uin: ${member.uin})`);
+        }
+    }
+}
+```
 
-<details>
-<summary> Message </summary>
+### 消息操作
 
-- [x] Text
-- [x] Face[^4]
-- [x] Mention (At)
-- [x] Image
-- [x] Reply
-- [x] Record
-- [x] Video[^3]
-- [ ] Market Face
-- [x] Multi Forwarded Message
-- [ ] XML
-- [x] Light App[^3]
-- [ ] Markdown
+参见 [message 文件夹](https://github.com/SaltifyDev/tanebi/blob/v2/packages/examples/src/message)，支持的操作有发送、撤回、回复等。
 
-[^3]: Only implemented receiving.
-[^4]: *May* not function properly when sending.
-</details>
+```typescript
+// 例：发送消息
+const group = await bot.getGroup(0); // 替换为你的群号
 
-<details>
-<summary> Operation </summary>
+await group?.sendMsg(async (b) => {
+    b.text('Hello, this is a test message.');
+    b.image(readFileSync('temp/qrcode.png'));
+});
+```
 
-- [x] Fetch friends
-- [x] Fetch groups
-- [x] Fetch group members
-- [x] Send poke
-- [x] Send face reaction
-- [x] Recall message
-- [x] Leave group
-- [x] Set member card
-- [x] Ban (mute) member[^5]
-- [x] Kick member
-- [x] Set member to admin
-- [x] Set special title
-- [x] Handle friend request
-- [x] Handle group request
-- [x] Handle group invitation
-- [ ] Get client key
-- [ ] Get cookies
-</details>
+### 监听事件
 
-<details>
-<summary> Event </summary>
+调用 `Bot.onEvent` 并提供事件名称和回调函数。支持的事件参见 [core 的 index.ts](https://github.com/SaltifyDev/tanebi/blob/v2/packages/core/src/index.ts) 的 `type TanebiEventEmitter` 定义。
 
-- [ ] Bot offline
-- [x] Friend poke
-- [x] Friend message recall
-- [x] Friend request
-- [x] Group poke
-- [x] Group message recall
-- [x] Group mute
-- [x] Group join request
-- [x] Group invited join request
-- [x] Group member increase
-- [x] Group member decrease
-- [x] Group invitation
-- [x] Group admin change
-- [x] Group essence message
-- [x] Group face reaction
-- [ ] Group TODO
-</details>
+```typescript
+bot.onEvent('groupInvitationRequest', (req) => {
+    console.log(`Received group invitation from ${req.invitor.nickname} to join ${req.groupUin}`);
+});
+```
 
-## Contribution
+## Special Thanks
 
-> [!TIP]
-> If you want to contribute to this project, please consider using **Visual Studio Code** instead of JetBrains IDEs to improve type inferring performance and enhance coding experience.
+tanebi 离不开以下前辈项目及贡献者：
+- [LagrangeDev/Lagrange.Core](https://github.com/LagrangeDev/Lagrange.Core) - 提供了项目的基础架构和绝大多数协议包定义
+- [LagrangeDev/lagrangejs](https://github.com/LagrangeDev/lagrangejs) - 提供了 NTQQ 的加密算法和认证流程的 JavaScript 实现
+- [takayama-lily/oicq](https://github.com/takayama-lily/oicq) - QQ 协议最初的 JavaScript 实现
+- [@pk5ls20](https://github.com/pk5ls20) - 编写了 Highway (媒体文件上传）逻辑的 JavaScript 实现
+
+> 项目名称源自日语「種火」(たねび)，意为火种，向所有先前与当下的 QQ 协议实现致敬。无论是否还在活跃维护，这些项目都是点亮了今天的 QQ Bot 开发的当之无愧的“火种”。

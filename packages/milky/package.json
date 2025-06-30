@@ -1,0 +1,30 @@
+{
+  "name": "tanebi-milky",
+  "version": "0.1.0",
+  "description": "Milky Implementation based on tanebi",
+  "keywords": [
+    "qq",
+    "oicq"
+  ],
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SaltifyDev/tanebi.git"
+  },
+  "license": "GPL-3.0-or-later",
+  "author": "Young",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "tanebi-milky": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "tanebi": "workspace:*"
+  }
+}

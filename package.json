@@ -11,6 +11,7 @@
   "devDependencies": {
     "@eslint/js": "^9.30.0",
     "@types/node": "^20.17.12",
+    "@yao-pkg/pkg": "^6.5.1",
     "eslint": "^9.30.0",
     "globals": "^16.2.0",
     "tsup": "^8.5.0",

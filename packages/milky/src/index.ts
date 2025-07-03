@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Config, defaultProfile, exampleConfig, zConfig, zProfile } from '@/common/config';
 import { NTSilkBinding } from '@/common/silk';
 import chalk from 'chalk';

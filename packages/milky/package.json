@@ -16,10 +16,7 @@
   "license": "GPL-3.0-or-later",
   "author": "Young",
   "type": "module",
-  "main": "dist/index.js",
-  "bin": {
-    "tanebi-milky": "dist/index.js"
-  },
+  "bin": "dist/index.cjs",
   "scripts": {
     "build": "tsup",
     "prepack": "npm run build"

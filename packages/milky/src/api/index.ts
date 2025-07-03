@@ -46,15 +46,19 @@ export class ApiHandler {
         });
     }
 
+    /**
+     * Checks if the API endpoint is defined.
+     */
+    hasApi(endpoint: string) {
+        return this.apiMap.has(endpoint);
+    }
+
     async handle(endpoint: string, payload: unknown): Promise<MilkyApiResponse> {
-        const api = this.apiMap.get(endpoint);
-        if (!api) {
-            return Failed(404, 'API not found');
-        }
+        const api = this.apiMap.get(endpoint)!;
         try {
             const parsedPayload = api.validator.safeParse(payload);
             if (!parsedPayload.success) {
-                return Failed(400, 'Invalid payload' + encodeZodIssues(parsedPayload.error.issues));
+                return Failed(-400, 'Invalid payload: ' + encodeZodIssues(parsedPayload.error.issues));
             }
             return await api.handler(this.app, parsedPayload.data);
         } catch (e) {
@@ -64,7 +68,7 @@ export class ApiHandler {
                 }`,
             );
             if (e instanceof z.ZodError) {
-                return Failed(400, 'Invalid payload:' + encodeZodIssues(e.issues));
+                return Failed(-400, 'Zod error: ' + encodeZodIssues(e.issues));
             }
             return Failed(500, 'Internal error: ' + (e instanceof Error ? e.message : String(e)));
         }

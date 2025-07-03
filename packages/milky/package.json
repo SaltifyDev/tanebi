@@ -25,6 +25,12 @@
     "prepack": "npm run build"
   },
   "devDependencies": {
-    "tanebi": "workspace:*"
+    "@hono/node-server": "^1.14.4",
+    "@hono/node-ws": "^1.2.0",
+    "hono": "^4.8.3",
+    "music-metadata": "^11.6.0",
+    "tanebi": "workspace:*",
+    "winston": "^3.17.0",
+    "zod": "^3.25.67"
   }
 }

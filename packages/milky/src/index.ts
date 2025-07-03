@@ -14,6 +14,7 @@ import {
     serializeKeystore,
     UrlSignProvider,
 } from 'tanebi';
+import { QRErrorCorrectLevel, generate } from 'ts-qrcode-terminal';
 import winston, { transports, format } from 'winston';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -188,6 +189,26 @@ export class MilkyApp {
     }
     //#endregion
 
+    async start() {
+        if (this.isFirstRun) {
+            const qrCodePath = path.join(this.userDataDir, 'qrcode.png');
+            await this.bot.qrCodeLogin((url, png) => {
+                fs.writeFileSync(qrCodePath, png);
+                this.logger.info('Please scan the QR code below to login:');
+                generate(url, { small: true, qrErrorCorrectLevel: QRErrorCorrectLevel.L });
+                this.logger.info(`QR code image saved to ${path.resolve(qrCodePath)}.`);
+                this.logger.info('Or you can generate a QR code with the following URL:');
+                this.logger.info(url);
+            });
+        } else {
+            await this.bot.fastLogin();
+        }
+    }
+
+    async stop() {
+        await this.bot.dispose();
+    }
+
     static async create(baseDir: string) {
         let bot: Bot;
 
@@ -267,3 +288,21 @@ export class MilkyApp {
         return new MilkyApp(userDataDir, isFirstRun, bot, ntSilkBinding, config);
     }
 }
+
+async function main() {
+    const app = await MilkyApp.create('data');
+    await app.start();
+
+    let sigIntTriggered = false;
+    process.on('SIGINT', () => {
+        if (sigIntTriggered) {
+            return;
+        }
+        sigIntTriggered = true;
+        app.stop().then(() => {
+            process.exit(0);
+        });
+    });
+}
+
+main();

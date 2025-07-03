@@ -31,6 +31,7 @@
     "hono": "^4.8.3",
     "music-metadata": "^11.6.0",
     "tanebi": "workspace:*",
+    "ts-qrcode-terminal": "^1.0.1",
     "winston": "^3.17.0",
     "zod": "^3.25.67"
   }

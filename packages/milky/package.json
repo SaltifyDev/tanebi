@@ -27,6 +27,7 @@
   "devDependencies": {
     "@hono/node-server": "^1.14.4",
     "@hono/node-ws": "^1.2.0",
+    "chalk": "^5.4.1",
     "hono": "^4.8.3",
     "music-metadata": "^11.6.0",
     "tanebi": "workspace:*",

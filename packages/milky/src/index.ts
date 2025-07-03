@@ -1,5 +1,6 @@
 import { Config, defaultProfile, exampleConfig, zConfig, zProfile } from '@/common/config';
 import { NTSilkBinding } from '@/common/silk';
+import chalk from 'chalk';
 import {
     Bot,
     deserializeDeviceInfo,
@@ -13,17 +14,65 @@ import {
     serializeKeystore,
     UrlSignProvider,
 } from 'tanebi';
+import winston, { transports, format } from 'winston';
 import fs from 'node:fs';
 import path from 'node:path';
 
 export class MilkyApp {
+    readonly logger: winston.Logger;
+
     private constructor(
         readonly userDataDir: string,
         readonly isFirstRun: boolean,
         readonly bot: Bot,
         readonly ntSilkBinding: NTSilkBinding | null,
         readonly config: Config
-    ) {}
+    ) {
+        const logDir = path.join(userDataDir, 'logs');
+        if (!fs.existsSync(logDir)) {
+            fs.mkdirSync(logDir);
+        }
+        this.logger = winston.createLogger({
+            transports: [
+                new transports.File({
+                    filename: path.join(logDir, `${new Date().toISOString().replaceAll(':', '')}.log`),
+                    level: 'debug',
+                    maxsize: 5 * 1024 * 1024, // 5MB
+                    maxFiles: 5,
+                    format: format.combine(
+                        format.timestamp(),
+                        format.printf(
+                            ({ timestamp, level, message, ...meta }) =>
+                                `${timestamp} [${level}] [${meta.module ?? 'Bot'}] ${message}`,
+                        ),
+                        format.uncolorize(),
+                    ),
+                }),
+                new transports.Console({
+                    level: config.logLevel === 'trace' ? 'debug' : config.logLevel,
+                    format: format.combine(
+                        format.timestamp({ format: 'hh:mm:ss' }),
+                        format.colorize(),
+                        format.printf(
+                            ({ timestamp, level, message, ...meta }) =>
+                                `${timestamp} ${level} ${chalk.magentaBright(meta.module ?? 'Bot')} ${message}`,
+                        ),
+                    ),
+                }),
+            ],
+        });
+
+        if (config.logLevel === 'trace') {
+            this.bot.onTrace((module, message) => this.logger.debug(`${message}`, { module }));
+        }
+        this.bot.onInfo((module, message) => this.logger.info(`${message}`, { module }));
+        this.bot.onWarning((module, message, error) =>
+            this.logger.warn(`${message} caused by ${error instanceof Error ? error.stack : error}`, { module })
+        );
+        this.bot.onFatal((module, message, error) =>
+            this.logger.error(`${message} caused by ${error instanceof Error ? error.stack : error}`, { module })
+        );
+    }
 
     static async create(baseDir: string) {
         let bot: Bot;

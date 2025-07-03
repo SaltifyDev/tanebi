@@ -1,5 +1,5 @@
-import { MilkyFriend } from '@/entity/friend';
-import { MilkyGroup, MilkyGroupMember } from '@/entity/group';
+import { MilkyFriend } from '@/struct/friend';
+import { MilkyGroup, MilkyGroupMember } from '@/struct/group';
 
 interface MilkyIncomingMessageBase {
     peer_id: number;

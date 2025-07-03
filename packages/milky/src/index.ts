@@ -72,7 +72,121 @@ export class MilkyApp {
         this.bot.onFatal((module, message, error) =>
             this.logger.error(`${message} caused by ${error instanceof Error ? error.stack : error}`, { module })
         );
+
+        this.configureEventLogging();
     }
+
+    //#region Event Logging
+    configureEventLogging() {
+        this.bot.onPrivateMessage((friend, message) =>
+            this.logger.info(
+                `${message.isSelf ? '->' : '<-'} [${chalk.yellow(friend)}] ${message.content.toPreviewString()}`,
+                {
+                    module: 'Message',
+                },
+            )
+        );
+    
+        this.bot.onGroupMessage((group, sender, message) =>
+            this.logger.info(
+                `${sender.uin === this.bot.uin ? '->' : '<-'} [${chalk.blueBright(group)}] [${
+                    chalk.green(sender)
+                }] ${message.content.toPreviewString()}`,
+                { module: 'Message' },
+            )
+        );
+    
+        this.bot.onEvent('forceOffline', (title, tip) => {
+            this.logger.error(`[${title}] ${tip}`, { module: 'ForcedOffline' });
+        });
+    
+        this.bot.onEvent('friendPoke', (friend, isSelf, actionStr, _, suffix) =>
+            this.logger.info(
+                isSelf ?
+                    `你${actionStr || '戳了戳'} ${friend} ${suffix}` :
+                    `${friend} ${actionStr || '戳了戳'}你${suffix}`,
+                { module: 'FriendPoke' },
+            )
+        );
+    
+        this.bot.onEvent('friendRecall', (friend, seq, tip) =>
+            this.logger.info(`${friend} 撤回了一条消息 [${seq}] ${tip}`, {
+                module: 'FriendRecall',
+            })
+        );
+    
+        this.bot.onEvent('friendRequest', (req) => this.logger.info(req.toString(), { module: 'FriendRequest' }));
+    
+        this.bot.onEvent('groupAdminChange', (group, member, isPromote) =>
+            this.logger.info(`[${group}] ${member} ${isPromote ? 'promoted to' : 'demoted from'} admin`, {
+                module: 'GroupAdminChange',
+            })
+        );
+    
+        this.bot.onEvent('groupEssenceMessageChange', (group, sequence, operator, isAdd) => {
+            this.logger.info(
+                `[${group}] msg [${sequence}] ${isAdd ? 'added to' : 'removed from'} essence by ${operator}`,
+                { module: 'GroupEssenceMessageChange' },
+            );
+        });
+    
+        this.bot.onEvent('groupInvitationRequest', (req) =>
+            this.logger.info(req.toString(), { module: 'GroupInvitationRequest' }));
+    
+        this.bot.onEvent('groupInvitedJoinRequest', (_, req) =>
+            this.logger.info(req.toString(), { module: 'GroupInvitedJoinRequest' })
+        );
+    
+        this.bot.onEvent('groupJoinRequest', (_, req) => this.logger.info(req.toString(), { module: 'GroupJoinRequest' }));
+    
+        this.bot.onEvent('groupMemberIncrease', (group, member, _, operator) =>
+            this.logger.info(
+                `[${group}] ${member} joined` +
+                    (operator ? ` by ${operator.card || operator.nickname} (${operator.uin})` : ''),
+                { module: 'GroupMemberIncrease' },
+            )
+        );
+    
+        this.bot.onEvent('groupMemberLeave', (group, memberUin) =>
+            this.logger.info(`[${group}] (${memberUin}) left`, { module: 'GroupMemberLeave' })
+        );
+    
+        this.bot.onEvent('groupMemberKick', (group, memberUin, operator) =>
+            this.logger.info(`[${group}] (${memberUin}) was kicked by ${operator}`, { module: 'GroupMemberKick' })
+        );
+    
+        this.bot.onEvent('groupMute', (group, member, operator, duration) =>
+            this.logger.info(`[${group}] ${member} was muted by ${operator} for ${duration} seconds`, {
+                module: 'GroupMute',
+            })
+        );
+    
+        this.bot.onEvent('groupUnmute', (group, member, operator) =>
+            this.logger.info(`[${group}] ${member} was unmuted by ${operator}`, { module: 'GroupUnmute' })
+        );
+    
+        this.bot.onEvent('groupMuteAll', (group, operator, isSet) =>
+            this.logger.info(`${group} ${isSet ? 'muted' : 'unmuted'} by ${operator}`, { module: 'GroupMuteAll' })
+        );
+    
+        this.bot.onEvent('groupReaction', (group, seq, operator, code, isAdd) =>
+            this.logger.info(`[${group}] ${operator} ${isAdd ? 'added' : 'removed'} reaction ${code} to msg [${seq}]`, {
+                module: 'GroupReaction',
+            })
+        );
+    
+        this.bot.onEvent('groupRecall', (group, seq, tip, operator) =>
+            this.logger.info(`[${group}] ${operator} 撤回了一条消息 [${seq}] ${tip}`, { module: 'GroupRecall' })
+        );
+    
+        this.bot.onEvent('groupPoke', (group, sender, receiver, actionStr, _, suffix) =>
+            this.logger.info(
+                `[${group}] ${sender} ${actionStr || '戳了戳'} ${receiver} ${suffix}`,
+                { module: 'GroupPoke' },
+            )
+        );
+    }
+    //#endregion
 
     static async create(baseDir: string) {
         let bot: Bot;

@@ -25,6 +25,11 @@ export interface MilkyIncomingTempMessage extends MilkyIncomingMessageBase {
     group?: MilkyGroup;
 }
 
+export type MilkyIncomingMessage =
+    | MilkyIncomingFriendMessage
+    | MilkyIncomingGroupMessage
+    | MilkyIncomingTempMessage;
+
 export interface MilkyIncomingForwardedMessage {
     name: string;
     avatar_url: string;

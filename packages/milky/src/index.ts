@@ -2,6 +2,8 @@
 
 import { Config, defaultProfile, exampleConfig, zConfig, zProfile } from '@/common/config';
 import { NTSilkBinding } from '@/common/silk';
+import { ApiHandler as MilkyApiHandler } from '@/api';
+import { MilkyHttpHandler } from '@/network/http';
 import chalk from 'chalk';
 import {
     Bot,
@@ -23,6 +25,10 @@ import path from 'node:path';
 
 export class MilkyApp {
     readonly logger: winston.Logger;
+    readonly apiHandler = new MilkyApiHandler(this, [
+        // api here
+    ]);
+    readonly httpHandler;
 
     private constructor(
         readonly userDataDir: string,
@@ -75,6 +81,8 @@ export class MilkyApp {
         this.bot.onFatal((module, message, error) =>
             this.logger.error(`${message} caused by ${error instanceof Error ? error.stack : error}`, { module })
         );
+
+        this.httpHandler = new MilkyHttpHandler(this, this.config.milky.http);
 
         this.configureEventLogging();
     }
@@ -205,6 +213,8 @@ export class MilkyApp {
         } else {
             await this.bot.fastLogin();
         }
+
+        this.httpHandler.start();
     }
 
     async stop() {

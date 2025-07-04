@@ -21,6 +21,7 @@ export const zConfig = z.object({
             host: z.string(),
             port: z.number().int().min(1).max(65535),
             prefix: z.string(),
+            accessToken: z.string(),
         }),
         webhook: z.object({
             urls: z.array(z.string().url()),
@@ -41,6 +42,7 @@ export const exampleConfig: Config = {
             host: '0.0.0.0',
             port: 3000,
             prefix: '/',
+            accessToken: '',
         },
         webhook: {
             urls: []

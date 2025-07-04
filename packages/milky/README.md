@@ -14,7 +14,8 @@
 
 ### 通信方式
 
-- [ ] WebSocket
+- [x] HTTP
+- [x] WebSocket
 - [ ] WebHook
 
 ### API
@@ -87,7 +88,7 @@
 
 ### 事件
 
-- [ ] bot_offline
+- [x] bot_offline
 - [ ] message_receive
 - [ ] message_recall
 - [ ] friend_request

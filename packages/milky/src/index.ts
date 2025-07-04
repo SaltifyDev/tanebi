@@ -22,6 +22,8 @@ import { QRErrorCorrectLevel, generate } from 'ts-qrcode-terminal';
 import winston, { transports, format } from 'winston';
 import fs from 'node:fs';
 import path from 'node:path';
+import { MilkyEventTypes } from '@/struct/event';
+import { configureEventTransformation } from '@/transform/event';
 
 export class MilkyApp {
     readonly logger: winston.Logger;
@@ -199,6 +201,17 @@ export class MilkyApp {
     }
     //#endregion
 
+    emitEvent<E extends keyof MilkyEventTypes>(eventName: E, data: MilkyEventTypes[E]) {
+        const eventString = JSON.stringify({
+            time: Math.floor(Date.now()),
+            self_id: this.bot.uin,
+            event_type: eventName,
+            data: data,
+        });
+        this.httpHandler.broadcast(eventString);
+        // emit to webhook
+    }
+
     async start() {
         if (this.isFirstRun) {
             const qrCodePath = path.join(this.userDataDir, 'qrcode.png');
@@ -215,6 +228,7 @@ export class MilkyApp {
         }
 
         this.httpHandler.start();
+        configureEventTransformation(this);
     }
 
     async stop() {

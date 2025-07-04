@@ -22,8 +22,8 @@
 
 #### 系统 API
 
-- [ ] /get_login_info
-- [ ] /get_impl_info
+- [x] /get_login_info
+- [x] /get_impl_info
 - [ ] /get_friend_list
 - [ ] /get_friend_info
 - [ ] /get_group_list

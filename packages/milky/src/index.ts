@@ -60,7 +60,7 @@ export class MilkyApp {
                 new transports.Console({
                     level: config.logLevel === 'trace' ? 'debug' : config.logLevel,
                     format: format.combine(
-                        format.timestamp({ format: 'hh:mm:ss' }),
+                        format.timestamp({ format: 'HH:mm:ss' }),
                         format.colorize(),
                         format.printf(
                             ({ timestamp, level, message, ...meta }) =>
@@ -218,6 +218,7 @@ export class MilkyApp {
     }
 
     async stop() {
+        this.httpHandler.stop();
         await this.bot.dispose();
     }
 

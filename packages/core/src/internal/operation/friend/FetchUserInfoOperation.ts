@@ -10,6 +10,7 @@ import {
 export type EnumToStringKey = {
     [FetchUserInfoKey.Avatar]: 'avatar';
     [FetchUserInfoKey.Signature]: 'signature';
+    [FetchUserInfoKey.Remark]: 'remark';
     [FetchUserInfoKey.Level]: 'level';
     [FetchUserInfoKey.BusinessList]: 'businessList';
     [FetchUserInfoKey.Nickname]: 'nickname';
@@ -26,6 +27,7 @@ export interface FetchUserInfoGeneralReturn {
     uin: number;
     avatar?: string;
     signature?: string;
+    remark?: string;
     level?: number;
     businessList?: Array<{
         type: number;
@@ -49,6 +51,7 @@ export const FetchUserInfoOperation = defineOperation(
     (ctx, uinOrUid: number | string, keys: FetchUserInfoKey[] = [
         FetchUserInfoKey.Avatar,
         FetchUserInfoKey.Signature,
+        FetchUserInfoKey.Remark,
         FetchUserInfoKey.Level,
         FetchUserInfoKey.BusinessList,
         FetchUserInfoKey.Nickname,
@@ -74,6 +77,7 @@ export const FetchUserInfoOperation = defineOperation(
             nickname: bytesProps.get(FetchUserInfoKey.Nickname)?.toString(),
             avatar: bytesProps.has(FetchUserInfoKey.Avatar) ?
                 UserInfoAvatar.decode(bytesProps.get(FetchUserInfoKey.Avatar)!).url + '640' : undefined,
+            remark: bytesProps.get(FetchUserInfoKey.Remark)?.toString(),
             city: bytesProps.get(FetchUserInfoKey.City)?.toString(),
             country: bytesProps.get(FetchUserInfoKey.Country)?.toString(),
             school: bytesProps.get(FetchUserInfoKey.School)?.toString(),

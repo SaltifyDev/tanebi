@@ -4,6 +4,7 @@ import { ProtoField, ScalarType } from '@tanebijs/protobuf';
 export enum FetchUserInfoKey {
     Avatar = 101,
     Signature = 102,
+    Remark = 103,
     Level = 105,
     BusinessList = 107,
     Nickname = 20002,

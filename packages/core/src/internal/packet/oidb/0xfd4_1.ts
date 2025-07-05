@@ -38,7 +38,11 @@ export const FetchFriendsResponse = new OidbSvcContract(
             additional: ProtoField(10001, () => ({
                 type: ProtoField(1, ScalarType.UINT32, false, false),
                 layer1: ProtoField(2, () => ({
-                    properties: ProtoField(2, () => ({
+                    numData: ProtoField(1, () => ({
+                        code: ProtoField(1, ScalarType.UINT32, false, false),
+                        value: ProtoField(2, ScalarType.UINT32, true, false),
+                    }), false, true),
+                    strData: ProtoField(2, () => ({
                         code: ProtoField(1, ScalarType.UINT32, false, false),
                         value: ProtoField(2, ScalarType.STRING, true, false),
                     }), false, true),

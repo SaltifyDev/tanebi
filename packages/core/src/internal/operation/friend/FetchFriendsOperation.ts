@@ -1,12 +1,7 @@
 import { defineOperation } from '@/internal/operation/OperationBase';
+import { UserInfoGender } from '@/internal/packet/common/UserInfo';
 import { FetchFriends, FetchFriendsResponse } from '@/internal/packet/oidb/0xfd4_1';
-
-export enum FetchFriendsQueryField {
-    Signature = 102,
-    Remark = 103,
-    Nickname = 20002,
-    QID = 27394,
-}
+import { FetchUserInfoKey } from '@/internal/packet/oidb/0xfe1_2';
 
 /**
  * This is a paginated operation to fetch friends.
@@ -22,10 +17,12 @@ export const FetchFriendsOperation = defineOperation(
                     type: 1,
                     fields: {
                         numbers: [
-                            FetchFriendsQueryField.Signature,
-                            FetchFriendsQueryField.Remark,
-                            FetchFriendsQueryField.Nickname,
-                            FetchFriendsQueryField.QID,
+                            FetchUserInfoKey.Signature,
+                            FetchUserInfoKey.Remark,
+                            FetchUserInfoKey.Nickname,
+                            FetchUserInfoKey.Qid,
+                            FetchUserInfoKey.Age,
+                            FetchUserInfoKey.Gender,
                         ],
                     },
                 },
@@ -43,19 +40,23 @@ export const FetchFriendsOperation = defineOperation(
         return {
             nextUin: response.next?.uin,
             friends: response.friends.map(friendRaw => {
-                const additionalProps = friendRaw.additional.find(
-                    additional => additional.type === 1)?.layer1?.properties;
+                const { numData, strData } = friendRaw.additional.find(
+                    additional => additional.type === 1)!.layer1!;
                 return {
                     uin: friendRaw.uin,
                     uid: friendRaw.uid,
-                    nickname: additionalProps?.find(
-                        prop => prop.code === FetchFriendsQueryField.Nickname)?.value,
-                    remark: additionalProps?.find(
-                        prop => prop.code === FetchFriendsQueryField.Remark)?.value,
-                    signature: additionalProps?.find(
-                        prop => prop.code === FetchFriendsQueryField.Signature)?.value,
-                    qid: additionalProps?.find(
-                        prop => prop.code === FetchFriendsQueryField.QID)?.value,
+                    nickname: strData?.find(
+                        prop => prop.code === FetchUserInfoKey.Nickname)?.value,
+                    remark: strData?.find(
+                        prop => prop.code === FetchUserInfoKey.Remark)?.value,
+                    signature: strData?.find(
+                        prop => prop.code === FetchUserInfoKey.Signature)?.value,
+                    qid: strData?.find(
+                        prop => prop.code === FetchUserInfoKey.Qid)?.value,
+                    age: numData?.find(
+                        prop => prop.code === FetchUserInfoKey.Age)?.value,
+                    gender: <UserInfoGender>(numData?.find(
+                        prop => prop.code === FetchUserInfoKey.Gender)?.value ?? UserInfoGender.Unset),
                     category: friendRaw.category,
                 };
             }),

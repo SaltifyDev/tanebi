@@ -1,5 +1,6 @@
 import {
     BotFriend,
+    BotFriendDataBinding,
     BotFriendMessage,
     BotFriendRequest,
     BotGroup,
@@ -139,25 +140,16 @@ export class Bot {
                 // 全家4完了才能想出来这种分页的逻辑
                 // -- quoted from https://github.com/LagrangeDev/Lagrange.Core/blob/master/Lagrange.Core/Internal/Service/System/FetchFriendsService.cs#L61
                 let data = await bot[ctx].call(FetchFriendsOperation);
-                let friends = data.friends;
+                const mappedData = new Map<number, BotFriendDataBinding>();
                 while (data.nextUin) {
                     data = await bot[ctx].call(FetchFriendsOperation, data.nextUin);
-                    friends = friends.concat(data.friends);
+                    data.friends.forEach(friend => {
+                        this[identityService].uin2uid.set(friend.uin, friend.uid);
+                        this[identityService].uid2uin.set(friend.uid, friend.uin);
+                        mappedData.set(friend.uin, friend);
+                    });
                 }
-                friends.forEach(friend => {
-                    this[identityService].uin2uid.set(friend.uin, friend.uid!);
-                    this[identityService].uid2uin.set(friend.uid!, friend.uin);
-                });
-
-                return new Map(friends.map(friend => [friend.uin, {
-                    uin: friend.uin,
-                    uid: friend.uid!,
-                    nickname: friend.nickname,
-                    remark: friend.remark,
-                    signature: friend.signature,
-                    qid: friend.qid,
-                    category: friend.category
-                }]));
+                return mappedData;
             },
             (bot, data) => new BotFriend(bot, data),
         );

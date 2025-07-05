@@ -1,4 +1,4 @@
-import { Bot, ctx, log } from '@/index';
+import { Bot, ctx, log, UserInfoGender } from '@/index';
 import { BotContact } from '@/entity';
 import { DispatchedMessage, PrivateMessageBuilder, type rawMessage } from '@/message';
 import { OutgoingPrivateMessage } from '@/internal/message/outgoing';
@@ -7,9 +7,10 @@ import { SendMessageOperation } from '@/internal/operation/message/SendMessageOp
 import { RecallFriendMessageOperation } from '@/internal/operation/message/RecallFriendMessageOperation';
 import { SendGrayTipPokeOperation } from '@/internal/operation/message/SendGrayTipPokeOperation';
 
-interface BotFriendDataBinding {
+export interface BotFriendDataBinding {
     uin: number;
     uid: string;
+    gender: UserInfoGender;
     nickname?: string;
     remark?: string;
     signature?: string;
@@ -42,6 +43,10 @@ export class BotFriend extends BotContact<BotFriendDataBinding> {
 
     get nickname() {
         return this.data.nickname;
+    }
+
+    get gender() {
+        return this.data.gender;
     }
 
     get remark() {

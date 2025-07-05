@@ -8,8 +8,6 @@ export class OidbSvcContract<const T extends ProtoModel> {
         public readonly command: number,
         public readonly subCommand: number,
         bodyFields: T,
-        public readonly addLafter: boolean = false,
-        public readonly isUid: boolean = false,
     ) {
         this.bodyProto = ProtoMessage.of(bodyFields);
     }
@@ -19,8 +17,6 @@ export class OidbSvcContract<const T extends ProtoModel> {
             command: this.command,
             subCommand: this.subCommand,
             body: this.bodyProto.encode(data),
-            reserved: this.isUid ? 1 : 0,
-            lafter: this.addLafter ? {} : undefined,
             properties: [],
         });
     }

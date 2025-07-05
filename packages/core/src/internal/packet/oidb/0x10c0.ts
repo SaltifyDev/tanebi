@@ -1,21 +1,15 @@
 import { OidbSvcContract } from '@/internal/util/binary/oidb';
 import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
-export const FetchGroupNotifies = new OidbSvcContract(
-    0x10c0, 1,
-    {
-        count: ProtoField(1, ScalarType.UINT32),
-        field2: ProtoField(2, ScalarType.UINT32),
-    }
-);
+export const FetchGroupNotifies = new OidbSvcContract(0x10c0, 1, {
+    count: ProtoField(1, ScalarType.UINT32),
+    field2: ProtoField(2, ScalarType.UINT32),
+});
 
-export const FetchGroupFilteredNotifies = new OidbSvcContract(
-    0x10c0, 2,
-    {
-        count: ProtoField(1, ScalarType.UINT32),
-        field2: ProtoField(2, ScalarType.UINT32),
-    }
-);
+export const FetchGroupFilteredNotifies = new OidbSvcContract(0x10c0, 2, {
+    count: ProtoField(1, ScalarType.UINT32),
+    field2: ProtoField(2, ScalarType.UINT32),
+});
 
 export enum GroupNotifyType {
     JoinRequest = 1,
@@ -45,13 +39,11 @@ export const FetchGroupNotifiesGeneralResponse = ProtoMessage.of({
     newLatestSequence: ProtoField(3, ScalarType.UINT64),
 });
 
-export const FetchGroupNotifiesResponse = new OidbSvcContract(
-    0x10c0, 1,
-    FetchGroupNotifiesGeneralResponse.fields
-);
+export const FetchGroupNotifiesResponse = new OidbSvcContract(0x10c0, 1, FetchGroupNotifiesGeneralResponse.fields);
 
 export const FetchGroupFilteredNotifiesResponse = new OidbSvcContract(
-    0x10c0, 2,
+    0x10c0,
+    2,
     FetchGroupNotifiesGeneralResponse.fields
 );
 

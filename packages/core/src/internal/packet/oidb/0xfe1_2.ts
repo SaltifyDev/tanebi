@@ -35,7 +35,6 @@ export const FetchUserInfoByUin = new OidbSvcContract(
             key: ProtoField(1, ScalarType.UINT32),
         }), false, true),
     },
-    false, true,
 );
 
 export const FetchUserInfoResponse = new OidbSvcContract(

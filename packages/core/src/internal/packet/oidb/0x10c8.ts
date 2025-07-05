@@ -17,14 +17,6 @@ export const HandleGroupRequestGeneral = ProtoMessage.of({
     })),
 });
 
-export const HandleGroupRequest = new OidbSvcContract(
-    0x10c8, 1,
-    HandleGroupRequestGeneral.fields,
-    false, true,
-);
+export const HandleGroupRequest = new OidbSvcContract(0x10c8, 1, HandleGroupRequestGeneral.fields);
 
-export const HandleGroupFilteredRequest = new OidbSvcContract(
-    0x10c8, 2,
-    HandleGroupRequestGeneral.fields,
-    false, true,
-);
+export const HandleGroupFilteredRequest = new OidbSvcContract(0x10c8, 2, HandleGroupRequestGeneral.fields);

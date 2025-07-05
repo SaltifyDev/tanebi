@@ -1,23 +1,17 @@
 import { OidbSvcContract } from '@/internal/util/binary/oidb';
 import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
 
-export const FetchFaceDetails = new OidbSvcContract(
-    0x9154, 1,
-    {
-        field1: ProtoField(1, ScalarType.UINT32),
-        field2: ProtoField(2, ScalarType.UINT32),
-        field3: ProtoField(3, ScalarType.STRING),
-    }
-);
+export const FetchFaceDetails = new OidbSvcContract(0x9154, 1, {
+    field1: ProtoField(1, ScalarType.UINT32),
+    field2: ProtoField(2, ScalarType.UINT32),
+    field3: ProtoField(3, ScalarType.STRING),
+});
 
-export const FetchFaceDetailsResponse = new OidbSvcContract(
-    0x9154, 1,
-    {
-        commonFace: ProtoField(2, () => FacesData.fields, true, false),
-        specialBigFace: ProtoField(3, () => FacesData.fields, true, false),
-        specialMagicFace: ProtoField(4, () => FacesData.fields, true, false),
-    }
-);
+export const FetchFaceDetailsResponse = new OidbSvcContract(0x9154, 1, {
+    commonFace: ProtoField(2, () => FacesData.fields, true, false),
+    specialBigFace: ProtoField(3, () => FacesData.fields, true, false),
+    specialMagicFace: ProtoField(4, () => FacesData.fields, true, false),
+});
 
 export const FacesData = ProtoMessage.of({
     facePackList: ProtoField(1, () => ({
@@ -40,7 +34,7 @@ export const FaceDetail = ProtoMessage.of({
     unknown10: ProtoField(10, ScalarType.INT32, true, false),
     aniStickerWidth: ProtoField(13, ScalarType.INT32, true, false),
     aniStickerHeight: ProtoField(14, ScalarType.INT32, true, false),
-}); 
+});
 
 export const FaceResourceUrl = ProtoMessage.of({
     baseUrl: ProtoField(1, ScalarType.STRING, true, false),

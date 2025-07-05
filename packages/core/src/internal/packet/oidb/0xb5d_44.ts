@@ -6,10 +6,7 @@ export enum FriendRequestOperation {
     Reject = 5,
 }
 
-export const HandleFriendRequest = new OidbSvcContract(
-    0xb5d, 44,
-    {
-        operation: ProtoField(1, ScalarType.UINT32),
-        uid: ProtoField(2, ScalarType.STRING),
-    }
-);
+export const HandleFriendRequest = new OidbSvcContract(0xb5d, 44, {
+    operation: ProtoField(1, ScalarType.UINT32),
+    uid: ProtoField(2, ScalarType.STRING),
+});

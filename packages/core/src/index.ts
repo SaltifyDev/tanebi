@@ -140,10 +140,10 @@ export class Bot {
             async (bot) => {
                 // 全家4完了才能想出来这种分页的逻辑
                 // -- quoted from https://github.com/LagrangeDev/Lagrange.Core/blob/master/Lagrange.Core/Internal/Service/System/FetchFriendsService.cs#L61
-                let data = await bot[ctx].call(FetchFriendsOperation);
+                let nextUin: number | undefined;
                 const mappedData = new Map<number, BotFriendDataBinding>();
-                while (data.nextUin) {
-                    data = await bot[ctx].call(FetchFriendsOperation, data.nextUin);
+                do {
+                    const data = await bot[ctx].call(FetchFriendsOperation, nextUin);
                     data.friends.forEach(friend => {
                         this[identityService].uin2uid.set(friend.uin, friend.uid);
                         this[identityService].uid2uin.set(friend.uid, friend.uin);
@@ -152,7 +152,8 @@ export class Bot {
                     data.friendCategories.forEach(category => {
                         this.friendCategories.set(category.code, category.value ?? '');
                     });
-                }
+                    nextUin = data.nextUin;
+                } while (nextUin);
                 return mappedData;
             },
             (bot, data) => new BotFriend(bot, data),

@@ -22,7 +22,7 @@ import { QRErrorCorrectLevel, generate } from 'ts-qrcode-terminal';
 import winston, { transports, format } from 'winston';
 import { MilkyEventTypes } from '@/struct/event';
 import { configureEventTransformation } from '@/transform/event';
-import { GetImplInfo, GetLoginInfo } from '@/api/system';
+import { GetFriendList, GetImplInfo, GetLoginInfo } from '@/api/system';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -31,6 +31,7 @@ export class MilkyApp {
     readonly apiHandler = new MilkyApiHandler(this, [
         GetLoginInfo,
         GetImplInfo,
+        GetFriendList,
     ]);
     readonly httpHandler;
 

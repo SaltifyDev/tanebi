@@ -113,6 +113,7 @@ export class Bot {
     private readonly friendCache;
     private readonly groupCache;
     private readonly globalMsg: MessageDispatcher['global'];
+    private readonly friendCategories = new Map<number, string>();
 
     /**
      * Whether the bot is logged in.
@@ -147,6 +148,9 @@ export class Bot {
                         this[identityService].uin2uid.set(friend.uin, friend.uid);
                         this[identityService].uid2uin.set(friend.uid, friend.uin);
                         mappedData.set(friend.uin, friend);
+                    });
+                    data.friendCategories.forEach(category => {
+                        this.friendCategories.set(category.code, category.value ?? '');
                     });
                 }
                 return mappedData;
@@ -724,6 +728,10 @@ export class Bot {
             throw new Error(`Failed to resolve UID for ${targetUin}`);
         }
         await this[ctx].call(SendProfileLikeOperation, targetUid, count);
+    }
+
+    getFriendCategoryName(code: number) {
+        return this.friendCategories.get(code);
     }
     //#endregion
 

@@ -60,9 +60,7 @@ export const FetchFriendsOperation = defineOperation(
                     category: friendRaw.category,
                 };
             }),
-            friendCategories: Object.fromEntries(response.friendCategories.map(
-                category => [category.code, category.value],
-            )),
+            friendCategories: response.friendCategories,
         };
     },
 );

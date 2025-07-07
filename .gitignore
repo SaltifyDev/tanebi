@@ -114,6 +114,10 @@ dist-storybook/
 .cache/
 .heft/
 
+# Lock files
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+
+# Turbo cache
+.turbo/

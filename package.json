@@ -5,8 +5,10 @@
     "packages/*"
   ],
   "scripts": {
-    "build:core": "cd packages/core && pnpm run build",
-    "build:examples": "cd packages/examples && pnpm run build"
+    "build": "turbo build --filter=tanebi-milky",
+    "start": "turbo tanebi-milky#start",
+    "sea": "turbo tanebi-milky#sea",
+    "build:all": "turbo build"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.0",
@@ -16,6 +18,7 @@
     "globals": "^16.2.0",
     "tsup": "^8.5.0",
     "tsx": "^4.20.3",
+    "turbo": "^2.5.4",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.35.0"
   },

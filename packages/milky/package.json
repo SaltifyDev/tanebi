@@ -19,7 +19,8 @@
   "bin": "dist/index.cjs",
   "scripts": {
     "build": "tsup",
-    "sea": "npm run build && node scripts/sea.js",
+    "start": "cd dist && node ./index.cjs",
+    "sea": "node scripts/sea.js",
     "prepack": "npm run build"
   },
   "devDependencies": {

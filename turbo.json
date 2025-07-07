@@ -1,0 +1,16 @@
+{
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "out/**"]
+    },
+    "tanebi-milky#start": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "tanebi-milky#sea": {
+      "dependsOn": ["build"],
+      "outputs": ["sea/**"]
+    }
+  }
+}

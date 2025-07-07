@@ -1,6 +1,6 @@
 import { defineApi, Failed, Ok } from '@/api';
 import { appName, appVersion } from '@/constants';
-import { transformFriend } from '@/transform/entity';
+import { transformFriend, transformGroup, transformGroupMember } from '@/transform/entity';
 import { ctx } from 'tanebi';
 import z from 'zod';
 
@@ -59,9 +59,83 @@ export const GetFriendInfo = defineApi(
     }
 );
 
+export const GetGroupList = defineApi(
+    'get_group_list',
+    z.object({
+        no_cache: z.boolean().default(false),
+    }),
+    async (app, payload) => {
+        const groups = await app.bot.getGroups(payload.no_cache);
+        return Ok({
+            groups: Array.from(groups).map(transformGroup),
+        });
+    }
+);
+
+export const GetGroupInfo = defineApi(
+    'get_group_info',
+    z.object({
+        group_id: z.number().int().positive(),
+        no_cache: z.boolean().default(false),
+    }),
+    async (app, payload) => {
+        const group = await app.bot.getGroup(payload.group_id, payload.no_cache);
+        if (!group) {
+            return Failed(-404, 'Group not found');
+        }
+        return Ok({
+            group: transformGroup(group),
+        });
+    }
+);
+
+export const GetGroupMemberList = defineApi(
+    'get_group_member_list',
+    z.object({
+        group_id: z.number().int().positive(),
+        no_cache: z.boolean().default(false),
+    }),
+    async (app, payload) => {
+        const group = await app.bot.getGroup(payload.group_id, payload.no_cache);
+        if (!group) {
+            return Failed(-404, 'Group not found');
+        }
+        const members = await group.getMembers(payload.no_cache);
+        return Ok({
+            members: Array.from(members).map(transformGroupMember),
+        });
+    }
+);
+
+export const GetGroupMemberInfo = defineApi(
+    'get_group_member_info',
+    z.object({
+        group_id: z.number().int().positive(),
+        user_id: z.number().int().positive(),
+        no_cache: z.boolean().default(false),
+    }),
+    async (app, payload) => {
+        const group = await app.bot.getGroup(payload.group_id, payload.no_cache);
+        if (!group) {
+            return Failed(-404, 'Group not found');
+        }
+        const member = await group.getMember(payload.user_id, payload.no_cache);
+        if (!member) {
+            return Failed(-404, 'Member not found');
+        }
+        return Ok({
+            member: transformGroupMember(member),
+        });
+    }
+);
+
 export const SystemApi = [
     GetLoginInfo,
     GetImplInfo,
     GetFriendList,
     GetFriendInfo,
+    GetGroupList,
+    GetGroupInfo,
+    GetGroupMemberList,
+    GetGroupMemberInfo,
 ];

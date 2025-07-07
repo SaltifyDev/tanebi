@@ -26,10 +26,10 @@
 - [x] /get_impl_info
 - [x] /get_friend_list
 - [x] /get_friend_info
-- [ ] /get_group_list
-- [ ] /get_group_info
-- [ ] /get_group_member_list
-- [ ] /get_group_member_info
+- [x] /get_group_list
+- [x] /get_group_info
+- [x] /get_group_member_list
+- [x] /get_group_member_info
 
 #### 消息 API
 

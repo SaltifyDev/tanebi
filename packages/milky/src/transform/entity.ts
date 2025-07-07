@@ -1,5 +1,6 @@
 import { MilkyFriend } from '@/struct/friend';
-import { BotFriend, UserInfoGender } from 'tanebi';
+import { MilkyGroup, MilkyGroupMember } from '@/struct/group';
+import { BotFriend, BotGroup, BotGroupMember, GroupMemberPermission, UserInfoGender } from 'tanebi';
 
 export function transformGender(gender: UserInfoGender): 'male' | 'female' | 'unknown' {
     if (gender === UserInfoGender.Male)
@@ -20,5 +21,37 @@ export function transformFriend(friend: BotFriend): MilkyFriend {
             category_id: friend.category,
             category_name: friend.bot.getFriendCategoryName(friend.category) ?? '',
         }
+    };
+}
+
+export function transformGroup(group: BotGroup): MilkyGroup {
+    return {
+        group_id: group.uin,
+        name: group.name,
+        member_count: group.memberCount,
+        max_member_count: group.maxMemberCount,
+    };
+}
+
+export function transformGroupMemberRole(role: GroupMemberPermission): 'owner' | 'admin' | 'member' {
+    if (role === GroupMemberPermission.Owner)
+        return 'owner';
+    if (role === GroupMemberPermission.Admin)
+        return 'admin';
+    return 'member';
+}
+
+export function transformGroupMember(member: BotGroupMember): MilkyGroupMember {
+    return {
+        user_id: member.uin,
+        nickname: member.nickname ?? '',
+        sex: 'unknown',
+        group_id: member.group.uin,
+        card: member.card ?? '',
+        title: member.specialTitle,
+        level: member.level,
+        role: transformGroupMemberRole(member.permission),
+        join_time: member.joinTime,
+        last_sent_time: member.lastMsgTime,
     };
 }

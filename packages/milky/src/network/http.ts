@@ -26,7 +26,7 @@ export class MilkyHttpHandler {
         this.injectWebSocket = nodeWebSocket.injectWebSocket;
 
         if (config.accessToken) {
-            router.use('/api', async (c, next) => {
+            router.use('/api/*', async (c, next) => {
                 if (c.req.header('Content-Type') !== 'application/json') {
                     this.logger.warn(
                         `${c.env.incoming.socket.remoteAddress} -> ${c.req.path} (Content-Type not application/json)`

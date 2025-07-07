@@ -19,7 +19,7 @@
   "bin": "dist/index.cjs",
   "scripts": {
     "build": "tsup",
-    "start": "cd dist && node ./index.cjs",
+    "start": "node dist/index.cjs",
     "sea": "node scripts/sea.js",
     "prepack": "npm run build"
   },

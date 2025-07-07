@@ -53,7 +53,9 @@ export const GetFriendInfo = defineApi(
         if (!friend) {
             return Failed(-404, 'Friend not found');
         }
-        return Ok(transformFriend(friend));
+        return Ok({
+            friend: transformFriend(friend),
+        });
     }
 );
 

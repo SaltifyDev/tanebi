@@ -1,4 +1,4 @@
-import { defineApi, Ok } from '@/api';
+import { defineApi, Failed, Ok } from '@/api';
 import { appName, appVersion } from '@/constants';
 import { transformFriend } from '@/transform/entity';
 import { ctx } from 'tanebi';
@@ -41,3 +41,25 @@ export const GetFriendList = defineApi(
         });
     }
 );
+
+export const GetFriendInfo = defineApi(
+    'get_friend_info',
+    z.object({
+        user_id: z.number().int().positive(),
+        no_cache: z.boolean().default(false),
+    }),
+    async (app, payload) => {
+        const friend = await app.bot.getFriend(payload.user_id, payload.no_cache);
+        if (!friend) {
+            return Failed(-404, 'Friend not found');
+        }
+        return Ok(transformFriend(friend));
+    }
+);
+
+export const SystemApi = [
+    GetLoginInfo,
+    GetImplInfo,
+    GetFriendList,
+    GetFriendInfo,
+];

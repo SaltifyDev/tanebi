@@ -20,18 +20,16 @@ import {
 } from 'tanebi';
 import { QRErrorCorrectLevel, generate } from 'ts-qrcode-terminal';
 import winston, { transports, format } from 'winston';
-import { MilkyEventTypes } from '@/struct/event';
-import { configureEventTransformation } from '@/transform/event';
-import { GetFriendList, GetImplInfo, GetLoginInfo } from '@/api/system';
 import fs from 'node:fs';
 import path from 'node:path';
+import { MilkyEventTypes } from '@/struct/event';
+import { configureEventTransformation } from '@/transform/event';
+import { SystemApi } from '@/api/system';
 
 export class MilkyApp {
     readonly logger: winston.Logger;
     readonly apiHandler = new MilkyApiHandler(this, [
-        GetLoginInfo,
-        GetImplInfo,
-        GetFriendList,
+        ...SystemApi,
     ]);
     readonly httpHandler;
 

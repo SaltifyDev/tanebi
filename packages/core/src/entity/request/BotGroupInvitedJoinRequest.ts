@@ -10,6 +10,7 @@ import { InferProtoModel } from '@tanebijs/protobuf';
 export class BotGroupInvitedJoinRequest {
     private constructor(
         private readonly bot: Bot,
+        readonly time: number,
         readonly groupUin: number,
         readonly sequence: bigint,
         readonly targetUin: number,
@@ -66,6 +67,6 @@ export class BotGroupInvitedJoinRequest {
             return null;
         }
         return new BotGroupInvitedJoinRequest(
-            bot, req.group.groupUin, req.sequence, memberUin, req.target.uid, invitor, isFiltered);
+            bot, req.time, req.group.groupUin, req.sequence, memberUin, req.target.uid, invitor, isFiltered);
     }
 }

@@ -39,6 +39,7 @@ export const msgUid = Symbol('Message UID');
 
 interface MessageBase {
     type: MessageType;
+    time: number;
     senderUin: number;
     targetUin: number;
     senderUid?: string;
@@ -119,7 +120,7 @@ function parseMetadata(pushMsg: InferProtoModel<typeof PushMsgBody.fields>, raw:
     if (!pushMsg.responseHead.groupExt) {
         return {
             type: MessageType.PrivateMessage,
-
+            time: pushMsg.contentHead.timestamp,
             senderUin: pushMsg.responseHead.fromUin,
             targetUin: pushMsg.responseHead.toUin,
             senderUid: pushMsg.responseHead.fromUid,
@@ -130,7 +131,6 @@ function parseMetadata(pushMsg: InferProtoModel<typeof PushMsgBody.fields>, raw:
             [blob]: raw,
             [rawElems]: pushMsg.body?.richText?.elements ?? [],
             [msgUid]: pushMsg.contentHead.msgUid!,
-
             clientSequence: pushMsg.contentHead.sequence ?? 0,
             random: pushMsg.contentHead.random ?? 0,
             isTemporary: pushMsg.contentHead.type === PushMsgType.TempMessage,
@@ -138,9 +138,8 @@ function parseMetadata(pushMsg: InferProtoModel<typeof PushMsgBody.fields>, raw:
     } else {
         return {
             type: MessageType.GroupMessage,
-
+            time: pushMsg.contentHead.timestamp,
             groupUin: pushMsg.responseHead.groupExt.groupUin,
-
             senderUin: pushMsg.responseHead.fromUin,
             targetUin: pushMsg.responseHead.toUin,
             senderUid: pushMsg.responseHead.fromUid,

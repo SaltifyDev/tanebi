@@ -6,7 +6,7 @@ export const MessageContentHead = ProtoMessage.of({
     c2cCmd: ProtoField(3, ScalarType.UINT32, true), // c2c message subtype
     random: ProtoField(4, ScalarType.UINT32, true),
     sequence: ProtoField(5, ScalarType.UINT32, true),
-    timestamp: ProtoField(6, ScalarType.INT64, true),
+    timestamp: ProtoField(6, ScalarType.UINT32),
     pkgNum: ProtoField(7, ScalarType.INT64, true), // number of packages, not 1 when the message needs to be sent in packages
     pkgIndex: ProtoField(8, ScalarType.UINT32, true), // current package index, starting from 0
     divSeq: ProtoField(9, ScalarType.UINT32, true), // message package seq, the div_seq of the same message is the same

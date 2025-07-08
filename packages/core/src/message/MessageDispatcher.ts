@@ -47,6 +47,7 @@ export type DispatchedMessageBody =
       };
 
 export type DispatchedMessage = DispatchedMessageBody & {
+    timestamp: number;
     sequence: number;
     repliedSequence?: number;
     messageUid: bigint;
@@ -114,7 +115,7 @@ export class MessageDispatcher {
                 if (firstSegment.app === 'com.tencent.qun.invite' && contact instanceof BotFriend) {
                     this.bot[eventsDX].emit(
                         'groupInvitationRequest',
-                        await BotGroupInvitationRequest.create(contact, firstSegment, this.bot)
+                        await BotGroupInvitationRequest.create(contact, incoming, firstSegment, this.bot)
                     );
                 }
                 return {
@@ -140,6 +141,7 @@ export class MessageDispatcher {
     async dispatch(message: DispatchedMessageBody, raw: IncomingMessage, contact: BotContact) {
         if (contact instanceof BotFriend) {
             const friendMessage: BotFriendMessage = {
+                timestamp: raw.time,
                 sequence: raw.sequence,
                 isSelf: raw.senderUin === this.bot.uin,
                 repliedSequence: raw.repliedSequence,
@@ -153,6 +155,7 @@ export class MessageDispatcher {
             const rawGroup = raw as GroupMessage;
             if (sender) {
                 const groupMessage: BotGroupMessage = {
+                    timestamp: raw.time,
                     sequence: raw.sequence,
                     sender,
                     repliedSequence: raw.repliedSequence,

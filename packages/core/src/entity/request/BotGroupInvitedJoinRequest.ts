@@ -1,10 +1,11 @@
-import { Bot, ctx, identityService, log } from '@/index';
+import { Bot, ctx, identityService } from '@/index';
 import { BotGroupMember, GroupRequestOperation } from '@/entity';
-import { GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
+import { GroupNotify, GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
 import { FetchGroupNotifiesOperation } from '@/internal/operation/group/FetchGroupNotifiesOperation';
 import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/FetchGroupFilteredNotifies';
 import { HandleGroupRequestOperation } from '@/internal/operation/group/HandleGroupRequestOperation';
 import { HandleGroupFilteredRequestOperation } from '@/internal/operation/group/HandleGroupFilteredRequestOperation';
+import { InferProtoModel } from '@tanebijs/protobuf';
 
 export class BotGroupInvitedJoinRequest {
     private constructor(
@@ -52,17 +53,19 @@ export class BotGroupInvitedJoinRequest {
                 return null;
             }
         }
-        const memberUin = await bot[identityService].resolveUin(invitorUid, groupUin);
+        return await BotGroupInvitedJoinRequest.restore(req, isFiltered, bot);
+    }
+
+    static async restore(req: InferProtoModel<typeof GroupNotify.fields>, isFiltered: boolean, bot: Bot) {
+        const memberUin = await bot[identityService].resolveUin(req.invitor!.uid, req.group.groupUin);
         if (!memberUin) {
             return null;
         }
-        const invitor = await (await bot.getGroup(groupUin))?.getMember(memberUin);
+        const invitor = await (await bot.getGroup(req.group.groupUin))?.getMember(memberUin);
         if (!invitor) {
             return null;
         }
-        bot[log].emit('trace', 'BotGroupInvitedJoinRequest',
-            `Received invited join request: ${memberUin} -> ${groupUin}; invitor: ${invitorUid}`);
         return new BotGroupInvitedJoinRequest(
-            bot, groupUin, req.sequence, memberUin, targetUid, invitor, isFiltered);
+            bot, req.group.groupUin, req.sequence, memberUin, req.target.uid, invitor, isFiltered);
     }
 }

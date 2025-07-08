@@ -1,10 +1,11 @@
-import { Bot, ctx, identityService, log } from '@/index';
-import { GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
+import { Bot, ctx, identityService } from '@/index';
+import { GroupNotify, GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
 import { GroupRequestOperation } from '.';
 import { FetchGroupNotifiesOperation } from '@/internal/operation/group/FetchGroupNotifiesOperation';
 import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/FetchGroupFilteredNotifies';
 import { HandleGroupRequestOperation } from '@/internal/operation/group/HandleGroupRequestOperation';
 import { HandleGroupFilteredRequestOperation } from '@/internal/operation/group/HandleGroupFilteredRequestOperation';
+import { InferProtoModel } from '@tanebijs/protobuf';
 
 export class BotGroupJoinRequest {
     private constructor(
@@ -53,9 +54,15 @@ export class BotGroupJoinRequest {
         const uinFetch = await bot.getUserInfo(req.target.uid);
         bot[identityService].uid2uin.set(req.target.uid, uinFetch.uin);
         bot[identityService].uin2uid.set(uinFetch.uin, req.target.uid);
-        bot[log].emit('trace', 'BotGroupJoinRequest',
-            `Received join request: ${uinFetch.uin} -> ${groupUin}; comment: ${req.comment}`);
+        return await BotGroupJoinRequest.restore(req, isFiltered, bot);
+    }
+
+    static async restore(req: InferProtoModel<typeof GroupNotify.fields>, isFiltered: boolean, bot: Bot) {
+        const requestUin = await bot[identityService].resolveUin(req.target.uid, req.group.groupUin);
+        if (!requestUin) {
+            return null;
+        }
         return new BotGroupJoinRequest(
-            bot, groupUin, req.sequence, uinFetch.uin, requestUid, req.comment, isFiltered);
+            bot, req.group.groupUin, req.sequence, requestUin, req.target.uid, req.comment, isFiltered);
     }
 }

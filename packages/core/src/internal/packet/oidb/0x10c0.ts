@@ -25,17 +25,20 @@ export enum GroupRequestState {
     Completed = 2,
 }
 
+export const GroupNotify = ProtoMessage.of({
+    sequence: ProtoField(1, ScalarType.UINT64),
+    notifyType: ProtoField(2, ScalarType.UINT32),
+    requestState: ProtoField(3, ScalarType.UINT32),
+    group: ProtoField(4, () => ResponseGroup.fields),
+    target: ProtoField(5, () => ResponseUser.fields),
+    invitor: ProtoField(6, () => ResponseUser.fields, true),
+    operator: ProtoField(7, () => ResponseUser.fields, true),
+    time: ProtoField(8, ScalarType.UINT32),
+    comment: ProtoField(10, ScalarType.STRING),
+});
+
 export const FetchGroupNotifiesGeneralResponse = ProtoMessage.of({
-    requests: ProtoField(1, () => ({
-        sequence: ProtoField(1, ScalarType.UINT64),
-        notifyType: ProtoField(2, ScalarType.UINT32),
-        requestState: ProtoField(3, ScalarType.UINT32),
-        group: ProtoField(4, () => ResponseGroup.fields),
-        target: ProtoField(5, () => ResponseUser.fields),
-        invitor: ProtoField(6, () => ResponseUser.fields, true),
-        operator: ProtoField(7, () => ResponseUser.fields, true),
-        comment: ProtoField(10, ScalarType.STRING),
-    }), false, true),
+    requests: ProtoField(1, () => GroupNotify.fields, false, true),
     newLatestSequence: ProtoField(3, ScalarType.UINT64),
 });
 

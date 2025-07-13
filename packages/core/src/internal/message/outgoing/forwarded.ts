@@ -25,7 +25,7 @@ export function buildForwarded(msg: OutgoingForwardedMessage):InferProtoModelInp
             c2cCmd: 4,
             random: randomInt(0, 4294967295),
             sequence: randomInt(1000000, 9999999),
-            timestamp: BigInt(timestamp()),
+            timestamp: timestamp(),
             pkgNum: 1n,
             forward: {
                 field3: 2,

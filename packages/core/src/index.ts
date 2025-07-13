@@ -707,7 +707,11 @@ export class Bot {
         uinOrUid: number | string, keys?: K
     ) {
         this[log].emit('trace', 'Bot', `Getting user info for ${uinOrUid}`);
-        const userInfo = await this[ctx].call(FetchUserInfoOperation, uinOrUid, keys ?? [
+        const uid = typeof uinOrUid === 'number' ? await this[identityService].resolveUid(uinOrUid) : uinOrUid;
+        if (!uid) {
+            throw new Error(`Failed to resolve UID for ${uinOrUid}`);
+        }
+        const userInfo = await this[ctx].call(FetchUserInfoOperation, uid, keys ?? [
             FetchUserInfoKey.Age // at least one key is required
         ]);
         return userInfo as Pick<

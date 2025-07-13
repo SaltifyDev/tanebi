@@ -2,7 +2,6 @@ import { defineOperation } from '@/internal/operation/OperationBase';
 import { UserInfoAvatar, UserInfoBusiness, UserInfoGender } from '@/internal/packet/common/UserInfo';
 import {
     FetchUserInfoByUid,
-    FetchUserInfoByUin,
     FetchUserInfoKey,
     FetchUserInfoResponse,
 } from '@/internal/packet/oidb/0xfe1_2';
@@ -48,7 +47,7 @@ export interface FetchUserInfoGeneralReturn {
 
 export const FetchUserInfoOperation = defineOperation(
     'OidbSvcTrpcTcp.0xfe1_2',
-    (ctx, uinOrUid: number | string, keys: FetchUserInfoKey[] = [
+    (ctx, uid: string, keys: FetchUserInfoKey[] = [
         FetchUserInfoKey.Avatar,
         FetchUserInfoKey.Signature,
         FetchUserInfoKey.Remark,
@@ -62,10 +61,7 @@ export const FetchUserInfoOperation = defineOperation(
         FetchUserInfoKey.RegisterTime,
         FetchUserInfoKey.Age,
         FetchUserInfoKey.Qid,
-    ]) =>
-        typeof uinOrUid === 'string' ?
-            FetchUserInfoByUid.encode({ uid: uinOrUid, keys: keys.map(key => ({ key })) }) :
-            FetchUserInfoByUin.encode({ uin: uinOrUid, keys: keys.map(key => ({ key })) }),
+    ]) => FetchUserInfoByUid.encode({ uid, keys: keys.map(key => ({ key })) }),
     (ctx, payload): FetchUserInfoGeneralReturn => {
         const response = FetchUserInfoResponse.decodeBodyOrThrow(payload).body;
         const numberProps = new Map<number, number>(response.properties

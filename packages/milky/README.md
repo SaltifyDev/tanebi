@@ -24,6 +24,7 @@
 
 - [x] /get_login_info
 - [x] /get_impl_info
+- [x] /get_user_profile
 - [x] /get_friend_list
 - [x] /get_friend_info
 - [x] /get_group_list

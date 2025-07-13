@@ -1,7 +1,7 @@
 import { defineApi, Failed, Ok } from '@/api';
 import { appName, appVersion } from '@/constants';
-import { transformFriend, transformGroup, transformGroupMember } from '@/transform/entity';
-import { ctx } from 'tanebi';
+import { transformFriend, transformGender, transformGroup, transformGroupMember } from '@/transform/entity';
+import { ctx, FetchUserInfoKey, UserInfoGender } from 'tanebi';
 import z from 'zod';
 
 export const GetLoginInfo = defineApi(
@@ -27,6 +27,39 @@ export const GetImplInfo = defineApi(
         }[app.bot[ctx].appInfo.Os] ?? 'linux',
         milky_version: '1.0',
     }),
+);
+
+export const GetUserProfile = defineApi(
+    'get_user_profile',
+    z.object({
+        user_id: z.number().int().positive(),
+    }),
+    async (app, payload) => {
+        const user = await app.bot.getUserInfo(payload.user_id, [
+            FetchUserInfoKey.Nickname,
+            FetchUserInfoKey.Qid,
+            FetchUserInfoKey.Age,
+            FetchUserInfoKey.Gender,
+            FetchUserInfoKey.Remark,
+            FetchUserInfoKey.Signature,
+            FetchUserInfoKey.Level,
+            FetchUserInfoKey.Country,
+            FetchUserInfoKey.City,
+            FetchUserInfoKey.School,
+        ]);
+        return Ok({
+            nickname: user.nickname,
+            qid: user.qid,
+            age: user.age,
+            sex: transformGender(user.gender ?? UserInfoGender.Unknown),
+            remark: user.remark,
+            bio: user.signature,
+            level: user.level,
+            country: user.country,
+            city: user.city,
+            school: user.school,
+        });
+    }
 );
 
 export const GetFriendList = defineApi(
@@ -132,6 +165,7 @@ export const GetGroupMemberInfo = defineApi(
 export const SystemApi = [
     GetLoginInfo,
     GetImplInfo,
+    GetUserProfile,
     GetFriendList,
     GetFriendInfo,
     GetGroupList,

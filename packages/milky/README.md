@@ -70,8 +70,12 @@
 - [ ] /get_friend_requests
 - [ ] /get_group_requests
 - [ ] /get_group_invitations
-- [ ] /accept_request
-- [ ] /reject_request
+- [ ] /accept_friend_request
+- [ ] /reject_friend_request
+- [ ] /accept_group_request
+- [ ] /reject_group_request
+- [ ] /accept_group_invitation
+- [ ] /reject_group_invitation
 
 #### 文件 API
 

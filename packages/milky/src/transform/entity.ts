@@ -53,5 +53,6 @@ export function transformGroupMember(member: BotGroupMember): MilkyGroupMember {
         role: transformGroupMemberRole(member.permission),
         join_time: member.joinTime,
         last_sent_time: member.lastMsgTime,
+        shut_up_end_time: member.shutUpEndTime,
     };
 }

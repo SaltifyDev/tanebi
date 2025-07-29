@@ -16,6 +16,7 @@ export interface MilkyGroupMember {
     role: 'owner' | 'admin' | 'member';
     join_time: number;
     last_sent_time: number;
+    shut_up_end_time?: number;
 }
 
 export interface MilkyGroupAnnouncement {

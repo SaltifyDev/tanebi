@@ -17,7 +17,7 @@ interface BotGroupMemberDataBinding {
     specialTitle?: string;
     joinTime: number;
     lastMsgTime: number;
-    shutUpTime?: number;
+    shutUpEndTime?: number;
     permission: GroupMemberPermission;
 }
 
@@ -60,8 +60,8 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> {
         return this.data.lastMsgTime;
     }
 
-    get shutUpTime() {
-        return this.data.shutUpTime;
+    get shutUpEndTime() {
+        return this.data.shutUpEndTime;
     }
 
     get permission() {

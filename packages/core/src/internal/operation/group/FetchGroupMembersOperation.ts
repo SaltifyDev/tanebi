@@ -16,7 +16,7 @@ export const FetchGroupMembersOperation = defineOperation(
             specialTitle: true,
             joinTimestamp: true,
             lastMsgTimestamp: true,
-            shutUpTimestamp: true,
+            shutUpEndTimestamp: true,
             permission: true,
         },
         token,

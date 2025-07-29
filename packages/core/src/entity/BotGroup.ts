@@ -65,7 +65,7 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
                     specialTitle: member.specialTitle ? member.specialTitle.toString() : undefined,
                     joinTime: member.joinTimestamp,
                     lastMsgTime: member.lastMsgTimestamp,
-                    shutUpTime: member.shutUpTimestamp,
+                    shutUpEndTime: member.shutUpEndTimestamp,
                     permission: member.permission,
                 }]));
             },

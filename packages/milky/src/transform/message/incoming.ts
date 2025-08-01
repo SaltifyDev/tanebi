@@ -135,7 +135,6 @@ export function transformIncomingSegment(
 }
 
 export function transformImageSubType(type: ImageSubType): 'normal' | 'sticker' {
-    if (type === ImageSubType.Picture) return 'normal';
     if (type === ImageSubType.Face) return 'sticker';
-    throw new Error(`Unknown image sub type: ${type}`);
+    return 'normal';
 }

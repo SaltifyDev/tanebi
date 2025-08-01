@@ -94,7 +94,7 @@
 ### 事件
 
 - [x] bot_offline
-- [ ] message_receive
+- [x] message_receive
 - [ ] message_recall
 - [ ] friend_request
 - [ ] group_request

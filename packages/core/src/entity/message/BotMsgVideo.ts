@@ -6,6 +6,7 @@ import { DownloadVideoOperation } from '@/internal/operation/highway/DownloadVid
 
 export class BotMsgVideo implements BotMsgType {
     private constructor(
+        readonly fileId: string,
         readonly width: number,
         readonly height: number,
         readonly fileSize: number,
@@ -14,6 +15,7 @@ export class BotMsgVideo implements BotMsgType {
 
     static async create(data: IncomingSegmentOf<'video'>, msg: IncomingMessage, bot: Bot) {
         return new BotMsgVideo(
+            data.indexNode!.fileUuid!,
             data.indexNode.info?.width ?? 0,
             data.indexNode.info?.height ?? 0,
             data.indexNode.info?.fileSize ?? 0,
@@ -23,6 +25,7 @@ export class BotMsgVideo implements BotMsgType {
 
     static async createForward(data: IncomingSegmentOf<'video'>, messageType: MessageType, bot: Bot) {
         return new BotMsgVideo(
+            data.indexNode!.fileUuid!,
             data.indexNode.info?.width ?? 0,
             data.indexNode.info?.height ?? 0,
             data.indexNode.info?.fileSize ?? 0,

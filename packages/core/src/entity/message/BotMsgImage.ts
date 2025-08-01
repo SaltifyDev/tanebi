@@ -6,6 +6,7 @@ import { DownloadGroupImageOperation } from '@/internal/operation/highway/Downlo
 
 export class BotMsgImage implements BotMsgType {
     private constructor(
+        readonly fileId: string,
         readonly url: string,
         readonly width: number,
         readonly height: number,
@@ -17,6 +18,7 @@ export class BotMsgImage implements BotMsgType {
         if (data.url) {
             return new BotMsgImage(
                 data.url,
+                data.url,
                 data.width,
                 data.height,
                 data.subType,
@@ -26,6 +28,7 @@ export class BotMsgImage implements BotMsgType {
 
         if (data.indexNode) {
             return new BotMsgImage(
+                data.indexNode.fileUuid!,
                 msg.type === MessageType.PrivateMessage ?
                     await bot[ctx].call(DownloadPrivateImageOperation, msg.senderUid!, data.indexNode) :
                     await bot[ctx].call(DownloadGroupImageOperation, msg.groupUin, data.indexNode),
@@ -43,6 +46,7 @@ export class BotMsgImage implements BotMsgType {
         if (data.url) {
             return new BotMsgImage(
                 data.url,
+                data.url,
                 data.width,
                 data.height,
                 data.subType,
@@ -52,6 +56,7 @@ export class BotMsgImage implements BotMsgType {
 
         if (data.indexNode) {
             return new BotMsgImage(
+                data.indexNode.fileUuid!,
                 messageType === MessageType.PrivateMessage ?
                     await bot[ctx].call(DownloadPrivateImageOperation, 'u_B-xbHgFtPzMTjvfvZNVuqw', data.indexNode) :
                     await bot[ctx].call(DownloadGroupImageOperation, 0, data.indexNode),

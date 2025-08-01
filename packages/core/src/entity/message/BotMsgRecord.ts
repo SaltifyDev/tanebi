@@ -7,12 +7,14 @@ import { DownloadGroupRecordOperation } from '@/internal/operation/highway/Downl
 
 export class BotMsgRecord implements BotMsgType {
     private constructor(
+        readonly fileId: string,
         readonly duration: number,
         readonly url: string,
     ) {}
 
     static async create(data: IncomingSegmentOf<'record'>, msg: IncomingMessage, bot: Bot) {
         return new BotMsgRecord(
+            data.indexNode!.fileUuid!,
             data.indexNode?.info?.time ?? 0,
             msg.type === MessageType.PrivateMessage ?
                 await bot[ctx].call(DownloadPrivateRecordOperation, msg.senderUid!, data.indexNode) :

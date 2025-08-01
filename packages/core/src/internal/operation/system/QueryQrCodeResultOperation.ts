@@ -5,7 +5,7 @@ import {
     TransEmp12Response_Confirmed,
     TransEmp12Response_Confirmed_TlvPack,
 } from '@/internal/packet/login/wtlogin/TransEmp12';
-import { SmartBuffer } from 'smart-buffer';
+import { SmartBuffer } from 'smart-arraybuffer';
 
 export const QueryQrCodeResultSubCommand = 0x12;
 

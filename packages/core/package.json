@@ -27,7 +27,7 @@
     "async-mutex": "^0.5.0",
     "fast-xml-parser": "^5.2.5",
     "image-size": "^2.0.2",
-    "smart-buffer": "^4.2.0",
+    "smart-arraybuffer": "^1.0.0",
     "typed-emitter": "^2.1.0",
     "zod": "^3.25.67"
   }

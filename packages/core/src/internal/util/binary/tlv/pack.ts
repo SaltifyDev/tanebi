@@ -1,5 +1,5 @@
 import { decodeTlv, Deserialized, encodeTlv, TlvPacketSchema } from '@/internal/util/binary/tlv/serialize';
-import { SmartBuffer } from 'smart-buffer';
+import { SmartBuffer } from 'smart-arraybuffer';
 
 export type TlvTag = `0x${string}`;
 export type TaggedTlvPacketSchema<Tag extends TlvTag, Schema extends TlvPacketSchema> = {

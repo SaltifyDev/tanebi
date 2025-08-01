@@ -1,5 +1,5 @@
 import { LogicBase } from '@/internal/logic/LogicBase';
-import { SmartBuffer } from 'smart-buffer';
+import { SmartBuffer } from 'smart-arraybuffer';
 import { timestamp } from '@/internal/util/format';
 import { decryptTea, encryptTea } from '@/internal/util/crypto/tea';
 import { WtLoginResponseBase } from '@/internal/packet/login/wtlogin/WtLoginBase';

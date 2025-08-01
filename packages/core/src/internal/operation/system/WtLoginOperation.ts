@@ -6,7 +6,7 @@ import { TlvLogin0x119_DecryptedPack } from '@/internal/packet/login/wtlogin/log
 import { decryptTea, encryptTea } from '@/internal/util/crypto/tea';
 import { TlvLogin0x543Body } from '@/internal/packet/login/wtlogin/login/0x543';
 import { TlvLogin0x114_TlvBody } from '@/internal/packet/login/wtlogin/login/0x144';
-import { SmartBuffer } from 'smart-buffer';
+import { SmartBuffer } from 'smart-arraybuffer';
 
 const BUF12 = Buffer.alloc(12);
 

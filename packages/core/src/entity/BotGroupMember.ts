@@ -108,6 +108,7 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> {
     async mute(duration: number) {
         this.bot[log].emit('trace', this.moduleName, `Mute for ${duration} seconds`);
         await this.bot[ctx].call(MuteMemberOperation, this.group.uin, this.uid, duration);
+        this.data.shutUpEndTime = Date.now() + duration * 1000;
     }
 
     /**
@@ -117,6 +118,7 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> {
     async unmute() {
         this.bot[log].emit('trace', this.moduleName, 'Unmute');
         await this.bot[ctx].call(MuteMemberOperation, this.group.uin, this.uid, 0);
+        this.data.shutUpEndTime = undefined;
     }
 
     /**
@@ -151,5 +153,6 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> {
         this.bot[log].emit('trace', this.moduleName, 'Kick');
         await this.bot[ctx].call(KickMemberOperation,
             this.group.uin, this.uid, acceptSubsequentRequests, reason);
+        this.group.getMembers(true); // Update the group member cache after kicking
     }
 }

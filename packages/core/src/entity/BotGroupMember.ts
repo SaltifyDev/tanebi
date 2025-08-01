@@ -61,6 +61,11 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> {
     }
 
     get shutUpEndTime() {
+        const current = Math.floor(Date.now() / 1000);
+        if (!this.data.shutUpEndTime || this.data.shutUpEndTime < current) {
+            this.data.shutUpEndTime = undefined; // Clear if not muted or mute duration has ended
+            return undefined; // Not muted or mute duration has ended
+        }
         return this.data.shutUpEndTime;
     }
 

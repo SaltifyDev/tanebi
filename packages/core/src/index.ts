@@ -338,8 +338,10 @@ export class Bot {
                     const operator = await group.getMember(operatorUin);
                     if (member && operator) {
                         if (duration === 0) {
+                            member.data.shutUpEndTime = undefined;
                             this[eventsDX].emit('groupUnmute', group, member, operator);
                         } else {
+                            member.data.shutUpEndTime = Math.floor(Date.now() / 1000) + duration;
                             this[eventsDX].emit('groupMute', group, member, operator, duration);
                         }
                     }

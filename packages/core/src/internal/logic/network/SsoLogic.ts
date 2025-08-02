@@ -212,12 +212,14 @@ export class SsoLogic extends LogicBase {
         if (op.postOnly) {
             await this.ctx.ssoLogic.postSsoPacket(op.command, buf, await this.nextSeq());
             return undefined as ReturnType<
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 OperationMap<T>[OpName]['parse']>;
         } else {
             const seq = await this.nextSeq();
             const retPacket = await this.sendSsoPacket(op.command, buf, seq);
             if ('body' in retPacket) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 return op.parse(this.ctx, retPacket.body) as any;
             } else {
                 throw new Error(

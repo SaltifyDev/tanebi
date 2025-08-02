@@ -138,31 +138,37 @@ export class MessageDispatcher {
         }
     }
 
+    createFriendMessage(message: DispatchedMessageBody, raw: IncomingMessage): BotFriendMessage {
+        return {
+            timestamp: raw.time,
+            sequence: raw.sequence,
+            isSelf: raw.senderUin === this.bot.uin,
+            repliedSequence: raw.repliedSequence,
+            [rawMessage]: raw as PrivateMessage,
+            messageUid: raw[msgUid],
+            ...message,
+        };
+    }
+
+    createGroupMessage(message: DispatchedMessageBody, raw: IncomingMessage): BotGroupMessage {
+        return {
+            timestamp: raw.time,
+            sequence: raw.sequence,
+            repliedSequence: raw.repliedSequence,
+            [rawMessage]: raw as GroupMessage,
+            messageUid: raw[msgUid],
+            ...message,
+        };
+    }
+
     async dispatch(message: DispatchedMessageBody, raw: IncomingMessage, contact: BotContact) {
         if (contact instanceof BotFriend) {
-            const friendMessage: BotFriendMessage = {
-                timestamp: raw.time,
-                sequence: raw.sequence,
-                isSelf: raw.senderUin === this.bot.uin,
-                repliedSequence: raw.repliedSequence,
-                [rawMessage]: raw as PrivateMessage,
-                messageUid: raw[msgUid],
-                ...message,
-            };
-            this.global.emit('private', contact, friendMessage);
+            this.global.emit('private', contact, this.createFriendMessage(message, raw));
         } else if (contact instanceof BotGroup) {
             const sender = await contact.getMember(raw.senderUin);
             const rawGroup = raw as GroupMessage;
             if (sender) {
-                const groupMessage: BotGroupMessage = {
-                    timestamp: raw.time,
-                    sequence: raw.sequence,
-                    sender,
-                    repliedSequence: raw.repliedSequence,
-                    [rawMessage]: rawGroup,
-                    messageUid: raw[msgUid],
-                    ...message,
-                };
+                const groupMessage = this.createGroupMessage(message, raw);
                 const bindingUpdate = rawGroup.senderDataBindingUpdate;
                 if (bindingUpdate) {
                     if (bindingUpdate.card) {

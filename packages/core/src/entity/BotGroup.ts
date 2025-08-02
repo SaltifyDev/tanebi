@@ -135,7 +135,7 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
      */
     async sendMsg(buildMsg: (b: GroupMessageBuilder) => void): Promise<BotGroupSendMsgRef> {
         this.bot[log].emit('trace', this.moduleName, 'Send message');
-        const builder = new GroupMessageBuilder(this.uin, this.bot);
+        const builder = new GroupMessageBuilder(this, this.bot);
         buildMsg(builder);
         const message = await builder.build(this.clientSequence++);
         const sendResult = await this.bot[ctx].call(SendMessageOperation, message);

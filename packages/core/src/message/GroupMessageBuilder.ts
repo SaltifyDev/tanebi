@@ -1,4 +1,4 @@
-import { BotGroupMember, BotGroupMessage } from '@/entity';
+import { BotGroup, BotGroupMember, BotGroupMessage } from '@/entity';
 import { AbstractMessageBuilder } from './AbstractMessageBuilder';
 import { MessageType } from '@/internal/message';
 import { ImageSubType } from '@/internal/message/incoming/segment/image';
@@ -14,23 +14,46 @@ import { UploadGroupRecordOperation } from '@/internal/operation/highway/UploadG
 import { UploadGroupImageOperation } from '@/internal/operation/highway/UploadGroupImageOperation';
 
 export class GroupMessageBuilder extends AbstractMessageBuilder {
+    private readonly groupUin;
     replyInfo?: ReplyInfo;
 
-    constructor(private readonly groupUin: number, bot: Bot) {
+    constructor(private readonly group: BotGroup, bot: Bot) {
         super(bot);
+        this.groupUin = group.uin;
     }
 
     /**
      * Mention a member in the group
-     * @param member The member to mention
+     * @param member The member (or its uin) to mention
      */
-    mention(member: BotGroupMember) {
-        this.segments.push(Promise.resolve({
-            type: 'mention',
-            uin: member.uin,
-            uid: member.uid,
-            name: '@' + (member.card || member.nickname),
-        }));
+    mention(member: number): void;
+    /**
+     * Mention a member in the group
+     * @param member The member (or its uin) to mention
+     */
+    mention(member: BotGroupMember): void;
+    mention(member: number | BotGroupMember) {
+        if (typeof member === 'number') {
+            this.segments.push((async () => {
+                const actualMember = await this.group.getMember(member);
+                if (!actualMember) {
+                    throw new Error(`Member with ID ${member} not found in group ${this.groupUin}`);
+                }
+                return {
+                    type: 'mention',
+                    uin: actualMember.uin,
+                    uid: actualMember.uid,
+                    name: '@' + (actualMember.card || actualMember.nickname),
+                };
+            })());
+        } else {
+            this.segments.push(Promise.resolve({
+                type: 'mention',
+                uin: member.uin,
+                uid: member.uid,
+                name: '@' + (member.card || member.nickname),
+            }));
+        }
     }
 
     /**

@@ -133,10 +133,10 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
      * @param buildMsg Use this function to add segments to the message
      * @returns The message sequence number and timestamp
      */
-    async sendMsg(buildMsg: (b: GroupMessageBuilder) => void): Promise<BotGroupSendMsgRef> {
+    async sendMsg(buildMsg: (b: GroupMessageBuilder) => void | Promise<void>): Promise<BotGroupSendMsgRef> {
         this.bot[log].emit('trace', this.moduleName, 'Send message');
         const builder = new GroupMessageBuilder(this, this.bot);
-        buildMsg(builder);
+        await buildMsg(builder);
         const message = await builder.build(this.clientSequence++);
         const sendResult = await this.bot[ctx].call(SendMessageOperation, message);
         return {

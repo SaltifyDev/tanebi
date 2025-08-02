@@ -109,7 +109,12 @@ export function parsePushMsgBody(raw: Buffer): IncomingMessage {
         }
     }
 
-    if (result.repliedSequence && result.type === MessageType.GroupMessage) {
+    if (
+        result.repliedSequence &&
+        result.type === MessageType.GroupMessage &&
+        result.segments[0]?.type === 'mention' &&
+        result.segments[1]?.type === 'text'
+    ) {
         result.segments = result.segments.slice(2);
         // Remove the first two segments [ mention, text ] which are redundant
     }

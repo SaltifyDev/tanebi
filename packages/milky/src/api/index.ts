@@ -19,18 +19,19 @@ export function Failed(retcode: number, message: string): MilkyApiResponse {
 export interface MilkyApi {
     endpoint: string;
     validator: z.ZodType;
-    handler: (app: MilkyApp, payload: unknown) => MilkyApiResponse | Promise<MilkyApiResponse>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    handler: (app: MilkyApp, payload: any) => MilkyApiResponse | Promise<MilkyApiResponse>;
 }
 
 export function defineApi<T extends z.ZodType>(
     endpoint: string,
     validator: T,
-    handler: (app: MilkyApp, payload: z.output<T>) => MilkyApiResponse | Promise<MilkyApiResponse>,
+    handler: (app: MilkyApp, payload: z.infer<T>) => MilkyApiResponse | Promise<MilkyApiResponse>,
 ): MilkyApi {
     return { endpoint, validator, handler };
 }
 
-function encodeZodIssues(issues: z.ZodIssue[]): string {
+function encodeZodIssues(issues: z.core.$ZodIssue[]): string {
     return issues.map((issue) => `[${issue.code}] ${issue.path.join('/')}: ${issue.message}`).join('; ');
 }
 

@@ -1,4 +1,4 @@
-import { Bot, ctx, log, UserInfoGender } from '@/index';
+import { Bot, ctx, dispatcher, log, UserInfoGender } from '@/index';
 import { BotContact } from '@/entity';
 import { DispatchedMessage, PrivateMessageBuilder, type rawMessage } from '@/message';
 import { OutgoingPrivateMessage } from '@/internal/message/outgoing';
@@ -6,6 +6,7 @@ import { PrivateMessage } from '@/internal/message/incoming';
 import { SendMessageOperation } from '@/internal/operation/message/SendMessageOperation';
 import { RecallFriendMessageOperation } from '@/internal/operation/message/RecallFriendMessageOperation';
 import { SendGrayTipPokeOperation } from '@/internal/operation/message/SendGrayTipPokeOperation';
+import { GetFriendMessagesOperation } from '@/internal/operation/message/GetFriendMessagesOperation';
 
 export interface BotFriendDataBinding {
     uin: number;
@@ -92,6 +93,19 @@ export class BotFriend extends BotContact<BotFriendDataBinding> {
                     this.uid, message.clientSequence, message.random, sendResult.timestamp, sendResult.sequence);
             }
         };
+    }
+
+    /**
+     * Get messages from a friend
+     * @param startSequence The starting sequence number (inclusive)
+     * @param endSequence The ending sequence number (inclusive)
+     */
+    async getMessages(startSequence: number, endSequence: number): Promise<BotFriendMessage[]> {
+        this.bot[log].emit('trace', this.moduleName, `Get messages from ${startSequence} to ${endSequence}`);
+        const messages = await this.bot[ctx].call(GetFriendMessagesOperation, this.uid, startSequence, endSequence);
+        const indermediate = await Promise.all(messages.map(msg => this.bot[dispatcher].create(msg, this)));
+        return indermediate.filter(idm => idm !== undefined)
+            .map((idm, index) => this.bot[dispatcher].createFriendMessage(idm, messages[index]));
     }
 
     /**

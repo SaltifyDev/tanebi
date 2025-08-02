@@ -1,4 +1,4 @@
-import { Bot, ctx, identityService, log } from '@/index';
+import { Bot, ctx, dispatcher, identityService, log } from '@/index';
 import { BotContact, BotGroupMember, ReactionType } from '@/entity';
 import { DispatchedMessage, GroupMessageBuilder, type rawMessage } from '@/message';
 import { BotCacheService } from '@/util';
@@ -12,6 +12,7 @@ import { MuteAllMembersOperation } from '@/internal/operation/group/MuteAllMembe
 import { AddGroupReactionOperation } from '@/internal/operation/group/AddGroupReactionOperation';
 import { RemoveGroupReactionOperation } from '@/internal/operation/group/RemoveGroupReactionOperation';
 import { LeaveGroupOperation } from '@/internal/operation/group/LeaveGroupOperation';
+import { GetGroupMessagesOperation } from '@/internal/operation/message/GetGroupMessagesOperation';
 
 interface BotGroupDataBinding {
     uin: number;
@@ -145,6 +146,19 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
                 await this.bot[ctx].call(RecallGroupMessageOperation, this.uin, sendResult.sequence);
             }
         };
+    }
+
+    /**
+     * Get messages from this group
+     * @param startSequence The starting sequence number (inclusive)
+     * @param endSequence The ending sequence number (inclusive)
+     */
+    async getMessages(startSequence: number, endSequence: number): Promise<BotGroupMessage[]> {
+        this.bot[log].emit('trace', this.moduleName, `Get messages from ${startSequence} to ${endSequence}`);
+        const messages = await this.bot[ctx].call(GetGroupMessagesOperation, this.uin, startSequence, endSequence);
+        const indermediate = await Promise.all(messages.map(msg => this.bot[dispatcher].create(msg, this)));
+        return indermediate.filter(idm => idm !== undefined)
+            .map((idm, index) => this.bot[dispatcher].createGroupMessage(idm, messages[index]));
     }
 
     /**

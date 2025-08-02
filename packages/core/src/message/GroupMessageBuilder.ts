@@ -72,13 +72,13 @@ export class GroupMessageBuilder extends AbstractMessageBuilder {
      * Reply to a group message
      */
     reply(message: BotGroupMessage) {
-        if (message.sender.group.uin !== this.groupUin) {
+        if (message[rawMessage].groupUin !== this.groupUin) {
             throw new Error('Cannot reply to a message from another group');
         }
         this.replyInfo = {
             sequence: message.sequence,
-            senderUin: message.sender.uin,
-            senderUid: message.sender.uid,
+            senderUin: message[rawMessage].senderUin,
+            senderUid: message[rawMessage].senderUid!,
             messageUid: message.messageUid,
             elements: message[rawMessage][rawElems],
         };

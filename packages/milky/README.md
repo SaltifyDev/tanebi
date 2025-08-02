@@ -118,7 +118,7 @@
 - [x] mention
 - [x] mention_all
 - [x] face
-- [x] reply[^1]
+- [x] reply
 - [x] image
 - [x] record
 - [x] video[^1]

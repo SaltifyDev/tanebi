@@ -25,7 +25,12 @@ export async function transformOutgoingFriendMessage(
         } else if (segment.type === 'face') {
             b.face(segment.data.face_id);
         } else if (segment.type === 'reply') {
-            // TODO: implement get_message by sequence
+            const [replied] = await contact.getMessages(segment.data.message_seq, segment.data.message_seq);
+            if (!replied) {
+                app.logger.warn(`Reply to message sequence ${segment.data.message_seq} not found`);
+                continue;
+            }
+            b.reply(replied);
         } else if (segment.type === 'image') {
             const image = await resolveMilkyUri(segment.data.uri);
             b.image(image, transformMilkyImageSubType(segment.data.sub_type), segment.data.summary);
@@ -62,7 +67,12 @@ export async function transformOutgoingGroupMessage(
         } else if (segment.type === 'face') {
             b.face(segment.data.face_id);
         } else if (segment.type === 'reply') {
-            // TODO: implement get_message by sequence
+            const [replied] = await contact.getMessages(segment.data.message_seq, segment.data.message_seq);
+            if (!replied) {
+                app.logger.warn(`Reply to message sequence ${segment.data.message_seq} not found`);
+                continue;
+            }
+            b.reply(replied);
         } else if (segment.type === 'image') {
             const image = await resolveMilkyUri(segment.data.uri);
             b.image(image, transformMilkyImageSubType(segment.data.sub_type), segment.data.summary);

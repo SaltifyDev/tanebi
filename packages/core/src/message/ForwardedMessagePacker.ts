@@ -16,11 +16,11 @@ export class ForwardedMessagePacker {
      * @param nick The nickname of the sender.
      * @param buildMsg A callback that builds the message.
      */
-    fake(uin: number, nick: string, buildMsg: (b: ForwardedMessageBuilder) => void) {
+    fake(uin: number, nick: string, buildMsg: (b: ForwardedMessageBuilder) => void | Promise<void>) {
         this.messages.push((async () => {
             const builder = new ForwardedMessageBuilder(uin, nick, this.bot);
             // When uploading resources, use the bot itself's uid.
-            buildMsg(builder);
+            await buildMsg(builder);
             const msg = await builder.build(this.clientSequence++);
             if (this.preview.length < 4) {
                 this.preview.push(generatePreview(msg));

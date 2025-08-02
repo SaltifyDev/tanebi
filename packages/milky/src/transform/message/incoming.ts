@@ -34,6 +34,32 @@ export function transformIncomingGroupMessage(
     };
 }
 
+export function transformDanglingIncomingGroupMessage(
+    group: BotGroup,
+    message: BotGroupMessage,
+): MilkyIncomingGroupMessage {
+    return {
+        message_scene: 'group',
+        peer_id: group.uin,
+        message_seq: message.sequence,
+        segments: transformIncomingSegment(message, message.repliedSequence),
+        time: message.timestamp,
+        sender_id: message[rawMessage].senderUin,
+        group: transformGroup(group),
+        group_member: {
+            user_id: message[rawMessage].senderUin,
+            nickname: message[rawMessage].senderName,
+            sex: 'unknown',
+            group_id: group.uin,
+            card: message[rawMessage].senderName,
+            level: 0,
+            role: 'member',
+            join_time: 0,
+            last_sent_time: message.timestamp,
+        },
+    };
+}
+
 export function transformIncomingSegment(
     message: DispatchedMessageBody,
     repliedSequence?: number

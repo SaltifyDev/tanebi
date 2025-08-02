@@ -1,6 +1,9 @@
 import { defineApi, Failed, Ok } from '@/api';
+import { zMessageScene } from '@/struct/message/common';
 import { zMilkyOutgoingSegment } from '@/struct/message/outgoing';
+import { transformDanglingIncomingGroupMessage, transformIncomingFriendMessage, transformIncomingGroupMessage } from '@/transform/message/incoming';
 import { transformOutgoingFriendMessage, transformOutgoingGroupMessage } from '@/transform/message/outgoing';
+import { rawMessage } from 'tanebi';
 import z from 'zod';
 
 export const SendPrivateMessage = defineApi(
@@ -45,7 +48,51 @@ export const SendGroupMessage = defineApi(
     }
 );
 
+export const GetMessage = defineApi(
+    'get_message',
+    z.object({
+        message_scene: zMessageScene,
+        peer_id: z.number().int().positive(),
+        message_seq: z.number().int().positive(),
+    }),
+    async (app, payload) => {
+        if (payload.message_scene === 'friend') {
+            const friend = await app.bot.getFriend(payload.peer_id);
+            if (!friend) {
+                return Failed(-404, 'Friend not found');
+            }
+            const [message] = await friend.getMessages(payload.message_seq, payload.message_seq);
+            if (!message) {
+                return Failed(-404, 'Message not found');
+            }
+            return Ok({
+                message: transformIncomingFriendMessage(friend, message),
+            });
+        } else if (payload.message_scene === 'group') {
+            const group = await app.bot.getGroup(payload.peer_id);
+            if (!group) {
+                return Failed(-404, 'Group not found');
+            }
+            const [message] = await group.getMessages(payload.message_seq, payload.message_seq);
+            if (!message) {
+                return Failed(-404, 'Message not found');
+            }
+            const member = await group.getMember(message[rawMessage].senderUin);
+            if (!member) {
+                return Ok({
+                    message: transformDanglingIncomingGroupMessage(group, message),
+                });
+            }
+            return Ok({
+                message: transformIncomingGroupMessage(group, member, message),
+            });
+        }
+        return Failed(-400, 'Unsupported message scene');
+    }
+);
+
 export const MessageApi = [
     SendPrivateMessage,
     SendGroupMessage,
+    GetMessage,
 ];

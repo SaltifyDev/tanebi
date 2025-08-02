@@ -25,11 +25,13 @@ import path from 'node:path';
 import { MilkyEventTypes } from '@/struct/event';
 import { configureEventTransformation } from '@/transform/event';
 import { SystemApi } from '@/api/system';
+import { MessageApi } from '@/api/message';
 
 export class MilkyApp {
     readonly logger: winston.Logger;
     readonly apiHandler = new MilkyApiHandler(this, [
         ...SystemApi,
+        ...MessageApi,
     ]);
     readonly httpHandler;
 

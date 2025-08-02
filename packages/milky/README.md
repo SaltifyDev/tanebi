@@ -34,8 +34,8 @@
 
 #### 消息 API
 
-- [ ] /send_private_message
-- [ ] /send_group_message
+- [x] /send_private_message
+- [x] /send_group_message
 - [ ] /get_message
 - [ ] /get_history_messages
 - [ ] /get_resource_temp_url
@@ -114,18 +114,20 @@
 
 ### 消息段
 
-- [ ] text
-- [ ] mention
-- [ ] mention_all
-- [ ] face
-- [ ] reply
-- [ ] image
-- [ ] record
-- [ ] video
-- [ ] forward
+- [x] text
+- [x] mention
+- [x] mention_all
+- [x] face
+- [x] reply[^1]
+- [x] image
+- [x] record
+- [x] video[^1]
+- [x] forward
 - [ ] market_face
-- [ ] light_app
+- [x] light_app[^1]
 - [ ] xml
+
+[^1]: 仅限收取消息
 </details>
 
 ## Special Thanks

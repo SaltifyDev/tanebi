@@ -7,6 +7,7 @@ import { SendMessageOperation } from '@/internal/operation/message/SendMessageOp
 import { RecallFriendMessageOperation } from '@/internal/operation/message/RecallFriendMessageOperation';
 import { SendGrayTipPokeOperation } from '@/internal/operation/message/SendGrayTipPokeOperation';
 import { GetFriendMessagesOperation } from '@/internal/operation/message/GetFriendMessagesOperation';
+import { GetRoamMessagesDirection, GetRoamMessagesOperation } from '@/internal/operation/message/GetRoamMessagesOperation';
 
 export interface BotFriendDataBinding {
     uin: number;
@@ -29,7 +30,6 @@ export type BotFriendSendMsgRef = {
     timestamp: number;
     recall: () => Promise<void>;
 } & OutgoingPrivateMessage;
-
 
 export class BotFriend extends BotContact<BotFriendDataBinding> {
     private clientSequence = 100000;
@@ -106,6 +106,22 @@ export class BotFriend extends BotContact<BotFriendDataBinding> {
         const indermediate = await Promise.all(messages.map(msg => this.bot[dispatcher].create(msg, this)));
         return indermediate.filter(idm => idm !== undefined)
             .map((idm, index) => this.bot[dispatcher].createFriendMessage(idm, messages[index]));
+    }
+
+    /**
+     * Get the latest message sequence number for this friend
+     * @returns The latest message sequence number for this friend
+     */
+    async getLatestMessageSequence(): Promise<number> {
+        this.bot[log].emit('trace', this.moduleName, 'Get latest message sequence');
+        const result = await this.bot[ctx].call(
+            GetRoamMessagesOperation,
+            this.uid,
+            Math.floor(Date.now() / 1000),
+            1,
+            GetRoamMessagesDirection.Up
+        );
+        return result.messages.length > 0 ? result.messages[0].sequence : 0;
     }
 
     /**

@@ -11,8 +11,7 @@ export const defaultProfile: Profile = {
 
 export const zConfig = z.object({
     logLevel: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']),
-    signApiUrl: z.string().url()
-        .transform((url) => (url.endsWith('/') ? url.substring(0, url.length - 1) : url)),
+    signApiUrl: z.url().transform((url) => (url.endsWith('/') ? url.substring(0, url.length - 1) : url)),
     reportSelfMessage: z.boolean(),
     enableNtSilk: z.boolean(),
     onForcedOffline: z.enum(['exit', 'reLogin', 'noAction']),

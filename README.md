@@ -18,7 +18,7 @@ PC NTQQ 协议的 TypeScript 实现
 - `pnpm run build` - 构建除 examples 以外的所有包
 - `pnpm run build:all` - 构建所有包
 - `pnpm start` - 启动 Milky 协议实现
-- `pnpm run sea` - 打包 Milky 协议实现的可执行文件（在 Windows/Linux x64 中打包 Windows/Linux x64 可执行文件；在 macOS 中打包 macOS arm64 可执行文件）
+- `pnpm run sea` - 打包 Milky 协议实现在对应系统下的可执行文件，生成的文件位于 `packages/milky/sea` 目录下
 
 ## Special Thanks
 

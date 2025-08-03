@@ -1,0 +1,53 @@
+name: Build tanebi-milky
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/milky/**'
+      - 'packages/core/**'
+      - '.github/workflows/build-milky.yml'
+
+jobs:
+  build:
+    name: Build for ${{ matrix.identifier }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            identifier: win-x64
+            ext: .exe
+          - os: macos-latest
+            identifier: mac-arm64
+            ext: ''
+          - os: ubuntu-latest
+            identifier: linux-x64
+            ext: ''
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm 10
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build tanebi-milky
+        run: pnpm run sea
+
+      - name: Upload tanebi-milky artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tanebi-milky-${{ matrix.identifier }}
+          path: ./packages/milky/sea/tanebi-milky${{ matrix.ext }}

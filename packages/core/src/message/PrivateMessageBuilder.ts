@@ -26,6 +26,7 @@ export class PrivateMessageBuilder extends AbstractMessageBuilder {
             sequence: message.sequence,
             senderUin: this.friendUin,
             senderUid: this.friendUid,
+            senderName: message[rawMessage].senderName,
             messageUid: message.messageUid,
             elements: message[rawMessage][rawElems],
         };

@@ -9,6 +9,7 @@ import { faceBuilder } from '@/internal/message/outgoing/segment/face';
 import { recordBuilder } from '@/internal/message/outgoing/segment/record';
 import { forwardBuilder } from '@/internal/message/outgoing/segment/forward';
 import { MessageElement } from '@/internal/packet/message/MessageElement';
+import { MentionExtra, MentionType } from '@/internal/packet/message/element/TextElement';
 
 const outgoingSegments = new OutgoingSegmentCollection([
     textBuilder,
@@ -28,6 +29,7 @@ export interface ReplyInfo {
     sequence: number;
     senderUin: number;
     senderUid: string;
+    senderName: string;
     messageUid: bigint;
     elements: Buffer[];
 }
@@ -66,14 +68,14 @@ export function buildPbSendMsg(message: OutgoingMessage): Buffer {
 
 export function buildElements(message: OutgoingMessage): MessageElementEncoded[] {
     const result: MessageElementEncoded[] = [];
-    if (message.reply) {
-        result.push(message.type === MessageType.PrivateMessage ?
-            buildPrivateReply(message.reply, message.repliedClientSequence!) :
-            buildGroupReply(message.reply));
-    }
     for (const segment of message.segments) {
         const element = outgoingSegments.build(segment, message);
         result.push(...element);
+    }
+    if (message.reply) {
+        result.unshift(...message.type === MessageType.PrivateMessage ?
+            buildPrivateReply(message.reply, message.repliedClientSequence!) :
+            buildGroupReply(message.reply));
     }
     return result;
 }
@@ -97,35 +99,55 @@ function buildPbSendMsgBase(message: OutgoingMessage): Parameters<typeof PbSendM
     };
 }
 
-function buildPrivateReply(reply: Exclude<OutgoingMessage['reply'], undefined>, seq: number): MessageElementEncoded {
-    return {
-        srcMsg: {
-            origSeqs: [seq],
-            senderUin: reply.senderUin,
-            time: timestamp(),
-            elems: reply.elements,
-            pbReserve: {
-                messageId: reply.messageUid,
-                senderUid: reply.senderUid,
-                friendSequence: reply.sequence,
+function buildPrivateReply(reply: Exclude<OutgoingMessage['reply'], undefined>, seq: number): MessageElementEncoded[] {
+    return [
+        {
+            srcMsg: {
+                origSeqs: [seq],
+                senderUin: reply.senderUin,
+                time: timestamp(),
+                elems: reply.elements,
+                pbReserve: {
+                    messageId: reply.messageUid,
+                    senderUid: reply.senderUid,
+                    friendSequence: reply.sequence,
+                },
+                toUin: 0,
             },
-            toUin: 0,
-        }
-    };
+        },
+    ];
 }
 
-function buildGroupReply(reply: Exclude<OutgoingMessage['reply'], undefined>): MessageElementEncoded {
-    return {
-        srcMsg: {
-            origSeqs: [reply.sequence],
-            senderUin: reply.senderUin,
-            time: timestamp(),
-            elems: reply.elements,
-            pbReserve: {
-                messageId: reply.messageUid,
-                senderUid: reply.senderUid,
+function buildGroupReply(reply: Exclude<OutgoingMessage['reply'], undefined>): MessageElementEncoded[] {
+    return [
+        {
+            srcMsg: {
+                origSeqs: [reply.sequence],
+                senderUin: reply.senderUin,
+                time: timestamp(),
+                elems: reply.elements,
+                pbReserve: {
+                    messageId: reply.messageUid,
+                    senderUid: reply.senderUid,
+                },
+                toUin: 0,
             },
-            toUin: 0,
-        }
-    };
+        },
+        {
+            text: {
+                str: `@${reply.senderName}`,
+                pbReserve: MentionExtra.encode({
+                    type: MentionType.Someone,
+                    uin: reply.senderUin,
+                    field5: 0,
+                    uid: reply.senderUid,
+                }),
+            },
+        },
+        {
+            text: {
+                str: ' ',
+            },
+        },
+    ];
 }

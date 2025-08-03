@@ -79,6 +79,7 @@ export class GroupMessageBuilder extends AbstractMessageBuilder {
             sequence: message.sequence,
             senderUin: message[rawMessage].senderUin,
             senderUid: message[rawMessage].senderUid!,
+            senderName: message[rawMessage].senderName,
             messageUid: message.messageUid,
             elements: message[rawMessage][rawElems],
         };

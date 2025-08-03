@@ -1,14 +1,13 @@
 name: Build tanebi-milky
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [ v2 ]
     paths:
-      - 'packages/milky/**'
-      - 'packages/core/**'
-      - '.github/workflows/build-milky.yml'
+      - packages/milky/**
+      - packages/core/**
+      - .github/workflows/build-milky.yml
+  workflow_dispatch:
 
 jobs:
   build:

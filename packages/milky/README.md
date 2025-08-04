@@ -96,20 +96,20 @@
 - [x] bot_offline
 - [x] message_receive
 - [ ] message_recall
-- [ ] friend_request
-- [ ] group_request
-- [ ] group_invitation
-- [ ] friend_nudge
+- [x] friend_request
+- [x] group_request
+- [x] group_invitation
+- [x] friend_nudge
 - [ ] friend_file_upload
-- [ ] group_admin_change
-- [ ] group_essence_message_change
-- [ ] group_member_increase
-- [ ] group_member_decrease
-- [ ] group_name_change
-- [ ] group_message_reaction
-- [ ] group_mute
-- [ ] group_whole_mute
-- [ ] group_nudge
+- [x] group_admin_change
+- [x] group_essence_message_change
+- [x] group_member_increase
+- [x] group_member_decrease
+- [x] group_name_change
+- [x] group_message_reaction
+- [x] group_mute
+- [x] group_whole_mute
+- [x] group_nudge
 - [ ] group_file_upload
 
 ### 消息段

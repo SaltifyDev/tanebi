@@ -1,5 +1,6 @@
 import { MilkyApp } from '@/index';
 import { transformIncomingFriendMessage, transformIncomingGroupMessage } from '@/transform/message/incoming';
+import { transformFriendRequest, transformGroupInvitation, transformGroupInvitedJoinRequest, transformGroupJoinRequest } from '@/transform/request';
 
 export function configureEventTransformation(app: MilkyApp) {
     app.bot.onEvent('forceOffline', (title, tip) => {
@@ -14,5 +15,120 @@ export function configureEventTransformation(app: MilkyApp) {
 
     app.bot.onGroupMessage((group, member, message) => {
         app.emitEvent('message_receive', transformIncomingGroupMessage(group, member, message));
+    });
+
+    app.bot.onEvent('friendRequest', (request) => {
+        app.emitEvent('friend_request', transformFriendRequest(request));
+    });
+
+    app.bot.onEvent('groupJoinRequest', (group, request) => {
+        app.emitEvent('group_request', transformGroupJoinRequest(request));
+    });
+
+    app.bot.onEvent('groupInvitedJoinRequest', (group, request) => {
+        app.emitEvent('group_request', transformGroupInvitedJoinRequest(request));
+    });
+
+    app.bot.onEvent('groupInvitationRequest', (request) => {
+        app.emitEvent('group_invitation', transformGroupInvitation(request));
+    });
+
+    app.bot.onEvent('friendPoke', (friend, isSelfSend, isSelfReceive) => {
+        app.emitEvent('friend_nudge', {
+            user_id: friend.uin,
+            is_self_send: isSelfSend,
+            is_self_receive: isSelfReceive,
+        });
+    });
+
+    app.bot.onEvent('groupAdminChange', (group, user, isPromote) => {
+        app.emitEvent('group_admin_change', {
+            group_id: group.uin,
+            user_id: user.uin,
+            is_set: isPromote,
+        });
+    });
+
+    app.bot.onEvent('groupEssenceMessageChange', (group, sequence, operator, isAdd) => {
+        app.emitEvent('group_essence_message_change', {
+            group_id: group.uin,
+            message_seq: sequence,
+            is_set: isAdd,
+        });
+    });
+
+    app.bot.onEvent('groupMemberIncrease', (group, user, increaseType, invitor) => {
+        app.emitEvent('group_member_increase', {
+            group_id: group.uin,
+            user_id: user.uin,
+            invitor_id: invitor?.uin,
+        });
+    });
+
+    app.bot.onEvent('groupMemberLeave', (group, uin) => {
+        app.emitEvent('group_member_decrease', {
+            group_id: group.uin,
+            user_id: uin,
+        });
+    });
+
+    app.bot.onEvent('groupMemberKick', (group, uin, operator) => {
+        app.emitEvent('group_member_decrease', {
+            group_id: group.uin,
+            user_id: uin,
+            operator_id: operator?.uin,
+        });
+    });
+
+    app.bot.onEvent('groupNameChange', (group, name, operator) => {
+        app.emitEvent('group_name_change', {
+            group_id: group.uin,
+            name,
+            operator_id: operator.uin,
+        });
+    });
+
+    app.bot.onEvent('groupReaction', (group, sequence, member, reactionCode, isAdd) => {
+        app.emitEvent('group_message_reaction', {
+            group_id: group.uin,
+            user_id: member.uin,
+            message_seq: sequence,
+            face_id: reactionCode,
+            is_add: isAdd,
+        });
+    });
+
+    app.bot.onEvent('groupMute', (group, member, operator, duration) => {
+        app.emitEvent('group_mute', {
+            group_id: group.uin,
+            user_id: member.uin,
+            operator_id: operator.uin,
+            duration,
+        });
+    });
+
+    app.bot.onEvent('groupUnmute', (group, member, operator) => {
+        app.emitEvent('group_mute', {
+            group_id: group.uin,
+            user_id: member.uin,
+            operator_id: operator.uin,
+            duration: 0, // Unmute is represented by a duration of 0
+        });
+    });
+
+    app.bot.onEvent('groupMuteAll', (group, operator, isSet) => {
+        app.emitEvent('group_whole_mute', {
+            group_id: group.uin,
+            operator_id: operator.uin,
+            is_mute: isSet,
+        });
+    });
+
+    app.bot.onEvent('groupPoke', (group, sender, receiver) => {
+        app.emitEvent('group_nudge', {
+            group_id: group.uin,
+            sender_id: sender.uin,
+            receiver_id: receiver.uin,
+        });
     });
 }

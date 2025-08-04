@@ -4,6 +4,7 @@ import { HandleFriendRequestOperation } from '@/internal/operation/friend/Handle
 export class BotFriendRequest {
     constructor(
         private readonly bot: Bot,
+        readonly time: number,
         readonly fromUin: number,
         readonly fromUid: string,
         readonly message: string,

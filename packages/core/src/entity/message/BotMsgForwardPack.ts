@@ -29,7 +29,6 @@ export type ForwardedMessage = ForwardedMessageBody & {
 export class BotMsgForwardPack implements BotMsgType {
     constructor(
         readonly messageType: MessageType,
-        readonly senderUid: string,
         private readonly segment: IncomingSegmentOf<'forward'>,
         private readonly bot: Bot,
     ) {}
@@ -68,7 +67,7 @@ export class BotMsgForwardPack implements BotMsgType {
             if (firstSegment.type === 'forward') {
                 return {
                     type: 'forward',
-                    content: new BotMsgForwardPack(this.messageType, incoming.senderUid!, firstSegment, this.bot),
+                    content: new BotMsgForwardPack(this.messageType, firstSegment, this.bot),
                 };
             }
     
@@ -94,7 +93,7 @@ export class BotMsgForwardPack implements BotMsgType {
     }
 
     async download(): Promise<ForwardedMessage[]> {
-        return await this.bot[ctx].call(DownloadLongMessageOperation, this.senderUid, this.segment.resId)
+        return await this.bot[ctx].call(DownloadLongMessageOperation, this.segment.resId)
             .then(result => Promise
                 .all(result.map(async msg => {
                     const build = await this.build(msg);

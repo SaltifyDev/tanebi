@@ -20,13 +20,13 @@ export class BotGroupInvitationRequest {
         private readonly bot: Bot,
         readonly time: number,
         readonly sequence: bigint,
-        readonly invitor: BotFriend,
+        readonly invitorUin: number,
         readonly groupUin: number,
         readonly state: RequestState,
     ) {}
 
     toString() {
-        return `${this.invitor} invited you to join group (${this.groupUin})`;
+        return `(${this.invitorUin}) invited you to join group (${this.groupUin})`;
     }
 
     async handle(isAccept: boolean, message?: string) {
@@ -40,7 +40,7 @@ export class BotGroupInvitationRequest {
         );
     }
 
-    static async create(invitor: BotFriend, message: IncomingMessage, lightApp: IncomingSegmentOf<'lightApp'>, bot: Bot) {
+    static create(invitor: BotFriend, message: IncomingMessage, lightApp: IncomingSegmentOf<'lightApp'>, bot: Bot) {
         const parsed = lightAppGroupInvitationPattern.safeParse(lightApp.payload);
         if (!parsed.success) {
             throw new Error('Failed to parse light app content');
@@ -48,6 +48,6 @@ export class BotGroupInvitationRequest {
         const url = new URL(parsed.data.meta.news.jumpUrl);
         const groupUin = parseInt(url.searchParams.get('groupcode')!);
         const sequence = BigInt(url.searchParams.get('msgseq')!);
-        return new BotGroupInvitationRequest(bot, message.time, sequence, invitor, groupUin, RequestState.Pending);
+        return new BotGroupInvitationRequest(bot, message.time, sequence, invitor.uin, groupUin, RequestState.Pending);
     }
 }

@@ -19,6 +19,7 @@ export class BotGroupJoinRequest {
         readonly comment: string,
         readonly isFiltered: boolean,
         readonly state: RequestState,
+        readonly operatorUin?: number,
     ) {}
 
     toString() {
@@ -65,7 +66,9 @@ export class BotGroupJoinRequest {
         if (!requestUin) {
             return null;
         }
+        const operatorUin = req.operator ? await bot[identityService].resolveUin(req.operator.uid, req.group.groupUin) : undefined;
         return new BotGroupJoinRequest(
-            bot, req.time, req.group.groupUin, req.sequence, requestUin, req.target.uid, req.comment, isFiltered, req.requestState);
+            bot, req.time, req.group.groupUin, req.sequence, requestUin, req.target.uid, req.comment, isFiltered, req.requestState, operatorUin
+        );
     }
 }

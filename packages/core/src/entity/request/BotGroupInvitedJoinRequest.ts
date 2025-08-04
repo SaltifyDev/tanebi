@@ -1,5 +1,5 @@
 import { Bot, ctx, identityService } from '@/index';
-import { BotGroupMember, GroupRequestOperation } from '@/entity';
+import { GroupRequestOperation } from '@/entity';
 import { GroupNotify, GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
 import { FetchGroupNotifiesOperation } from '@/internal/operation/group/FetchGroupNotifiesOperation';
 import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/FetchGroupFilteredNotifies';
@@ -16,13 +16,14 @@ export class BotGroupInvitedJoinRequest {
         readonly sequence: bigint,
         readonly targetUin: number,
         readonly targetUid: string,
-        readonly invitor: BotGroupMember,
+        readonly invitorUin: number,
         readonly isFiltered: boolean,
         readonly state: RequestState,
+        readonly operatorUin: number | undefined,
     ) {}
 
     toString() {
-        return `${this.invitor} invited (${this.targetUin}) to join group (${this.groupUin})`;
+        return `(${this.invitorUin}) invited (${this.targetUin}) to join group (${this.groupUin})`;
     }
 
     async handle(operation: GroupRequestOperation, message?: string) {
@@ -64,11 +65,9 @@ export class BotGroupInvitedJoinRequest {
         if (!memberUin) {
             return null;
         }
-        const invitor = await (await bot.getGroup(req.group.groupUin))?.getMember(memberUin);
-        if (!invitor) {
-            return null;
-        }
+        const operatorUin = req.operator ? await bot[identityService].resolveUin(req.operator.uid, req.group.groupUin) : undefined;
         return new BotGroupInvitedJoinRequest(
-            bot, req.time, req.group.groupUin, req.sequence, memberUin, req.target.uid, invitor, isFiltered, req.requestState);
+            bot, req.time, req.group.groupUin, req.sequence, memberUin, req.target.uid, memberUin, isFiltered, req.requestState, operatorUin
+        );
     }
 }

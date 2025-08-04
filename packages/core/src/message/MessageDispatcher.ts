@@ -115,7 +115,7 @@ export class MessageDispatcher {
                 if (firstSegment.app === 'com.tencent.qun.invite' && contact instanceof BotFriend) {
                     this.bot[eventsDX].emit(
                         'groupInvitationRequest',
-                        await BotGroupInvitationRequest.create(contact, incoming, firstSegment, this.bot)
+                        BotGroupInvitationRequest.create(contact, incoming, firstSegment, this.bot)
                     );
                 }
                 return {

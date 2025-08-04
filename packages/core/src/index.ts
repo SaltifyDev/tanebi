@@ -114,6 +114,7 @@ export class Bot {
     private readonly groupCache;
     private readonly globalMsg: MessageDispatcher['global'];
     private readonly friendCategories = new Map<number, string>();
+    private readonly groupLatestSeqs = new Map<number, number>();
 
     /**
      * Whether the bot is logged in.
@@ -184,11 +185,20 @@ export class Bot {
         this[ctx].events.on('messagePush', (data) => {
             try {
                 if (data) {
+                    if ('groupUin' in data) {
+                        this.groupLatestSeqs.set(data.groupUin, data.sequence);
+                    }
                     this[dispatcher].emit(data);
                 }
             } catch (e) {
                 this[log].emit('warning', 'Bot', 'Failed to handle message', e);
             }
+        });
+
+        this[ctx].events.on('infoSyncPush', (data) => {
+            data.groupSystemNotifications.notifications.forEach(n => {
+                this.groupLatestSeqs.set(n.groupCode, n.endSeq);
+            });
         });
 
         this[ctx].events.on('kickNT', (data) => {

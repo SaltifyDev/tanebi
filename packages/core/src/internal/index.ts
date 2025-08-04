@@ -11,6 +11,7 @@ import { NotifyLogic } from '@/internal/logic/NotifyLogic';
 import { HighwayLogic } from '@/internal/logic/network/HighwayLogic';
 import { DecreaseType, IncreaseType } from '@/internal/packet/message/notify/GroupMemberChange';
 import TypedEventEmitter from 'typed-emitter';
+import { InfoSyncPushEvent } from '@/internal/event/system/InfoSyncPushEvent';
 
 type InternalEventEmitter = TypedEventEmitter<{
     friendRequest: (fromUin: number, fromUid: string, message: string, via: string) => void;
@@ -53,7 +54,7 @@ export class BotContext {
 
     events = new EventChannel(this, [
         MessagePushEvent,
-
+        InfoSyncPushEvent,
         KickNTEvent,
     ]);
 

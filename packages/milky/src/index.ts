@@ -116,14 +116,14 @@ export class MilkyApp {
             this.logger.error(`[${title}] ${tip}`, { module: 'ForcedOffline' });
         });
     
-        this.bot.onEvent('friendPoke', (friend, isSelf, actionStr, _, suffix) =>
+        this.bot.onEvent('friendPoke', (friend, isSelfSend, isSelfReceive, actionStr, _, suffix) => {
+            const senderStr = isSelfSend ? '你' : friend.toString();
+            const receiverStr = (isSelfSend === isSelfReceive) ? '自己' : (isSelfReceive ? '你' : friend.toString());
             this.logger.info(
-                isSelf ?
-                    `你${actionStr || '戳了戳'} ${friend} ${suffix}` :
-                    `${friend} ${actionStr || '戳了戳'}你${suffix}`,
+                `${senderStr}${actionStr || '戳了戳'}${receiverStr}${suffix}`,
                 { module: 'FriendPoke' },
-            )
-        );
+            );
+        });
     
         this.bot.onEvent('friendRecall', (friend, seq, tip) =>
             this.logger.info(`${friend} 撤回了一条消息 [${seq}] ${tip}`, {

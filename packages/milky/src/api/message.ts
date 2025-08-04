@@ -91,8 +91,50 @@ export const GetMessage = defineApi(
     }
 );
 
+export const GetHistoryMessages = defineApi(
+    'get_history_messages',
+    z.object({
+        message_scene: zMessageScene,
+        peer_id: z.number().int().positive(),
+        start_message_seq: z.number().int().positive().optional(),
+        limit: z.number().int().min(1).max(100).default(20),
+    }),
+    async (app, payload) => {
+        if (payload.message_scene === 'friend') {
+            const friend = await app.bot.getFriend(payload.peer_id);
+            if (!friend) {
+                return Failed(-404, 'Friend not found');
+            }
+            const originSeq = payload.start_message_seq ?? await friend.getLatestMessageSequence();
+            const messages = await friend.getMessages(Math.max(1, originSeq - payload.limit + 1), originSeq);
+            return Ok({
+                messages: messages.map((msg) => transformIncomingFriendMessage(friend, msg)),
+            });
+        } else if (payload.message_scene === 'group') {
+            const group = await app.bot.getGroup(payload.peer_id);
+            if (!group) {
+                return Failed(-404, 'Group not found');
+            }
+            const originSeq = payload.start_message_seq ?? group.getLatestMessageSequence();
+            const messages = await group.getMessages(Math.max(1, originSeq - payload.limit + 1), originSeq);
+            return Ok({
+                messages: await Promise.all(messages.map(async (msg) => {
+                    const member = await group.getMember(msg[rawMessage].senderUin);
+                    if (!member) {
+                        return transformDanglingIncomingGroupMessage(group, msg);
+                    }
+                    return transformIncomingGroupMessage(group, member, msg);
+                })),
+            });
+        } else {
+            return Failed(-400, 'Unsupported message scene');
+        }
+    }
+);
+
 export const MessageApi = [
     SendPrivateMessage,
     SendGroupMessage,
     GetMessage,
+    GetHistoryMessages,
 ];

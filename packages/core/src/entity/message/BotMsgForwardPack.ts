@@ -21,8 +21,9 @@ export type ForwardedMessageBody = {
 };
 
 export type ForwardedMessage = ForwardedMessageBody & {
-    senderUin: number;
     senderName: string;
+    senderAvatarUrl: string;
+    time: number;
 };
 
 export class BotMsgForwardPack implements BotMsgType {
@@ -98,8 +99,9 @@ export class BotMsgForwardPack implements BotMsgType {
                     if (build) {
                         return {
                             ...build,
-                            senderUin: msg.senderUin,
                             senderName: msg.senderName,
+                            senderAvatarUrl: msg.forwardAvatarUrl ?? `https://q.qlogo.cn/headimg_dl?dst_uin=${msg.senderUin}&spec=640&img_type=jpg`,
+                            time: msg.time,
                         };
                     }
                     return undefined;

@@ -47,6 +47,7 @@ interface MessageBase {
     sequence: number;
     repliedSequence?: number;
     segments: IncomingSegment[];
+    forwardAvatarUrl?: string;
     [blob]: Buffer;
     [rawElems]: Buffer[];
     [msgUid]: bigint;
@@ -133,6 +134,7 @@ function parseMetadata(pushMsg: InferProtoModel<typeof PushMsgBody.fields>, raw:
             senderName: pushMsg.responseHead.friendExt?.friendName ?? '',
             sequence: pushMsg.contentHead.ntMsgSeq ?? 0,
             segments: [],
+            forwardAvatarUrl: pushMsg.contentHead.forward?.avatar,
             [blob]: raw,
             [rawElems]: pushMsg.body?.richText?.elements ?? [],
             [msgUid]: pushMsg.contentHead.msgUid!,
@@ -151,6 +153,7 @@ function parseMetadata(pushMsg: InferProtoModel<typeof PushMsgBody.fields>, raw:
             senderName: pushMsg.responseHead.groupExt.memberName,
             sequence: pushMsg.contentHead.sequence ?? 0,
             segments: [],
+            forwardAvatarUrl: pushMsg.contentHead.forward?.avatar,
             [blob]: raw,
             [rawElems]: pushMsg.body?.richText?.elements ?? [],
             [msgUid]: pushMsg.contentHead.msgUid!,

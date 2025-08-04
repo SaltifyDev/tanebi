@@ -1,4 +1,4 @@
-import { Bot, ctx, dispatcher, identityService, log } from '@/index';
+import { Bot, ctx, dispatcher, groupLatestSeqs, identityService, log } from '@/index';
 import { BotContact, BotGroupMember, ReactionType } from '@/entity';
 import { DispatchedMessage, GroupMessageBuilder, type rawMessage } from '@/message';
 import { BotCacheService } from '@/util';
@@ -159,6 +159,14 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
         const indermediate = await Promise.all(messages.map(msg => this.bot[dispatcher].create(msg, this)));
         return indermediate.filter(idm => idm !== undefined)
             .map((idm, index) => this.bot[dispatcher].createGroupMessage(idm, messages[index]));
+    }
+
+    /**
+     * Get the latest message sequence number in this group.
+     * This is the sequence number of the last message sent in this group.
+     */
+    getLatestMessageSequence() {
+        return this.bot[groupLatestSeqs].get(this.uin) ?? 0;
     }
 
     /**

@@ -98,6 +98,7 @@ type TanebiEventEmitter = TypedEventEmitter<{
     groupEssenceMessageChange: (group: BotGroup, sequence: number, operator: BotGroupMember, isAdd: boolean) => void;
     groupRecall: (group: BotGroup, sequence: number, tip: string, operator: BotGroupMember) => void;
     groupReaction: (group: BotGroup, sequence: number, member: BotGroupMember, reactionCode: string, isAdd: boolean, count: number) => void;
+    groupNameChange: (group: BotGroup, name: string) => void;
 }>;
 
 /**
@@ -445,6 +446,18 @@ export class Bot {
                 }
             } catch(e) {
                 this[log].emit('warning', 'Bot', 'Failed to handle group reaction', e);
+            }
+        });
+
+        this[ctx].eventsDX.on('groupNameChange', async (groupUin, name) => {
+            this[log].emit('trace', 'Bot', `Received group name change for group ${groupUin} to ${name}`);
+            try {
+                const group = await this.getGroup(groupUin);
+                if (group) {
+                    this[eventsDX].emit('groupNameChange', group, name);
+                }
+            } catch (e) {
+                this[log].emit('warning', 'Bot', 'Failed to handle group name change', e);
             }
         });
         //#endregion

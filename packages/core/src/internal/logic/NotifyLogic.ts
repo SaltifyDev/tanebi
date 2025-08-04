@@ -18,6 +18,7 @@ import {
 } from '@/internal/packet/message/PushMsg';
 import { InferProtoModel } from '@tanebijs/protobuf';
 import { GroupEssenceMessageChangeSetFlag } from '@/internal/packet/message/notify/GroupEssenceMessageChange';
+import { GroupNameChange } from '@/internal/packet/message/notify/GroupNameChange';
 
 export class NotifyLogic extends LogicBase {
     parsePushMsgBodyToNotify(pushMsgBody: InferProtoModel<typeof PushMsgBody.fields>, type: PushMsgType) {
@@ -61,6 +62,8 @@ export class NotifyLogic extends LogicBase {
                     GroupGeneral0x2DC.decode(pushMsgBody.body.msgContent).body);
                 if (wrapper.field13 === Event0x2DCSubType16Field13.GroupReaction) {
                     this.parseGroupReaction(wrapper);
+                } else if (wrapper.field13 === Event0x2DCSubType16Field13.GroupNameChange) {
+                    this.parseGroupNameChange(wrapper);
                 }
             }
         }
@@ -193,5 +196,12 @@ export class NotifyLogic extends LogicBase {
             content.data.data.data.code,
             content.data.data.data.type === 1,
             content.data.data.data.count);
+    }
+
+    parseGroupNameChange(
+        wrapper: InferProtoModel<typeof GroupGeneral0x2DCBody.fields>,
+    ) {
+        const content = GroupNameChange.decode(wrapper.eventParam!);
+        this.ctx.eventsDX.emit('groupNameChange', wrapper.groupUin, content.name);
     }
 }

@@ -88,7 +88,7 @@ type TanebiEventEmitter = TypedEventEmitter<{
     groupJoinRequest: (group: BotGroup, request: BotGroupJoinRequest) => void;
     groupInvitedJoinRequest: (group: BotGroup, request: BotGroupInvitedJoinRequest) => void;
     groupAdminChange: (group: BotGroup, member: BotGroupMember, isPromote: boolean) => void;
-    groupMemberIncrease: (group: BotGroup, member: BotGroupMember, increaseType: IncreaseType, operator?: BotGroupMember) => void;
+    groupMemberIncrease: (group: BotGroup, member: BotGroupMember, increaseType: IncreaseType, invitor?: BotGroupMember) => void;
     groupMemberLeave: (group: BotGroup, uin: number) => void;
     groupMemberCardChange: (group: BotGroup, member: BotGroupMember, oldMemberCard: string, newMemberCard: string) => void;
     groupMemberKick: (group: BotGroup, uin: number, operator?: BotGroupMember) => void;
@@ -293,7 +293,7 @@ export class Bot {
             }
         });
 
-        this[ctx].eventsDX.on('groupMemberIncrease', async (groupUin, memberUid, type, operatorUid) => {
+        this[ctx].eventsDX.on('groupMemberIncrease', async (groupUin, memberUid, type, invitorUid) => {
             this[log].emit('trace', 'Bot', `Received member increase in group ${groupUin} for ${memberUid}`);
             try {
                 const group = await this.getGroup(groupUin);
@@ -302,12 +302,12 @@ export class Bot {
                     if (!uin) return;
                     const member = await group.getMember(uin);
                     if (member) {
-                        if (operatorUid) {
-                            const operatorUin = await this[identityService].resolveUin(operatorUid);
-                            if (!operatorUin) return;
-                            const operator = await group.getMember(operatorUin);
-                            if (operator) {
-                                this[eventsDX].emit('groupMemberIncrease', group, member, type, operator);
+                        if (invitorUid) {
+                            const invitorUin = await this[identityService].resolveUin(invitorUid);
+                            if (!invitorUin) return;
+                            const invitor = await group.getMember(invitorUin);
+                            if (invitor) {
+                                this[eventsDX].emit('groupMemberIncrease', group, member, type, invitor);
                             }
                         } else {
                             this[eventsDX].emit('groupMemberIncrease', group, member, type);

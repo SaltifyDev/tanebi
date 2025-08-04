@@ -223,8 +223,6 @@ export class MessageDispatcher {
         }
         return contact;
     }
-
-    private async handleLightApp() {}
 }
 
 export { MessageType };

@@ -29,7 +29,7 @@ type InternalEventEmitter = TypedEventEmitter<{
     groupEssenceMessageChange: (groupUin: number, sequence: number, operatorUin: number, isAdd: boolean, tip?: string) => void;
     groupRecall: (groupUin: number, sequence: number, tip: string, operatorUid: string) => void;
     groupReaction: (groupUin: number, sequence: number, operatorUid: string, reactionCode: string, isAdd: boolean, count: number) => void;
-    groupNameChange: (groupUin: number, name: string) => void;
+    groupNameChange: (groupUin: number, name: string, operatorUid: string) => void;
 }>;
 
 /**

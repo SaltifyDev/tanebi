@@ -203,6 +203,6 @@ export class NotifyLogic extends LogicBase {
         wrapper: InferProtoModel<typeof GroupGeneral0x2DCBody.fields>,
     ) {
         const content = GroupNameChange.decode(wrapper.eventParam!);
-        this.ctx.eventsDX.emit('groupNameChange', wrapper.groupUin, content.name);
+        this.ctx.eventsDX.emit('groupNameChange', wrapper.groupUin, content.name, wrapper.operatorUid!);
     }
 }

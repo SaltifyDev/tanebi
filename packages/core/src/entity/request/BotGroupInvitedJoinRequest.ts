@@ -6,6 +6,7 @@ import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/
 import { HandleGroupRequestOperation } from '@/internal/operation/group/HandleGroupRequestOperation';
 import { HandleGroupFilteredRequestOperation } from '@/internal/operation/group/HandleGroupFilteredRequestOperation';
 import { InferProtoModel } from '@tanebijs/protobuf';
+import { RequestState } from '@/entity/request/RequestBase';
 
 export class BotGroupInvitedJoinRequest {
     private constructor(
@@ -17,6 +18,7 @@ export class BotGroupInvitedJoinRequest {
         readonly targetUid: string,
         readonly invitor: BotGroupMember,
         readonly isFiltered: boolean,
+        readonly state: RequestState,
     ) {}
 
     toString() {
@@ -67,6 +69,6 @@ export class BotGroupInvitedJoinRequest {
             return null;
         }
         return new BotGroupInvitedJoinRequest(
-            bot, req.time, req.group.groupUin, req.sequence, memberUin, req.target.uid, invitor, isFiltered);
+            bot, req.time, req.group.groupUin, req.sequence, memberUin, req.target.uid, invitor, isFiltered, req.requestState);
     }
 }

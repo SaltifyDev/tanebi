@@ -41,6 +41,7 @@ import { FetchHighwayUrlOperation } from '@/internal/operation/highway/FetchHigh
 import { BotOfflineOperation } from '@/internal/operation/system/BotOfflineOperation';
 import { SendProfileLikeOperation } from '@/internal/operation/friend/SendProfileLikeOperation';
 import TypedEventEmitter from 'typed-emitter';
+import { RequestState } from '@/entity/request/RequestBase';
 
 /**
  * Symbol of the bot context
@@ -220,7 +221,7 @@ export class Bot {
 
         this[ctx].eventsDX.on('friendRequest', (fromUin, fromUid, message, via) => {
             this[log].emit('trace', 'Bot', `Received friend request from ${fromUid}`);
-            this[eventsDX].emit('friendRequest', new BotFriendRequest(this, Math.floor(Date.now() / 1000), fromUin, fromUid, message, via));
+            this[eventsDX].emit('friendRequest', new BotFriendRequest(this, Math.floor(Date.now() / 1000), fromUin, fromUid, message, RequestState.Pending, via));
         });
 
         this[ctx].eventsDX.on('friendPoke', async (fromUin, toUin, actionStr, actionImgUrl, suffix) => {
@@ -850,3 +851,4 @@ export * from './util';
 export { FetchUserInfoKey };
 export { UserInfoGender } from '@/internal/packet/common/UserInfo';
 export { IncreaseType, DecreaseType };
+export { RequestState };

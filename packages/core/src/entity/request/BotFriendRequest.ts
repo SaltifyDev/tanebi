@@ -1,3 +1,4 @@
+import { RequestState } from '@/entity/request/RequestBase';
 import { Bot, ctx } from '@/index';
 import { HandleFriendRequestOperation } from '@/internal/operation/friend/HandleFriendRequestOperation';
 
@@ -8,6 +9,7 @@ export class BotFriendRequest {
         readonly fromUin: number,
         readonly fromUid: string,
         readonly message: string,
+        readonly state: RequestState,
 
         /**
          * How the sender found the bot, e.g. via search of via a group.

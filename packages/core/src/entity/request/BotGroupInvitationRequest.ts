@@ -5,6 +5,7 @@ import { GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
 import { URL } from 'node:url';
 import { z } from 'zod';
 import { HandleGroupRequestOperation } from '@/internal/operation/group/HandleGroupRequestOperation';
+import { RequestState } from '@/entity/request/RequestBase';
 
 const lightAppGroupInvitationPattern = z.object({
     meta: z.object({
@@ -21,6 +22,7 @@ export class BotGroupInvitationRequest {
         readonly sequence: bigint,
         readonly invitor: BotFriend,
         readonly groupUin: number,
+        readonly state: RequestState,
     ) {}
 
     toString() {
@@ -46,6 +48,6 @@ export class BotGroupInvitationRequest {
         const url = new URL(parsed.data.meta.news.jumpUrl);
         const groupUin = parseInt(url.searchParams.get('groupcode')!);
         const sequence = BigInt(url.searchParams.get('msgseq')!);
-        return new BotGroupInvitationRequest(bot, message.time, sequence, invitor, groupUin);
+        return new BotGroupInvitationRequest(bot, message.time, sequence, invitor, groupUin, RequestState.Pending);
     }
 }

@@ -83,7 +83,7 @@ type TanebiEventEmitter = TypedEventEmitter<{
     keystoreChange: (keystore: Keystore) => void;
     friendRequest: (request: BotFriendRequest) => void;
     groupInvitationRequest: (request: BotGroupInvitationRequest) => void;
-    friendPoke: (friend: BotFriend, isSelf: boolean, actionStr: string, actionImgUrl: string, suffix?: string) => void;
+    friendPoke: (friend: BotFriend, isSelfSend: boolean, isSelfReceive: boolean, actionStr: string, actionImgUrl: string, suffix?: string) => void;
     friendRecall: (friend: BotFriend, clientSequence: number, tip: string) => void;
     groupJoinRequest: (group: BotGroup, request: BotGroupJoinRequest) => void;
     groupInvitedJoinRequest: (group: BotGroup, request: BotGroupInvitedJoinRequest) => void;
@@ -224,12 +224,12 @@ export class Bot {
             this[eventsDX].emit('friendRequest', new BotFriendRequest(this, Math.floor(Date.now() / 1000), fromUin, fromUid, message, RequestState.Pending, via));
         });
 
-        this[ctx].eventsDX.on('friendPoke', async (fromUin, toUin, actionStr, actionImgUrl, suffix) => {
-            this[log].emit('trace', 'Bot', `Received poke from ${fromUin} to ${toUin}`);
+        this[ctx].eventsDX.on('friendPoke', async (peerUin, fromUin, toUin, actionStr, actionImgUrl, suffix) => {
+            this[log].emit('trace', 'Bot', `Received poke (${peerUin}) from ${fromUin} to ${toUin}`);
             try {
-                const friend = await this.getFriend(fromUin === this.uin ? toUin : fromUin);
+                const friend = await this.getFriend(peerUin);
                 if (friend) {
-                    this[eventsDX].emit('friendPoke', friend, fromUin === this.uin, actionStr, actionImgUrl, suffix);
+                    this[eventsDX].emit('friendPoke', friend, fromUin === this.uin, toUin === this.uin, actionStr, actionImgUrl, suffix);
                 }
             } catch (e) {
                 this[log].emit('warning', 'Bot', 'Failed to handle friend poke', e);

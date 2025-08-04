@@ -127,6 +127,7 @@ export class NotifyLogic extends LogicBase {
         const templateParamsMap = new Map(content.templateParams.map((param) => [param.key, param.value]));
         if (content.bizType === 12) {
             this.ctx.eventsDX.emit('friendPoke',
+                pushMsgBody.responseHead.fromUin,
                 parseInt(templateParamsMap.get('uin_str1')!),
                 parseInt(templateParamsMap.get('uin_str2')!),
                 templateParamsMap.get('action_str') ?? templateParamsMap.get('alt_str1') ?? '',

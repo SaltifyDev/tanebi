@@ -15,7 +15,7 @@ import { InfoSyncPushEvent } from '@/internal/event/system/InfoSyncPushEvent';
 
 type InternalEventEmitter = TypedEventEmitter<{
     friendRequest: (fromUin: number, fromUid: string, message: string, via: string) => void;
-    friendPoke: (fromUin: number, toUin: number, action: string, actionImgUrl: string, suffix?: string) => void;
+    friendPoke: (peerUin: number, fromUin: number, toUin: number, action: string, actionImgUrl: string, suffix?: string) => void;
     friendRecall: (fromUid: string, clientSequence: number, tip: string) => void;
     groupJoinRequest: (groupUin: number, memberUid: string) => void;
     groupInvitedJoinRequest: (groupUin: number, targetUid: string, invitorUid: string) => void;

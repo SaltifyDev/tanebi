@@ -1,9 +1,9 @@
 import { defineApi, Failed, Ok } from '@/api';
 import { zMessageScene } from '@/struct/message/common';
 import { zMilkyOutgoingSegment } from '@/struct/message/outgoing';
-import { transformDanglingIncomingGroupMessage, transformIncomingFriendMessage, transformIncomingGroupMessage } from '@/transform/message/incoming';
+import { transformDanglingIncomingGroupMessage, transformIncomingForwardedMessage, transformIncomingFriendMessage, transformIncomingGroupMessage } from '@/transform/message/incoming';
 import { transformOutgoingFriendMessage, transformOutgoingGroupMessage } from '@/transform/message/outgoing';
-import { rawMessage } from 'tanebi';
+import { BotMsgForwardPack, rawMessage } from 'tanebi';
 import z from 'zod';
 
 export const SendPrivateMessage = defineApi(
@@ -132,9 +132,31 @@ export const GetHistoryMessages = defineApi(
     }
 );
 
+export const GetForwardedMessages = defineApi(
+    'get_forwarded_messages',
+    z.object({
+        forward_id: z.string(),
+    }),
+    async (app, payload) => {
+        const downloadedMsgs = await new BotMsgForwardPack(
+            {
+                type: 'forward',
+                resId: payload.forward_id,
+                recursiveCount: 0, // dummy, not used
+                preview: [], // dummy, not used
+            },
+            app.bot,
+        ).download();
+        return Ok({
+            messages: downloadedMsgs.map(transformIncomingForwardedMessage),
+        });
+    }
+);
+
 export const MessageApi = [
     SendPrivateMessage,
     SendGroupMessage,
     GetMessage,
     GetHistoryMessages,
+    GetForwardedMessages,
 ];

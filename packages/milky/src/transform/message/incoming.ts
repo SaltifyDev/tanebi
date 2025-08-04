@@ -1,6 +1,6 @@
-import { MilkyIncomingFriendMessage, MilkyIncomingGroupMessage, MilkyIncomingSegment } from '@/struct/message/incoming';
+import { MilkyIncomingForwardedMessage, MilkyIncomingFriendMessage, MilkyIncomingGroupMessage, MilkyIncomingSegment } from '@/struct/message/incoming';
 import { transformFriend, transformGroup, transformGroupMember } from '@/transform/entity';
-import { BotFriend, BotFriendMessage, BotGroup, BotGroupMember, BotGroupMessage, DispatchedMessageBody, ImageSubType, rawMessage } from 'tanebi';
+import { BotFriend, BotFriendMessage, BotGroup, BotGroupMember, BotGroupMessage, DispatchedMessageBody, ForwardedMessage, ForwardedMessageBody, ImageSubType, rawMessage } from 'tanebi';
 
 export function transformIncomingFriendMessage(
     friend: BotFriend,
@@ -163,4 +163,92 @@ export function transformIncomingSegment(
 export function transformImageSubType(type: ImageSubType): 'normal' | 'sticker' {
     if (type === ImageSubType.Face) return 'sticker';
     return 'normal';
+}
+
+export function transformIncomingForwardedMessage(forwarded: ForwardedMessage): MilkyIncomingForwardedMessage {
+    return {
+        name: forwarded.senderName,
+        avatar_url: forwarded.senderAvatarUrl,
+        time: forwarded.time,
+        segments: transformIncomingForwardedSegment(forwarded),
+    };
+}
+
+export function transformIncomingForwardedSegment(
+    forwarded: ForwardedMessageBody,
+): MilkyIncomingSegment[] {
+    if (forwarded.type === 'bubble') {
+        return forwarded.content.segments.map<MilkyIncomingSegment>((s) => {
+            if (s.type === 'text') {
+                return {
+                    type: 'text',
+                    data: {
+                        text: s.content,
+                    },
+                };
+            } else if (s.type === 'mention') {
+                return {
+                    type: 'mention',
+                    data: {
+                        user_id: s.uin,
+                    },
+                };
+            } else if (s.type === 'mentionAll') {
+                return {
+                    type: 'mention_all',
+                    data: {},
+                };
+            } else if (s.type === 'image') {
+                return {
+                    type: 'image',
+                    data: {
+                        resource_id: s.content.fileId,
+                        temp_url: s.content.url,
+                        summary: s.content.summary,
+                        sub_type: transformImageSubType(s.content.subType),
+                    },
+                };
+            } else {
+                return {
+                    type: 'face',
+                    data: {
+                        face_id: '' + s.faceId,
+                    },
+                };
+            }
+        });
+    } else if (forwarded.type === 'image') {
+        return [{
+            type: 'image',
+            data: {
+                resource_id: forwarded.content.fileId,
+                temp_url: forwarded.content.url,
+                summary: forwarded.content.summary,
+                sub_type: transformImageSubType(forwarded.content.subType),
+            },
+        }];
+    } else if (forwarded.type === 'video') {
+        return [{
+            type: 'video',
+            data: {
+                resource_id: forwarded.content.fileId,
+                temp_url: forwarded.content.url,
+            },
+        }];
+    } else if (forwarded.type === 'lightApp') {
+        return [{
+            type: 'light_app',
+            data: {
+                app_name: forwarded.content.appName,
+                json_payload: JSON.stringify(forwarded.content.payload),
+            },
+        }];
+    } else {
+        return [{
+            type: 'forward',
+            data: {
+                forward_id: forwarded.content.resId,
+            },
+        }];
+    }
 }

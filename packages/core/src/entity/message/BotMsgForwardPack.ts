@@ -1,7 +1,6 @@
 import { IncomingMessage, IncomingSegmentOf } from '@/internal/message/incoming';
 import { BotMsgForwardBubble, BotMsgImage, BotMsgLightApp, BotMsgType, BotMsgVideo } from '.';
 import { Bot, ctx } from '@/index';
-import { MessageType } from '@/internal/message';
 import { DownloadLongMessageOperation } from '@/internal/operation/message/DownloadLongMessageOperation';
 
 export type ForwardedMessageBody = {
@@ -28,7 +27,6 @@ export type ForwardedMessage = ForwardedMessageBody & {
 
 export class BotMsgForwardPack implements BotMsgType {
     constructor(
-        readonly messageType: MessageType,
         private readonly segment: IncomingSegmentOf<'forward'>,
         private readonly bot: Bot,
     ) {}
@@ -45,29 +43,29 @@ export class BotMsgForwardPack implements BotMsgType {
         return this.segment.preview;
     }
 
-    private async build(incoming: IncomingMessage): Promise<ForwardedMessageBody | undefined> {
-        const segments = incoming.segments;
+    private async build(forwarded: IncomingMessage): Promise<ForwardedMessageBody | undefined> {
+        const segments = forwarded.segments;
         const firstSegment = segments[0];
     
         if (segments.length === 1) {
             if (firstSegment.type === 'image') {
                 return {
                     type: 'image',
-                    content: await BotMsgImage.createForward(firstSegment, this.messageType, this.bot),
+                    content: await BotMsgImage.createForward(firstSegment, forwarded.type, this.bot),
                 };
             }
     
             if (firstSegment.type === 'video') {
                 return {
                     type: 'video',
-                    content: await BotMsgVideo.createForward(firstSegment, this.messageType, this.bot),
+                    content: await BotMsgVideo.createForward(firstSegment, forwarded.type, this.bot),
                 };
             }
     
             if (firstSegment.type === 'forward') {
                 return {
                     type: 'forward',
-                    content: new BotMsgForwardPack(this.messageType, firstSegment, this.bot),
+                    content: new BotMsgForwardPack(firstSegment, this.bot),
                 };
             }
     
@@ -87,7 +85,7 @@ export class BotMsgForwardPack implements BotMsgType {
         ) {
             return {
                 type: 'bubble',
-                content: await BotMsgForwardBubble.create(segments, incoming, this.messageType, this.bot),
+                content: await BotMsgForwardBubble.create(segments, forwarded, forwarded.type, this.bot),
             };
         }
     }

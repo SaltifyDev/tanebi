@@ -107,7 +107,7 @@ export class MessageDispatcher {
             if (firstSegment.type === 'forward') {
                 return {
                     type: 'forward',
-                    content: new BotMsgForwardPack(incoming.type, firstSegment, this.bot),
+                    content: new BotMsgForwardPack(firstSegment, this.bot),
                 };
             }
 

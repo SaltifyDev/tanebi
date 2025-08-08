@@ -2,7 +2,7 @@ import { GeneralGrayTip } from '@/internal/packet/message/notify/GeneralGrayTip'
 import { GroupEssenceMessageChange } from '@/internal/packet/message/notify/GroupEssenceMessageChange';
 import { GroupReaction } from '@/internal/packet/message/notify/GroupReaction';
 import { GroupRecall } from '@/internal/packet/message/notify/GroupRecall';
-import { Tlv, TlvScalarField, TlvVariableField } from '@/internal/util/binary/tlv';
+import { Tlv, TlvScalarField, TlvVariableField } from '@/internal/util/tlv';
 import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const GroupGeneral0x2DC = Tlv.plain([

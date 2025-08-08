@@ -1,5 +1,5 @@
-import { decodeTlv, Deserialized, encodeTlv, TlvPacketSchema } from '@/internal/util/binary/tlv/serialize';
-import { PackedTlvSchema, packTlv, PackTlvInput, TlvTag, unpackTlv } from '@/internal/util/binary/tlv/pack';
+import { decodeTlv, Deserialized, encodeTlv, TlvPacketSchema } from '@/internal/util/tlv/serialize';
+import { PackedTlvSchema, packTlv, PackTlvInput, TlvTag, unpackTlv } from '@/internal/util/tlv/pack';
 
 export class Tlv<const T extends TlvPacketSchema, const Tag extends TlvTag | undefined> {
     private constructor(

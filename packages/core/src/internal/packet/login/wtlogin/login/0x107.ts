@@ -1,4 +1,4 @@
-import { Tlv, TlvScalarField } from '@/internal/util/binary/tlv';
+import { Tlv, TlvScalarField } from '@/internal/util/tlv';
 
 export const TlvLogin0x107 = Tlv.tagged([
     TlvScalarField('picType', 'uint16'), // 0x0001

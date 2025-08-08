@@ -1,4 +1,4 @@
-import { OidbSvcContract } from '@/internal/util/binary/oidb';
+import { OidbSvcContract } from '@/internal/util/oidb';
 import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export enum GroupRequestOperation {

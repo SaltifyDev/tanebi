@@ -1,4 +1,4 @@
-import { PackedTlv, Tlv, TlvVariableField } from '@/internal/util/binary/tlv';
+import { PackedTlv, Tlv, TlvVariableField } from '@/internal/util/tlv';
 import { TlvLogin0x11a } from '@/internal/packet/login/wtlogin/login/0x11a';
 import { TlvLogin0x305 } from '@/internal/packet/login/wtlogin/login/0x305';
 import { TlvLogin0x543 } from '@/internal/packet/login/wtlogin/login/0x543';

@@ -1,4 +1,4 @@
-import { Tlv, TlvScalarField } from '@/internal/util/binary/tlv';
+import { Tlv, TlvScalarField } from '@/internal/util/tlv';
 
 export const TlvLogin0x100 = Tlv.tagged([
     TlvScalarField('dbBufVersion', 'uint16'), // 0; originally 0x1

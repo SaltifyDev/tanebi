@@ -1,4 +1,4 @@
-import { Tlv, TlvScalarField, TlvVariableField } from '@/internal/util/binary/tlv';
+import { Tlv, TlvScalarField, TlvVariableField } from '@/internal/util/tlv';
 
 export const TlvQrCode0x016 = Tlv.tagged([
     TlvScalarField('field0', 'uint32'),

@@ -1,4 +1,4 @@
-import { Tlv, TlvVariableField } from '@/internal/util/binary/tlv';
+import { Tlv, TlvVariableField } from '@/internal/util/tlv';
 
 export const TlvLogin0x16a = Tlv.tagged([
     TlvVariableField('noPicSig', 'bytes', 'none', false),

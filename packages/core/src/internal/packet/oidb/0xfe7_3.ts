@@ -1,4 +1,4 @@
-import { OidbSvcContract } from '@/internal/util/binary/oidb';
+import { OidbSvcContract } from '@/internal/util/oidb';
 import { ProtoField, ScalarType } from '@/internal/util/pb';
 
 export const FetchGroupMembers = new OidbSvcContract(0xfe7, 3, {

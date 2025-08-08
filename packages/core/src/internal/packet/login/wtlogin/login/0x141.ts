@@ -1,4 +1,4 @@
-import { Tlv, TlvScalarField, TlvVariableField } from '@/internal/util/binary/tlv';
+import { Tlv, TlvScalarField, TlvVariableField } from '@/internal/util/tlv';
 
 export const TlvLogin0x141 = Tlv.tagged([
     TlvVariableField('field0', 'string', 'uint32', false), // 'Unknown'

@@ -7,7 +7,7 @@ import { TlvQrCode0x033 } from '@/internal/packet/login/wtlogin/qrcode/0x033';
 import { TlvQrCode0x035 } from '@/internal/packet/login/wtlogin/qrcode/0x035';
 import { TlvQrCode0x066 } from '@/internal/packet/login/wtlogin/qrcode/0x066';
 import { TlvQrCode0x0d1 } from '@/internal/packet/login/wtlogin/qrcode/0x0d1';
-import { PackedTlv, Tlv, TlvScalarField, TlvVariableField } from '@/internal/util/binary/tlv';
+import { PackedTlv, Tlv, TlvScalarField, TlvVariableField } from '@/internal/util/tlv';
 
 export const TransEmp31 = Tlv.plain([
     TlvScalarField('appId', 'uint32'),

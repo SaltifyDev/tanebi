@@ -1,4 +1,4 @@
-import { decodeTlv, Deserialized, encodeTlv, TlvPacketSchema } from '@/internal/util/binary/tlv/serialize';
+import { decodeTlv, Deserialized, encodeTlv, TlvPacketSchema } from '@/internal/util/tlv/serialize';
 import { SmartBuffer } from 'smart-arraybuffer';
 
 export type TlvTag = `0x${string}`;

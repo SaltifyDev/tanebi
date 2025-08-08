@@ -1,4 +1,4 @@
-import { PackedTlv, Tlv, TlvFixedBytesField, TlvScalarField, TlvVariableField } from '@/internal/util/binary/tlv';
+import { PackedTlv, Tlv, TlvFixedBytesField, TlvScalarField, TlvVariableField } from '@/internal/util/tlv';
 import { TlvQrCode0x018 } from '@/internal/packet/login/wtlogin/qrcode/0x018';
 import { TlvQrCode0x019 } from '@/internal/packet/login/wtlogin/qrcode/0x019';
 import { TlvQrCode0x01e } from '@/internal/packet/login/wtlogin/qrcode/0x01e';

@@ -1,4 +1,4 @@
-import { Tlv, TlvScalarField, TlvVariableField } from '@/internal/util/binary/tlv';
+import { Tlv, TlvScalarField, TlvVariableField } from '@/internal/util/tlv';
 
 export const IncomingSsoPacketWrapper = Tlv.plain([
     TlvScalarField('protocol', 'uint32'),

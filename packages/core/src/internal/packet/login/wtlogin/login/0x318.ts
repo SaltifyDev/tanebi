@@ -1,4 +1,4 @@
-import { Tlv } from '@/internal/util/binary/tlv';
+import { Tlv } from '@/internal/util/tlv';
 
 // Just empty;
 // NTQQ has already depreciated this tlv

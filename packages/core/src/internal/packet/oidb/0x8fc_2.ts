@@ -1,4 +1,4 @@
-import { OidbSvcContract } from '@/internal/util/binary/oidb';
+import { OidbSvcContract } from '@/internal/util/oidb';
 import { ProtoField, ScalarType } from '@/internal/util/pb';
 
 export const SetMemberSpecialTitle = new OidbSvcContract(0x8fc, 2, {

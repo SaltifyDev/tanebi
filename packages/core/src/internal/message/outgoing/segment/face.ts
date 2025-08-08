@@ -1,7 +1,7 @@
 import { defineOutgoing } from '@/internal/message/outgoing/segment-base';
 import { LargeFaceInfo } from '@/internal/packet/message/face/LargeFaceInfo';
 import { SmallExtraFaceInfo } from '@/internal/packet/message/face/SmallExtraFaceInfo';
-import { InferProtoModelInput } from '@tanebijs/protobuf';
+import { InferProtoModelInput } from '@/internal/util/pb';
 
 export const faceBuilder = defineOutgoing(
     'face',

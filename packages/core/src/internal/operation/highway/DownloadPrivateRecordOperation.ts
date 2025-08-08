@@ -1,7 +1,7 @@
 import { defineOperation } from '@/internal/operation/OperationBase';
 import { DownloadPrivateRecord, DownloadPrivateRecordResponse } from '@/internal/packet/oidb/media/Action';
 import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
-import { InferProtoModel } from '@tanebijs/protobuf';
+import { InferProtoModel } from '@/internal/util/pb';
 
 export const DownloadPrivateRecordOperation = defineOperation(
     'OidbSvcTrpcTcp.0x126d_200',

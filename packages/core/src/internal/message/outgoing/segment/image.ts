@@ -2,7 +2,7 @@ import { defineOutgoing } from '@/internal/message/outgoing/segment-base';
 import { CustomFaceElement } from '@/internal/packet/message/element/CustomFaceElement';
 import { NotOnlineImageElement } from '@/internal/packet/message/element/NotOnlineImageElement';
 import { MsgInfo } from '@/internal/packet/oidb/media/MsgInfo';
-import { InferProtoModelInput } from '@tanebijs/protobuf';
+import { InferProtoModelInput } from '@/internal/util/pb';
 
 export const imageBuilder = defineOutgoing(
     'image',

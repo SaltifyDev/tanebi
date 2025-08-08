@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const SsoNTEasyLogin = ProtoMessage.of({
     tempPassword: ProtoField(1, ScalarType.BYTES, true, false),

@@ -1,5 +1,5 @@
 import { OidbSvcContract } from '@/internal/util/binary/oidb';
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const FetchGroupNotifies = new OidbSvcContract(0x10c0, 1, {
     count: ProtoField(1, ScalarType.UINT32),

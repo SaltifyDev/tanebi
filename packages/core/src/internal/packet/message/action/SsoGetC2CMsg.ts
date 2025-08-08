@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const SsoGetC2CMsg = ProtoMessage.of({
     peerUin: ProtoField(1, ScalarType.UINT64),

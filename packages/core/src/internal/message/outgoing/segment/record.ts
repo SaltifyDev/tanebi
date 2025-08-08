@@ -1,6 +1,6 @@
 import { defineOutgoing } from '@/internal/message/outgoing/segment-base';
 import { MsgInfo } from '@/internal/packet/oidb/media/MsgInfo';
-import { InferProtoModelInput } from '@tanebijs/protobuf';
+import { InferProtoModelInput } from '@/internal/util/pb';
 
 export const recordBuilder = defineOutgoing(
     'record',

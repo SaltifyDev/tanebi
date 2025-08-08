@@ -1,5 +1,5 @@
 import { OidbBase } from '@/internal/packet/oidb';
-import { InferProtoModelInput, ProtoMessage, ProtoModel } from '@tanebijs/protobuf';
+import { InferProtoModelInput, ProtoMessage, ProtoModel } from '@/internal/util/pb';
 
 export class OidbSvcContract<const T extends ProtoModel> {
     private readonly bodyProto: ProtoMessage<T>;

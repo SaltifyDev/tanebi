@@ -2,7 +2,7 @@ import { defineIncoming } from '@/internal/message/incoming/segment-base';
 import { CustomFaceElement } from '@/internal/packet/message/element/CustomFaceElement';
 import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
 import { MsgInfo } from '@/internal/packet/oidb/media/MsgInfo';
-import { InferProtoModel } from '@tanebijs/protobuf';
+import { InferProtoModel } from '@/internal/util/pb';
 
 export interface ImageSegment {
     indexNode?: InferProtoModel<typeof IndexNode.fields>,

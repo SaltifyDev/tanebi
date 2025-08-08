@@ -1,5 +1,5 @@
 import { OidbSvcContract } from '@/internal/util/binary/oidb';
-import { ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ScalarType } from '@/internal/util/pb';
 
 export const FetchFriends = new OidbSvcContract(0xfd4, 1, {
     friendCount: ProtoField(2, ScalarType.UINT32, false, false),

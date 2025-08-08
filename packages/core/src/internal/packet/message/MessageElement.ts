@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage } from '@/internal/util/pb';
 import { TextElement } from '@/internal/packet/message/element/TextElement';
 import { FaceElement } from '@/internal/packet/message/element/FaceElement';
 import { OnlineImageElement } from '@/internal/packet/message/element/OnlineImageElement';

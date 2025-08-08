@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const OnlineImageElement = ProtoMessage.of({
     guid: ProtoField(1, ScalarType.BYTES, true, false),

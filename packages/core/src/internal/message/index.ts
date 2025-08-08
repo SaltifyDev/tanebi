@@ -1,5 +1,5 @@
 import { MessageElement } from '@/internal/packet/message/MessageElement';
-import { InferProtoModel, InferProtoModelInput } from '@tanebijs/protobuf';
+import { InferProtoModel, InferProtoModelInput } from '@/internal/util/pb';
 
 export enum MessageType {
     PrivateMessage = 1,

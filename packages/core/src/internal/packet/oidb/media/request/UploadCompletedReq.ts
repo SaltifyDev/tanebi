@@ -1,5 +1,5 @@
 import { MsgInfo } from '@/internal/packet/oidb/media/MsgInfo';
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const UploadCompletedReq = ProtoMessage.of({
     srvSendMsg: ProtoField(1, ScalarType.BOOL, false, false),

@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const ExtBizInfo = ProtoMessage.of({
     pic: ProtoField(1, () => PicExtBizInfo.fields, true, false),

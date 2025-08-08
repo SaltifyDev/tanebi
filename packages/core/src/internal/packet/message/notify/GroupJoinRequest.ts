@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const GroupJoinRequest = ProtoMessage.of({
     groupUin: ProtoField(1, ScalarType.UINT32),

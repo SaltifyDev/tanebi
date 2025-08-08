@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const SmallExtraFaceInfo = ProtoMessage.of({
     faceId: ProtoField(1, ScalarType.UINT32),

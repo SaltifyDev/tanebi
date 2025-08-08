@@ -2,7 +2,7 @@ import { MessageType } from '@/internal/message';
 import { defineOperation } from '@/internal/operation/OperationBase';
 import { DownloadVideo, DownloadVideoResponse } from '@/internal/packet/oidb/media/Action';
 import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
-import { InferProtoModel } from '@tanebijs/protobuf';
+import { InferProtoModel } from '@/internal/util/pb';
 
 export const DownloadVideoOperation = defineOperation(
     'OidbSvcTrpcTcp.0x11e9_200',

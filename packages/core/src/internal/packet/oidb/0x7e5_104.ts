@@ -1,5 +1,5 @@
 import { OidbSvcContract } from '@/internal/util/binary/oidb';
-import { ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ScalarType } from '@/internal/util/pb';
 
 export const SendProfileLike = new OidbSvcContract(0x7e5, 104, {
     targetUid: ProtoField(11, ScalarType.STRING),

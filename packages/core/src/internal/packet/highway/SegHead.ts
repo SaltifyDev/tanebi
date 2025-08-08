@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const SegHead = ProtoMessage.of({
     serviceId: ProtoField(1, ScalarType.UINT32, true),

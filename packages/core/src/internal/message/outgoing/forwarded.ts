@@ -2,7 +2,7 @@ import { buildElements, OutgoingPrivateMessage } from '@/internal/message/outgoi
 import { MessageElement } from '@/internal/packet/message/MessageElement';
 import { PushMsgBody } from '@/internal/packet/message/PushMsg';
 import { timestamp } from '@/internal/util/format';
-import { InferProtoModelInput } from '@tanebijs/protobuf';
+import { InferProtoModelInput } from '@/internal/util/pb';
 import { randomInt } from 'crypto';
 
 export type OutgoingForwardedMessage = OutgoingPrivateMessage & {

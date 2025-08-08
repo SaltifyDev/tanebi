@@ -16,7 +16,7 @@ import {
     PushMsgBody,
     PushMsgType,
 } from '@/internal/packet/message/PushMsg';
-import { InferProtoModel } from '@tanebijs/protobuf';
+import { InferProtoModel } from '@/internal/util/pb';
 import { GroupEssenceMessageChangeSetFlag } from '@/internal/packet/message/notify/GroupEssenceMessageChange';
 import { GroupNameChange } from '@/internal/packet/message/notify/GroupNameChange';
 

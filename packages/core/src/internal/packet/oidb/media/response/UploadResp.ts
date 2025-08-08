@@ -1,6 +1,6 @@
 import { IPv4, IPv6 } from '@/internal/packet/oidb/media/IP';
 import { MsgInfo } from '@/internal/packet/oidb/media/MsgInfo';
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const UploadResp = ProtoMessage.of({
     uKey: ProtoField(1, ScalarType.STRING, true, false),

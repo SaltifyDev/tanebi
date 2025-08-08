@@ -17,7 +17,7 @@ import { AppInfo, CoreConfig, DeviceInfo, Keystore, SignProvider } from '@/commo
 import { BotContext } from '@/internal';
 import { TransEmp12_QrCodeState } from '@/internal/packet/login/wtlogin/TransEmp12';
 import { EventEmitter } from 'node:events';
-import { InferProtoModel } from '@tanebijs/protobuf';
+import { InferProtoModel } from '@/internal/util/pb';
 import { FaceDetail } from '@/internal/packet/oidb/0x9154_1';
 import { BUF0, BUF16 } from '@/internal/util/constants';
 import { FetchUserInfoKey } from '@/internal/packet/oidb/0xfe1_2';

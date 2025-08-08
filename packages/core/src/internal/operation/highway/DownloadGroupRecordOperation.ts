@@ -1,7 +1,7 @@
 import { defineOperation } from '@/internal/operation/OperationBase';
 import { DownloadGroupRecord, DownloadGroupRecordResponse } from '@/internal/packet/oidb/media/Action';
 import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
-import { InferProtoModel } from '@tanebijs/protobuf';
+import { InferProtoModel } from '@/internal/util/pb';
 
 export const DownloadGroupRecordOperation = defineOperation(
     'OidbSvcTrpcTcp.0x126e_200',

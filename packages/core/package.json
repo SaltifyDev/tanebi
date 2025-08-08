@@ -23,7 +23,6 @@
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@tanebijs/protobuf": "^0.0.1",
     "async-mutex": "^0.5.0",
     "fast-xml-parser": "^5.2.5",
     "image-size": "^2.0.2",

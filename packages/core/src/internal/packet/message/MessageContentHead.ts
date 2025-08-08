@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const MessageContentHead = ProtoMessage.of({
     type: ProtoField(1, ScalarType.UINT32), // message type

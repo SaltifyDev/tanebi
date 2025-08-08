@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const VideoFileElement = ProtoMessage.of({
     fileUuid: ProtoField(1, ScalarType.STRING, true, false),

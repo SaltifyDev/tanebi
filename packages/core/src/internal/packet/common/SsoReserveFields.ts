@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const SsoReserveFields = ProtoMessage.of({
     clientIpCookie: ProtoField(4, ScalarType.BYTES, true),

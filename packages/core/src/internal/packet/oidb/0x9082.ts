@@ -1,5 +1,5 @@
 import { OidbSvcContract } from '@/internal/util/binary/oidb';
-import { ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ScalarType } from '@/internal/util/pb';
 
 export enum ReactionType {
     Face = 1,

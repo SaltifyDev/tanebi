@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const SrcMsgElement = ProtoMessage.of({
     origSeqs: ProtoField(1, ScalarType.UINT32, false, true),

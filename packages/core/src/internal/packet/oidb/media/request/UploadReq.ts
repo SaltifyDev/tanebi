@@ -1,6 +1,6 @@
 import { ExtBizInfo } from '@/internal/packet/oidb/media/ExtBizInfo';
 import { FileInfo } from '@/internal/packet/oidb/media/FileInfo';
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const UploadReq = ProtoMessage.of({
     uploadInfo: ProtoField(1, () => ({

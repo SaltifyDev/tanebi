@@ -10,7 +10,7 @@ import { md5 } from '@/internal/util/crypto/digest';
 import { int32ip2str } from '@/internal/util/format';
 import { MediaGeneralMetadata } from '@/internal/util/media/common';
 import { ImageMetadata } from '@/internal/util/media/image';
-import { InferProtoModelInput } from '@tanebijs/protobuf';
+import { InferProtoModelInput } from '@/internal/util/pb';
 import assert from 'node:assert';
 import { request } from 'node:http';
 import { connect } from 'node:net';

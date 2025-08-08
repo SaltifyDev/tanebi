@@ -1,6 +1,6 @@
 import { MessageBody } from '@/internal/packet/message/MessageBody';
 import { MessageContentHead } from '@/internal/packet/message/MessageContentHead';
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const PbSendMsg = ProtoMessage.of({
     routingHead: ProtoField(1, () => ({

@@ -1,5 +1,5 @@
 import { OidbSvcContract } from '@/internal/util/binary/oidb';
-import { ProtoField, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ScalarType } from '@/internal/util/pb';
 
 export const SetMemberCard = new OidbSvcContract(0x8fc, 3, {
     groupUin: ProtoField(1, ScalarType.UINT32),

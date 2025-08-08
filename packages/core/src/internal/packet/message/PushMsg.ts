@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 import { NTSysEvent } from '@/internal/packet/common/NTSysEvent';
 import { MessageContentHead } from '@/internal/packet/message/MessageContentHead';
 import { MessageBody } from '@/internal/packet/message/MessageBody';

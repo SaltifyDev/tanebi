@@ -5,7 +5,7 @@ import { FetchGroupNotifiesOperation } from '@/internal/operation/group/FetchGro
 import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/FetchGroupFilteredNotifies';
 import { HandleGroupRequestOperation } from '@/internal/operation/group/HandleGroupRequestOperation';
 import { HandleGroupFilteredRequestOperation } from '@/internal/operation/group/HandleGroupFilteredRequestOperation';
-import { InferProtoModel } from '@tanebijs/protobuf';
+import { InferProtoModel } from '@/internal/util/pb';
 import { RequestState } from '@/entity/request/RequestBase';
 
 export class BotGroupJoinRequest {

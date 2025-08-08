@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const GroupInvitationRequest = ProtoMessage.of({
     command: ProtoField(1, ScalarType.INT32),

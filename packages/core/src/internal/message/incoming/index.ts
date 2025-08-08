@@ -8,7 +8,7 @@ import {
 } from '@/internal/message/incoming/segment/image';
 import { mentionParser } from '@/internal/message/incoming/segment/mention';
 import { textParser } from '@/internal/message/incoming/segment/text';
-import { InferProtoModel } from '@tanebijs/protobuf';
+import { InferProtoModel } from '@/internal/util/pb';
 import { lightAppParser } from '@/internal/message/incoming/segment/light-app';
 import { recordParser } from '@/internal/message/incoming/segment/record';
 import { videoParser } from '@/internal/message/incoming/segment/video';

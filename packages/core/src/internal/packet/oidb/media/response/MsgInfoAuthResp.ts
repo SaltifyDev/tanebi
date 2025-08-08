@@ -1,4 +1,4 @@
-import { ProtoField, ProtoMessage, ScalarType } from '@tanebijs/protobuf';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const MsgInfoAuthResp = ProtoMessage.of({
     authCode: ProtoField(1, ScalarType.UINT32, false, false),

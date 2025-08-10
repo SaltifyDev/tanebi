@@ -148,10 +148,11 @@ export class BotFriend extends BotContact<BotFriendDataBinding> {
     }
 
     /**
-     * Send a gray tip poke to this friend
+     * Send a nudge (gray tip poke) in friend chat
+     * @param isSelf Whether to poke yourself (default false => poke the friend)
      */
-    async sendGrayTipPoke() {
-        this.bot[log].emit('trace', this.moduleName, 'Send gray tip poke');
-        await this.bot[ctx].call(SendGrayTipPokeOperation, this.uin, undefined, this.uin);
+    async sendNudge(isSelf: boolean = false) {
+        this.bot[log].emit('trace', this.moduleName, `Send ${isSelf ? 'self' : 'friend'} nudge`);
+        await this.bot[ctx].call(SendGrayTipPokeOperation, isSelf ? this.bot.uin : this.uin, undefined, this.uin);
     }
 }

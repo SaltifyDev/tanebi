@@ -11,7 +11,6 @@
 <details>
 <summary>点击展开</summary>
 
-
 ### 通信方式
 
 - [x] HTTP
@@ -50,20 +49,20 @@
 
 #### 群聊 API
 
-- [ ] /set_group_name
+- [x] /set_group_name
 - [ ] /set_group_avatar
-- [ ] /set_group_member_card
-- [ ] /set_group_member_special_title
-- [ ] /set_group_member_admin
-- [ ] /set_group_member_mute
-- [ ] /set_group_whole_mute
-- [ ] /kick_group_member
+- [x] /set_group_member_card
+- [x] /set_group_member_special_title
+- [x] /set_group_member_admin
+- [x] /set_group_member_mute
+- [x] /set_group_whole_mute
+- [x] /kick_group_member
 - [ ] /get_group_announcement_list
 - [ ] /send_group_announcement
 - [ ] /delete_group_announcement
-- [ ] /quit_group
-- [ ] /send_group_message_reaction
-- [ ] /send_group_nudge
+- [x] /quit_group
+- [x] /send_group_message_reaction
+- [x] /send_group_nudge
 
 #### 请求 API
 
@@ -128,11 +127,13 @@
 - [ ] xml
 
 [^1]: 仅限收取消息
+
 </details>
 
 ## Special Thanks
 
 tanebi 离不开以下前辈项目及贡献者：
+
 - [LagrangeDev/Lagrange.Core](https://github.com/LagrangeDev/Lagrange.Core) - 提供了项目的基础架构和绝大多数协议包定义
 - [LagrangeDev/lagrangejs](https://github.com/LagrangeDev/lagrangejs) - 提供了 NTQQ 的加密算法和认证流程的 JavaScript 实现
 - [takayama-lily/oicq](https://github.com/takayama-lily/oicq) - QQ 协议最初的 JavaScript 实现

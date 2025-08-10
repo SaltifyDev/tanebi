@@ -26,12 +26,14 @@ import { MilkyEventTypes } from '@/struct/event';
 import { configureEventTransformation } from '@/transform/event';
 import { SystemApi } from '@/api/system';
 import { MessageApi } from '@/api/message';
+import { GroupApi } from '@/api/group';
 
 export class MilkyApp {
     readonly logger: winston.Logger;
     readonly apiHandler = new MilkyApiHandler(this, [
         ...SystemApi,
         ...MessageApi,
+        ...GroupApi,
     ]);
     readonly httpHandler;
 

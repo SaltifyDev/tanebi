@@ -26,6 +26,7 @@ import { MilkyEventTypes } from '@/struct/event';
 import { configureEventTransformation } from '@/transform/event';
 import { SystemApi } from '@/api/system';
 import { MessageApi } from '@/api/message';
+import { FriendApi } from '@/api/friend';
 import { GroupApi } from '@/api/group';
 
 export class MilkyApp {
@@ -33,6 +34,7 @@ export class MilkyApp {
     readonly apiHandler = new MilkyApiHandler(this, [
         ...SystemApi,
         ...MessageApi,
+        ...FriendApi,
         ...GroupApi,
     ]);
     readonly httpHandler;

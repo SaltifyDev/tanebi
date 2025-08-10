@@ -44,8 +44,8 @@
 
 #### 好友 API
 
-- [ ] /send_friend_nudge
-- [ ] /send_profile_like
+- [x] /send_friend_nudge
+- [x] /send_profile_like
 
 #### 群聊 API
 

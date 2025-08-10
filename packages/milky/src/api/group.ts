@@ -1,5 +1,6 @@
 import { defineApi, Failed, Ok } from '@/api';
 import { ReactionType } from 'tanebi';
+import { resolveMilkyUri } from '@/common/download';
 import z from 'zod';
 
 export const SetGroupName = defineApi(
@@ -12,6 +13,21 @@ export const SetGroupName = defineApi(
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         await group.setName(payload.name);
+        return Ok();
+    }
+);
+
+export const SetGroupAvatar = defineApi(
+    'set_group_avatar',
+    z.object({
+        group_id: z.number().int().positive(),
+        image_uri: z.string(),
+    }),
+    async (app, payload) => {
+        const group = await app.bot.getGroup(payload.group_id);
+        if (!group) return Failed(-404, 'Group not found');
+        const image = await resolveMilkyUri(payload.image_uri);
+        await group.setAvatar(image);
         return Ok();
     }
 );
@@ -169,6 +185,7 @@ export const SendGroupNudge = defineApi(
 
 export const GroupApi = [
     SetGroupName,
+    SetGroupAvatar,
     SetGroupMemberCard,
     SetGroupMemberSpecialTitle,
     SetGroupMemberAdmin,

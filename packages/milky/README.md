@@ -50,7 +50,7 @@
 #### 群聊 API
 
 - [x] /set_group_name
-- [ ] /set_group_avatar
+- [x] /set_group_avatar
 - [x] /set_group_member_card
 - [x] /set_group_member_special_title
 - [x] /set_group_member_admin

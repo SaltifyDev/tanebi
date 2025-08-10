@@ -14,7 +14,16 @@ import { RemoveGroupReactionOperation } from '@/internal/operation/group/RemoveG
 import { LeaveGroupOperation } from '@/internal/operation/group/LeaveGroupOperation';
 import { GetGroupMessagesOperation } from '@/internal/operation/message/GetGroupMessagesOperation';
 import { GroupAvatarExtra } from '@/internal/packet/highway/GroupAvatarExtra';
-import { md5 } from '@/internal/util/crypto/digest';
+import { md5, sha1 } from '@/internal/util/crypto/digest';
+import { GroupFSRenameFolderOperation } from '@/internal/operation/file/GroupFSRenameFolderOperation';
+import { GroupFSDeleteFolderOperation } from '@/internal/operation/file/GroupFSDeleteFolderOperation';
+import { GroupFSCreateFolderOperation } from '@/internal/operation/file/GroupFSCreateFolderOperation';
+import { GroupFSListOperation } from '@/internal/operation/file/GroupFSListOperation';
+import { GroupFSMoveOperation } from '@/internal/operation/file/GroupFSMoveOperation';
+import { GroupFSDeleteOperation } from '@/internal/operation/file/GroupFSDeleteOperation';
+import { GroupFSDownloadUrlOperation } from '@/internal/operation/file/GroupFSDownloadUrlOperation';
+import { GroupFSUploadOperation } from '@/internal/operation/file/GroupFSUploadOperation';
+import { BotGroupFileSystemEntry } from '@/entity/BotGroupFileSystemEntry';
 
 interface BotGroupDataBinding {
     uin: number;
@@ -221,6 +230,86 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
         this.bot[log].emit('trace', this.moduleName, `${isSet ? 'Set' : 'Unset'} mute all`);
         await this.bot[ctx].call(MuteAllMembersOperation, this.uin, isSet ? 1 : 0);
     }
+
+    // #region Group File System
+    async uploadFile(buffer: Buffer, fileName: string, parentFolderId: string = '/') {
+        this.bot[log].emit('trace', this.moduleName, `Upload group file ${fileName} -> ${parentFolderId}`);
+        const md5sum = md5(buffer);
+        const sha1sum = sha1(buffer);
+        const resp = await this.bot[ctx].call(
+            GroupFSUploadOperation,
+            this.uin,
+            parentFolderId,
+            fileName,
+            BigInt(buffer.length),
+            sha1sum,
+            md5sum
+        );
+        if (resp.retCode !== 0) throw new Error(`Upload group file failed (${resp.retCode}): ${resp.retMsg ?? ''}`);
+        if (!resp.isExist) {
+            // TODO: upload real file to group file system
+        }
+        return resp.fileId;
+    }
+
+    async getFileDownloadUrl(fileId: string) {
+        this.bot[log].emit('trace', this.moduleName, `Get group file download url ${fileId}`);
+        return await this.bot[ctx].call(GroupFSDownloadUrlOperation, this.uin, fileId);
+    }
+
+    async listFiles(parentFolderId: string = '/') {
+        this.bot[log].emit('trace', this.moduleName, `List group files ${parentFolderId}`);
+        const results: Array<BotGroupFileSystemEntry> = [];
+        let startIndex = 0;
+        while (true) {
+            const { entries, isEnd } = await this.bot[ctx].call(
+                GroupFSListOperation,
+                this.uin,
+                parentFolderId,
+                startIndex
+            );
+            results.push(...entries);
+            if (isEnd) break;
+            startIndex += 20;
+        }
+        return results;
+    }
+
+    async moveFile(fileId: string, parentFolderId: string, targetFolderId: string) {
+        this.bot[log].emit(
+            'trace',
+            this.moduleName,
+            `Move group file ${fileId} ${parentFolderId} -> ${targetFolderId}`
+        );
+        await this.bot[ctx].call(GroupFSMoveOperation, this.uin, fileId, parentFolderId, targetFolderId);
+    }
+
+    async deleteFile(fileId: string) {
+        this.bot[log].emit('trace', this.moduleName, `Delete group file ${fileId}`);
+        await this.bot[ctx].call(GroupFSDeleteOperation, this.uin, fileId);
+    }
+
+    async createFolder(folderName: string) {
+        this.bot[log].emit('trace', this.moduleName, `Create group folder ${folderName}`);
+        const res = await this.bot[ctx].call(GroupFSCreateFolderOperation, this.uin, folderName);
+        if (res.code !== 0) throw new Error(`Create folder failed (${res.code}): ${res.message ?? ''}`);
+        return true;
+    }
+
+    async deleteFolder(folderId: string) {
+        this.bot[log].emit('trace', this.moduleName, `Delete group folder ${folderId}`);
+        const res = await this.bot[ctx].call(GroupFSDeleteFolderOperation, this.uin, folderId);
+        if (res.code !== 0) throw new Error(`Delete folder failed (${res.code}): ${res.message ?? ''}`);
+        return true;
+    }
+
+    async renameFolder(folderId: string, newFolderName: string) {
+        this.bot[log].emit('trace', this.moduleName, `Rename group folder ${folderId} -> ${newFolderName}`);
+        const res = await this.bot[ctx].call(GroupFSRenameFolderOperation, this.uin, folderId, newFolderName);
+        if (res.code !== 0) throw new Error(`Rename folder failed (${res.code}): ${res.message ?? ''}`);
+        return true;
+    }
+    // #endregion
 
     /**
      * Send a reaction to a message in this group.

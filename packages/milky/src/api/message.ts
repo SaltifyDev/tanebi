@@ -153,10 +153,44 @@ export const GetForwardedMessages = defineApi(
     }
 );
 
+export const RecallPrivateMessage = defineApi(
+    'recall_private_message',
+    z.object({
+        user_id: z.number().int().positive(),
+        message_seq: z.number().int().positive(),
+    }),
+    async (app, payload) => {
+        const friend = await app.bot.getFriend(payload.user_id);
+        if (!friend) {
+            return Failed(-404, 'Friend not found');
+        }
+        await friend.recallMsg(payload.message_seq);
+        return Ok();
+    }
+);
+
+export const RecallGroupMessage = defineApi(
+    'recall_group_message',
+    z.object({
+        group_id: z.number().int().positive(),
+        message_seq: z.number().int().positive(),
+    }),
+    async (app, payload) => {
+        const group = await app.bot.getGroup(payload.group_id);
+        if (!group) {
+            return Failed(-404, 'Group not found');
+        }
+        await group.recallMsg(payload.message_seq);
+        return Ok();
+    }
+);
+
 export const MessageApi = [
     SendPrivateMessage,
     SendGroupMessage,
     GetMessage,
     GetHistoryMessages,
     GetForwardedMessages,
+    RecallPrivateMessage,
+    RecallGroupMessage,
 ];

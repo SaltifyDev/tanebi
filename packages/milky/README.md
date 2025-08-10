@@ -39,8 +39,8 @@
 - [x] /get_history_messages
 - [ ] /get_resource_temp_url
 - [x] /get_forwarded_messages
-- [ ] /recall_private_message
-- [ ] /recall_group_message
+- [x] /recall_private_message
+- [x] /recall_group_message
 
 #### 好友 API
 

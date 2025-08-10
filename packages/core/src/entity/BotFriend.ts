@@ -1,6 +1,6 @@
 import { Bot, ctx, dispatcher, log, UserInfoGender } from '@/index';
 import { BotContact } from '@/entity';
-import { DispatchedMessage, PrivateMessageBuilder, type rawMessage } from '@/message';
+import { DispatchedMessage, PrivateMessageBuilder, rawMessage } from '@/message';
 import { OutgoingPrivateMessage } from '@/internal/message/outgoing';
 import { PrivateMessage } from '@/internal/message/incoming';
 import { SendMessageOperation } from '@/internal/operation/message/SendMessageOperation';
@@ -106,6 +106,29 @@ export class BotFriend extends BotContact<BotFriendDataBinding> {
         const indermediate = await Promise.all(messages.map(msg => this.bot[dispatcher].create(msg, this)));
         return indermediate.filter(idm => idm !== undefined)
             .map((idm, index) => this.bot[dispatcher].createFriendMessage(idm, messages[index]));
+    }
+
+    /**
+     * Recall a private message by sequence.
+     * Note: Only messages that you sent can be recalled.
+     */
+    async recallMsg(sequence: number) {
+        this.bot[log].emit('trace', this.moduleName, `Recall private message ${sequence}`);
+        const [message] = await this.getMessages(sequence, sequence);
+        if (!message) {
+            throw new Error('Message not found');
+        }
+        if (!message.isSelf) {
+            throw new Error('Only messages that you sent can be recalled');
+        }
+        await this.bot[ctx].call(
+            RecallFriendMessageOperation,
+            this.uid,
+            message[rawMessage].clientSequence,
+            message[rawMessage].random,
+            message[rawMessage].time,
+            message[rawMessage].sequence,
+        );
     }
 
     /**

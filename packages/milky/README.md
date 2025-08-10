@@ -79,16 +79,16 @@
 #### 文件 API
 
 - [ ] /upload_private_file
-- [ ] /upload_group_file
+- [x] /upload_group_file
 - [ ] /get_private_file_download_url
-- [ ] /get_group_file_download_url
-- [ ] /get_group_files
-- [ ] /move_group_file
+- [x] /get_group_file_download_url
+- [x] /get_group_files
+- [x] /move_group_file
 - [ ] /rename_group_file
-- [ ] /delete_group_file
-- [ ] /create_group_folder
-- [ ] /rename_group_folder
-- [ ] /delete_group_folder
+- [x] /delete_group_file
+- [x] /create_group_folder
+- [x] /rename_group_folder
+- [x] /delete_group_folder
 
 ### 事件
 

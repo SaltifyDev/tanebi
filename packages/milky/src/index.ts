@@ -28,6 +28,7 @@ import { SystemApi } from '@/api/system';
 import { MessageApi } from '@/api/message';
 import { FriendApi } from '@/api/friend';
 import { GroupApi } from '@/api/group';
+import { FileApi } from '@/api/file';
 
 export class MilkyApp {
     readonly logger: winston.Logger;
@@ -36,6 +37,7 @@ export class MilkyApp {
         ...MessageApi,
         ...FriendApi,
         ...GroupApi,
+        ...FileApi,
     ]);
     readonly httpHandler;
 

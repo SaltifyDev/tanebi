@@ -1,9 +1,11 @@
 import { BotContext } from '@/internal';
 import { LogicBase } from '@/internal/logic/LogicBase';
 import { MessageType } from '@/internal/message';
+import { FileUploadExt } from '@/internal/packet/highway/FileUploadExt';
 import { NTV2RichMediaHighwayExt } from '@/internal/packet/highway/NTV2RichMediaHighwayExt';
 import { ReqDataHighwayHead } from '@/internal/packet/highway/ReqDataHighwayHead';
 import { RespDataHighwayHead } from '@/internal/packet/highway/RespDataHighwayHead';
+import { GroupFSUploadResp } from '@/internal/packet/oidb/0x6d6';
 import { IPv4 } from '@/internal/packet/oidb/media/IP';
 import { NTV2RichMediaResponse } from '@/internal/packet/oidb/media/response/NTV2RichMediaResponse';
 import { md5 } from '@/internal/util/crypto/digest';
@@ -60,6 +62,59 @@ export class HighwayLogic extends LogicBase {
         await this.upload(
             1008, record, recordMeta.md5,
             this.buildExtendInfo(uploadResp, recordMeta.sha1)
+        );
+    }
+
+    async uploadGroupFile(
+        file: Buffer,
+        fileName: string,
+        fileMd5: Buffer,
+        uploadResp: GroupFSUploadResp,
+    ) {
+        await this.upload(
+            71,
+            file,
+            fileMd5,
+            FileUploadExt.encode({
+                unknown1: 100,
+                unknown2: 1,
+                entry: {
+                    busiBuff: {
+                        senderUin: this.ctx.keystore.uin,
+                        receiverUin: 0,
+                        groupCode: 0,
+                    },
+                    fileEntry: {
+                        fileSize: BigInt(file.length),
+                        md5: fileMd5,
+                        checkKey: uploadResp.checkKey,
+                        md5S2: fileMd5,
+                        fileId: uploadResp.fileId,
+                        uploadKey: uploadResp.fileKey,
+                    },
+                    clientInfo: {
+                        clientType: 3,
+                        appId: '100',
+                        terminalType: 3,
+                        clientVer: '1.1.1',
+                        unknown: 4,
+                    },
+                    fileNameInfo: {
+                        fileName: fileName,
+                    },
+                    host: {
+                        hosts: [
+                            {
+                                url: {
+                                    unknown: 1,
+                                    host: uploadResp.uploadIp,
+                                },
+                                port: uploadResp.uploadPort,
+                            },
+                        ],
+                    },
+                },
+            })
         );
     }
 

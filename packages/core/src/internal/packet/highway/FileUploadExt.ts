@@ -7,9 +7,9 @@ export const FileUploadExt = ProtoMessage.of({
     entry: ProtoField(100, () => ({
         busiBuff: ProtoField(100, () => ({
             busId: ProtoField(1, ScalarType.INT32),
-            senderUin: ProtoField(100, ScalarType.UINT64),
-            receiverUin: ProtoField(200, ScalarType.UINT64),
-            groupCode: ProtoField(400, ScalarType.UINT64),
+            senderUin: ProtoField(100, ScalarType.UINT32),
+            receiverUin: ProtoField(200, ScalarType.UINT32),
+            groupCode: ProtoField(400, ScalarType.UINT32),
         })),
         fileEntry: ProtoField(200, () => ({
             fileSize: ProtoField(100, ScalarType.UINT64),

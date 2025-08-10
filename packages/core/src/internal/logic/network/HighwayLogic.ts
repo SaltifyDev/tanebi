@@ -96,7 +96,7 @@ export class HighwayLogic extends LogicBase {
         };
     }
 
-    private async upload(cmd: number, data: Buffer, md5: Buffer, extendInfo: Buffer) {
+    async upload(cmd: number, data: Buffer, md5: Buffer, extendInfo: Buffer) {
         const trans = this.buildDataUpTrans(cmd, data, md5, extendInfo);
         try {
             await new HighwayTcpSession(this.ctx, trans).upload();

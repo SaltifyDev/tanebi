@@ -13,6 +13,8 @@ import { AddGroupReactionOperation } from '@/internal/operation/group/AddGroupRe
 import { RemoveGroupReactionOperation } from '@/internal/operation/group/RemoveGroupReactionOperation';
 import { LeaveGroupOperation } from '@/internal/operation/group/LeaveGroupOperation';
 import { GetGroupMessagesOperation } from '@/internal/operation/message/GetGroupMessagesOperation';
+import { GroupAvatarExtra } from '@/internal/packet/highway/GroupAvatarExtra';
+import { md5 } from '@/internal/util/crypto/digest';
 
 interface BotGroupDataBinding {
     uin: number;
@@ -186,6 +188,28 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
         this.bot[log].emit('trace', this.moduleName, `Set group name to ${name}`);
         await this.bot[ctx].call(SetGroupNameOperation, this.uin, name);
         this.data.name = name;
+    }
+
+    /**
+     * Set the avatar of this group.
+     * You must be the owner / an admin of the group to do this.
+     * @param image The image to set as the avatar.
+     */
+    async setAvatar(image: Buffer) {
+        await this.bot[ctx].highwayLogic.upload(
+            3000,
+            image,
+            md5(image),
+            GroupAvatarExtra.encode({
+                type: 101,
+                groupUin: this.uin,
+                field3: {
+                    field1: 1,
+                },
+                field5: 3,
+                field6: 1,
+            }),
+        );
     }
 
     /**

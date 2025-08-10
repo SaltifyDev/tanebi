@@ -1,6 +1,6 @@
 {
   "trailingComma": "es5",
-  "tabWidth": 4,
+  "tabWidth": 2,
   "semi": true,
   "singleQuote": true,
   "bracketSpacing": true,
@@ -9,9 +9,9 @@
   "endOfLine": "auto",
   "overrides": [
     {
-      "files": "*.{json,yml,yaml}",
+      "files": "*.ts",
       "options": {
-        "tabWidth": 2
+        "tabWidth": 4
       }
     }
   ]

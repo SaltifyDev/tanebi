@@ -101,7 +101,7 @@ export async function transformOutgoingForwardMessages(
     messages: MilkyOutgoingForwardSegment['data']['messages']
 ) {
     for (const message of messages) {
-        p.fake(message.user_id, message.name, async (b) => {
+        p.fake(message.user_id, message.sender_name, async (b) => {
             await transformOutgoingForwardSegments(app, b, zForwardedMessageSegment.parse(message.segments));
         });
     }

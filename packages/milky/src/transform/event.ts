@@ -83,7 +83,7 @@ export function configureEventTransformation(app: MilkyApp) {
     app.bot.onEvent('groupNameChange', (group, name, operator) => {
         app.emitEvent('group_name_change', {
             group_id: group.uin,
-            name,
+            new_group_name: name,
             operator_id: operator.uin,
         });
     });

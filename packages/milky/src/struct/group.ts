@@ -1,6 +1,6 @@
 export interface MilkyGroup {
     group_id: number;
-    name: string;
+    group_name: string;
     member_count: number;
     max_member_count: number;
 }

@@ -167,7 +167,7 @@ export function transformImageSubType(type: ImageSubType): 'normal' | 'sticker' 
 
 export function transformIncomingForwardedMessage(forwarded: ForwardedMessage): MilkyIncomingForwardedMessage {
     return {
-        name: forwarded.senderName,
+        sender_name: forwarded.senderName,
         avatar_url: forwarded.senderAvatarUrl,
         time: forwarded.time,
         segments: transformIncomingForwardedSegment(forwarded),

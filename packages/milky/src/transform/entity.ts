@@ -33,7 +33,7 @@ export function transformFriend(friend: BotFriend): MilkyFriend {
 export function transformGroup(group: BotGroup): MilkyGroup {
     return {
         group_id: group.uin,
-        name: group.name,
+        group_name: group.name,
         member_count: group.memberCount,
         max_member_count: group.maxMemberCount,
     };

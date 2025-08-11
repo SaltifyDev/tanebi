@@ -63,7 +63,7 @@ export interface MilkyEventTypes {
 
     group_name_change: {
         group_id: number;
-        name: string;
+        new_group_name: string;
         operator_id: number;
     };
 

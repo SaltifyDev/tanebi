@@ -31,7 +31,7 @@ export type MilkyIncomingMessage =
     | MilkyIncomingTempMessage;
 
 export interface MilkyIncomingForwardedMessage {
-    name: string;
+    sender_name: string;
     avatar_url: string;
     time: number; // seconds since epoch
     segments: MilkyIncomingSegment[];

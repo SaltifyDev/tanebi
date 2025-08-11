@@ -7,12 +7,12 @@ export const SetGroupName = defineApi(
     'set_group_name',
     z.object({
         group_id: z.number().int().positive(),
-        name: z.string(),
+        new_group_name: z.string(),
     }),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
-        await group.setName(payload.name);
+        await group.setName(payload.new_group_name);
         return Ok();
     }
 );

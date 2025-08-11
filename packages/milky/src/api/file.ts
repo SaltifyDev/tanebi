@@ -104,12 +104,12 @@ export const RenameGroupFolder = defineApi(
     z.object({
         group_id: z.number().int().positive(),
         folder_id: z.string(),
-        new_name: z.string(),
+        new_folder_name: z.string(),
     }),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
-        await group.renameFolder(payload.folder_id, payload.new_name);
+        await group.renameFolder(payload.folder_id, payload.new_folder_name);
         return Ok();
     }
 );

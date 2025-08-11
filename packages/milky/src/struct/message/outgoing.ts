@@ -62,7 +62,7 @@ export const zMilkyOutgoingForwardSegment = z.object({
     data: z.object({
         messages: z.array(z.object({
             user_id: z.number().int().positive(),
-            name: z.string(),
+            sender_name: z.string(),
             segments: z.array(z.any()), // validated later
         })),
     }),

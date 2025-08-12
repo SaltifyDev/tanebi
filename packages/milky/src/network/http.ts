@@ -1,12 +1,13 @@
 import { Config } from '@/common/config';
 import { MilkyApp } from '@/index';
+import { Failed } from '@/api';
 import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
 import { WSContext } from 'hono/ws';
 import { HttpBindings, serve } from '@hono/node-server';
 import { createNodeWebSocket } from '@hono/node-ws';
 import { Server } from 'node:http';
-import { Failed } from '@/api';
 
 export class MilkyHttpHandler {
     readonly honoApp;
@@ -20,6 +21,8 @@ export class MilkyHttpHandler {
         this.honoApp = new Hono<{ Bindings: HttpBindings }>();
         
         const router = new Hono<{ Bindings: HttpBindings }>();
+
+        router.use('/*', cors());
 
         const nodeWebSocket = createNodeWebSocket({ app: router });
         const upgradeWebSocket = nodeWebSocket.upgradeWebSocket;

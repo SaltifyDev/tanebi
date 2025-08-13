@@ -94,8 +94,8 @@ export const CreateGroupFolder = defineApi(
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
-        await group.createFolder(payload.folder_name);
-        return Ok({ folder_id: '' });
+        const folderId = await group.createFolder(payload.folder_name);
+        return Ok({ folder_id: folderId });
     }
 );
 

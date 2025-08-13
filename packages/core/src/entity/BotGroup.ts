@@ -289,11 +289,11 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
         await this.bot[ctx].call(GroupFSDeleteOperation, this.uin, fileId);
     }
 
-    async createFolder(folderName: string) {
+    async createFolder(folderName: string): Promise<string> {
         this.bot[log].emit('trace', this.moduleName, `Create group folder ${folderName}`);
         const res = await this.bot[ctx].call(GroupFSCreateFolderOperation, this.uin, folderName);
         if (res.code !== 0) throw new Error(`Create folder failed (${res.code}): ${res.message ?? ''}`);
-        return true;
+        return res.folderId;
     }
 
     async deleteFolder(folderId: string) {

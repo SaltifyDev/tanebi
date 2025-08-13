@@ -141,7 +141,7 @@ export class BotFriend extends BotContact<BotFriendDataBinding> {
             GetRoamMessagesOperation,
             this.uid,
             Math.floor(Date.now() / 1000),
-            1,
+            10,
             GetRoamMessagesDirection.Up
         );
         return result.messages.length > 0 ? result.messages[0].sequence : 0;

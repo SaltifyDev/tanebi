@@ -22,7 +22,7 @@ export const GetRoamMessagesOperation = defineOperation(
         return {
             isComplete: response.isComplete,
             timestamp: response.timestamp,
-            messages: response.messages.map(parsePushMsgBody),
+            messages: response.messages.map(parsePushMsgBody).filter((msg) => msg !== undefined),
         };
     },
 );

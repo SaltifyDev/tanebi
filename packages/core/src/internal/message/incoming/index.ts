@@ -74,7 +74,7 @@ export interface GroupMessage extends MessageBase {
 
 export type IncomingMessage = PrivateMessage | GroupMessage;
 
-export function parsePushMsgBody(raw: Buffer): IncomingMessage {
+export function parsePushMsgBody(raw: Buffer): IncomingMessage | undefined {
     const pushMsgBody = PushMsgBody.decode(raw);
     const result = parseMetadata(pushMsgBody, raw);
     if (pushMsgBody.body?.richText?.elements) {
@@ -108,6 +108,10 @@ export function parsePushMsgBody(raw: Buffer): IncomingMessage {
                 result.segments.push(parsed);
             }
         }
+    }
+
+    if (result.segments.length === 0) {
+        return undefined;
     }
 
     if (

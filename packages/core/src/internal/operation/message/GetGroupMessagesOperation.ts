@@ -14,6 +14,6 @@ export const GetGroupMessagesOperation = defineOperation(
         if (response.retcode !== 0) {
             throw new Error(`Failed to get group messages: ${response.errorMsg}`);
         }
-        return response.body.messages.map(parsePushMsgBody);
+        return response.body.messages.map(parsePushMsgBody).filter((msg) => msg !== undefined);
     }
 );

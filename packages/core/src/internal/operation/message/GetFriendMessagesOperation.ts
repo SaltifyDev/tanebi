@@ -11,6 +11,6 @@ export const GetFriendMessagesOperation = defineOperation(
         if (response.retcode !== 0) {
             throw new Error(`Failed to get friend messages: ${response.errorMsg}`);
         }
-        return response.messages.map(parsePushMsgBody);
+        return response.messages.map(parsePushMsgBody).filter((msg) => msg !== undefined);
     }
 );

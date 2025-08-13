@@ -18,7 +18,7 @@
   "type": "module",
   "bin": "dist/index.cjs",
   "scripts": {
-    "build": "tsup",
+    "build": "tsc --noEmit && tsup",
     "start": "node dist/index.cjs",
     "sea": "node scripts/sea.js",
     "prepack": "npm run build"

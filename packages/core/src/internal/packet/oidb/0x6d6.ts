@@ -1,8 +1,7 @@
-import { OidbBase } from '@/internal/packet/oidb';
+import { OidbSvcContract } from '@/internal/util/oidb';
 import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
-// Request body for 0x6D6
-const OidbSvcTrpcTcp0x6D6 = ProtoMessage.of({
+export const OidbSvcTrpcTcp0x6D6 = ProtoMessage.of({
     upload: ProtoField(1, () => ({
         groupUin: ProtoField(1, ScalarType.UINT32),
         appId: ProtoField(2, ScalarType.UINT32),
@@ -38,7 +37,7 @@ const OidbSvcTrpcTcp0x6D6 = ProtoMessage.of({
     }), true, false),
 });
 
-const OidbSvcTrpcTcp0x6D6Response = ProtoMessage.of({
+export const OidbSvcTrpcTcp0x6D6Response = ProtoMessage.of({
     upload: ProtoField(1, () => ({
         retCode: ProtoField(1, ScalarType.INT32),
         retMsg: ProtoField(2, ScalarType.STRING, true, false),
@@ -50,8 +49,8 @@ const OidbSvcTrpcTcp0x6D6Response = ProtoMessage.of({
         uploadPort: ProtoField(8, ScalarType.UINT32),
     }), true, false),
     download: ProtoField(3, () => ({
-        downloadDns: ProtoField(1, ScalarType.STRING),
-        downloadUrl: ProtoField(2, ScalarType.BYTES),
+        downloadDns: ProtoField(5, ScalarType.STRING),
+        downloadUrl: ProtoField(6, ScalarType.BYTES),
     }), true, false),
     delete: ProtoField(4, () => ({
         retCode: ProtoField(1, ScalarType.INT32),
@@ -67,96 +66,34 @@ const OidbSvcTrpcTcp0x6D6Response = ProtoMessage.of({
     }), true, false),
 });
 
-export type GroupFSUploadResp = {
-    retCode: number;
-    retMsg?: string;
-    isExist: boolean;
-    fileId: string;
-    fileKey: Buffer;
-    checkKey: Buffer;
-    uploadIp: string;
-    uploadPort: number;
-};
+export const GroupFSUploadRequest = new OidbSvcContract(
+    0x6d6, 0,
+    OidbSvcTrpcTcp0x6D6.fields,
+);
 
-export const GroupFS6D6 = {
-    encodeUpload(groupUin: number, targetDirectory: string, fileName: string, fileSize: bigint, fileSha1: Buffer, fileMd5: Buffer) {
-        return OidbBase.encode({
-            command: 0x6d6,
-            subCommand: 0,
-            body: OidbSvcTrpcTcp0x6D6.encode({
-                upload: {
-                    groupUin,
-                    appId: 7,
-                    busId: 102,
-                    entrance: 6,
-                    targetDirectory,
-                    fileName,
-                    localDirectory: `/${fileName}`,
-                    fileSize,
-                    fileSha1,
-                    fileSha3: Buffer.alloc(0),
-                    fileMd5,
-                    field15: true,
-                },
-            }),
-            properties: [],
-        });
-    },
-    decodeUpload(payload: Buffer): GroupFSUploadResp {
-        const body = OidbSvcTrpcTcp0x6D6Response.decode(OidbBase.decode(payload).body!);
-        const u = body.upload!;
-        return {
-            retCode: u.retCode!,
-            retMsg: u.retMsg,
-            isExist: u.boolFileExist!,
-            fileId: u.fileId!,
-            fileKey: u.fileKey!,
-            checkKey: u.checkKey!,
-            uploadIp: u.uploadIp!,
-            uploadPort: Number(u.uploadPort!),
-        };
-    },
-    encodeDownload(groupUin: number, fileId: string) {
-        return OidbBase.encode({
-            command: 0x6d6,
-            subCommand: 2,
-            body: OidbSvcTrpcTcp0x6D6.encode({
-                download: {
-                    groupUin,
-                    appId: 7,
-                    busId: 102,
-                    fileId,
-                },
-            }),
-            properties: [],
-        });
-    },
-    decodeDownload(payload: Buffer): string {
-        const decoded = OidbBase.decode(payload);
-        const body = OidbSvcTrpcTcp0x6D6Response.decode(decoded.body!);
-        const d = body.download!;
-        return `https://${d.downloadDns}/ftn_handler/${Buffer.from(d.downloadUrl!).toString('hex').toUpperCase()}/?fname=`;
-    },
-    encodeDelete(groupUin: number, fileId: string) {
-        return OidbBase.encode({
-            command: 0x6d6,
-            subCommand: 3,
-            body: OidbSvcTrpcTcp0x6D6.encode({
-                delete: { groupUin, busId: 102, fileId },
-            }),
-            properties: [],
-        });
-    },
-    encodeMove(groupUin: number, fileId: string, parentDirectory: string, targetDirectory: string) {
-        return OidbBase.encode({
-            command: 0x6d6,
-            subCommand: 5,
-            body: OidbSvcTrpcTcp0x6D6.encode({
-                move: { groupUin, appId: 7, busId: 102, fileId, parentDirectory, targetDirectory },
-            }),
-            properties: [],
-        });
-    },
-};
+export const GroupFSUploadResponse = new OidbSvcContract(
+    0x6d6, 0,
+    OidbSvcTrpcTcp0x6D6Response.fields,
+);
+
+export const GroupFSDownloadUrlRequest = new OidbSvcContract(
+    0x6d6, 2,
+    OidbSvcTrpcTcp0x6D6.fields,
+);
+
+export const GroupFSDownloadUrlResponse = new OidbSvcContract(
+    0x6d6, 2,
+    OidbSvcTrpcTcp0x6D6Response.fields,
+);
+
+export const GroupFSDeleteRequest = new OidbSvcContract(
+    0x6d6, 3,
+    OidbSvcTrpcTcp0x6D6.fields,
+);
+
+export const GroupFSMoveRequest = new OidbSvcContract(
+    0x6d6, 5,
+    OidbSvcTrpcTcp0x6D6.fields,
+);
 
 

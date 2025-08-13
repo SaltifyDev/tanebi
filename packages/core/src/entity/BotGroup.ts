@@ -246,7 +246,7 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
             md5sum
         );
         if (resp.retCode !== 0) throw new Error(`Upload group file failed (${resp.retCode}): ${resp.retMsg ?? ''}`);
-        if (!resp.isExist) {
+        if (!resp.boolFileExist) {
             await this.bot[ctx].highwayLogic.uploadGroupFile(buffer, fileName, md5sum, resp);
         }
         return resp.fileId;

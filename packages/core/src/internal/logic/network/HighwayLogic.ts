@@ -5,14 +5,14 @@ import { FileUploadExt } from '@/internal/packet/highway/FileUploadExt';
 import { NTV2RichMediaHighwayExt } from '@/internal/packet/highway/NTV2RichMediaHighwayExt';
 import { ReqDataHighwayHead } from '@/internal/packet/highway/ReqDataHighwayHead';
 import { RespDataHighwayHead } from '@/internal/packet/highway/RespDataHighwayHead';
-import { GroupFSUploadResp } from '@/internal/packet/oidb/0x6d6';
+import { OidbSvcTrpcTcp0x6D6Response } from '@/internal/packet/oidb/0x6d6';
 import { IPv4 } from '@/internal/packet/oidb/media/IP';
 import { NTV2RichMediaResponse } from '@/internal/packet/oidb/media/response/NTV2RichMediaResponse';
 import { md5 } from '@/internal/util/crypto/digest';
 import { int32ip2str } from '@/internal/util/format';
 import { MediaGeneralMetadata } from '@/internal/util/media/common';
 import { ImageMetadata } from '@/internal/util/media/image';
-import { InferProtoModelInput } from '@/internal/util/pb';
+import { InferProtoModel, InferProtoModelInput } from '@/internal/util/pb';
 import assert from 'node:assert';
 import { request } from 'node:http';
 import { connect } from 'node:net';
@@ -69,7 +69,7 @@ export class HighwayLogic extends LogicBase {
         file: Buffer,
         fileName: string,
         fileMd5: Buffer,
-        uploadResp: GroupFSUploadResp,
+        uploadResp: Exclude<InferProtoModel<typeof OidbSvcTrpcTcp0x6D6Response.fields>['upload'], undefined>,
     ) {
         await this.upload(
             71,

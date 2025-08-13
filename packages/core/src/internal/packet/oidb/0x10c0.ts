@@ -3,12 +3,12 @@ import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const FetchGroupNotifies = new OidbSvcContract(0x10c0, 1, {
     count: ProtoField(1, ScalarType.UINT32),
-    field2: ProtoField(2, ScalarType.UINT32),
+    nextSequence: ProtoField(2, ScalarType.UINT64),
 });
 
 export const FetchGroupFilteredNotifies = new OidbSvcContract(0x10c0, 2, {
     count: ProtoField(1, ScalarType.UINT32),
-    field2: ProtoField(2, ScalarType.UINT32),
+    nextSequence: ProtoField(2, ScalarType.UINT64),
 });
 
 export enum GroupNotifyType {

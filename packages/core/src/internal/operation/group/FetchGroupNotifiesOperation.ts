@@ -3,6 +3,6 @@ import { FetchGroupNotifies, FetchGroupNotifiesResponse } from '@/internal/packe
 
 export const FetchGroupNotifiesOperation = defineOperation(
     'OidbSvcTrpcTcp.0x10c0_1',
-    (ctx, count: number = 20) => FetchGroupNotifies.encode({ count }),
+    (ctx, count: number = 20, nextSequence?: bigint) => FetchGroupNotifies.encode({ count, nextSequence }),
     (ctx, payload) => FetchGroupNotifiesResponse.decodeBodyOrThrow(payload).requests,
 );

@@ -2,7 +2,7 @@ import { Bot, ctx, identityService } from '@/index';
 import { GroupNotify, GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
 import { GroupRequestOperation } from '.';
 import { FetchGroupNotifiesOperation } from '@/internal/operation/group/FetchGroupNotifiesOperation';
-import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/FetchGroupFilteredNotifies';
+import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/FetchGroupFilteredNotifiesOperation';
 import { HandleGroupRequestOperation } from '@/internal/operation/group/HandleGroupRequestOperation';
 import { HandleGroupFilteredRequestOperation } from '@/internal/operation/group/HandleGroupFilteredRequestOperation';
 import { InferProtoModel } from '@/internal/util/pb';

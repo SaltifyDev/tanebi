@@ -190,12 +190,6 @@ export class MessageDispatcher {
                             sender.data.nickname = bindingUpdate.nickname;
                         }
                     }
-                    if (bindingUpdate.level) {
-                        const oldLevel = sender.level;
-                        if (oldLevel !== bindingUpdate.level) {
-                            sender.data.level = bindingUpdate.level;
-                        }
-                    }
                     if (bindingUpdate.specialTitle) {
                         const oldSpecialTitle = sender.specialTitle;
                         if (oldSpecialTitle !== bindingUpdate.specialTitle) {

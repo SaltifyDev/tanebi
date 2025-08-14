@@ -66,7 +66,6 @@ export interface GroupMessage extends MessageBase {
     senderDataBindingUpdate?: {
         nickname?: string;
         card?: string;
-        level?: number;
         specialTitle?: string;
     }
 }
@@ -92,7 +91,6 @@ export function parsePushMsgBody(raw: Buffer): IncomingMessage | undefined {
                 result.senderDataBindingUpdate = {
                     nickname: element.extraInfo.nick,
                     card: element.extraInfo.groupCard,
-                    level: element.extraInfo.level,
                     specialTitle: element.extraInfo.senderTitle,
                 };
             }

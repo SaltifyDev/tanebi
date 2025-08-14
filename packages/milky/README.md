@@ -15,7 +15,7 @@
 
 - [x] HTTP
 - [x] WebSocket
-- [ ] WebHook
+- [x] WebHook
 
 ### API
 

@@ -30,6 +30,7 @@ import { FriendApi } from '@/api/friend';
 import { GroupApi } from '@/api/group';
 import { FileApi } from '@/api/file';
 import { appName, appVersion } from '@/constants';
+import { MilkyWebhookHandler } from '@/network/webhook';
 
 export class MilkyApp {
     readonly logger: winston.Logger;
@@ -41,6 +42,7 @@ export class MilkyApp {
         ...FileApi,
     ]);
     readonly httpHandler;
+    readonly webhookHandler;
 
     private constructor(
         readonly userDataDir: string,
@@ -95,6 +97,7 @@ export class MilkyApp {
         );
 
         this.httpHandler = new MilkyHttpHandler(this, this.config.milky.http);
+        this.webhookHandler = new MilkyWebhookHandler(this, this.config.milky.webhook);
 
         this.configureEventLogging();
     }
@@ -219,7 +222,7 @@ export class MilkyApp {
             data: data,
         });
         this.httpHandler.broadcast(eventString);
-        // emit to webhook
+        this.webhookHandler.broadcast(eventString);
     }
 
     async start() {

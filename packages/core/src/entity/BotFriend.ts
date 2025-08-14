@@ -148,6 +148,24 @@ export class BotFriend extends BotContact<BotFriendDataBinding> {
     }
 
     /**
+     * Get the latest messages from this friend.
+     * @param count The number of messages to retrieve, maximum 30
+     */
+    async getLatestMessages(count: number): Promise<BotFriendMessage[]> {
+        this.bot[log].emit('trace', this.moduleName, 'Get latest roam messages');
+        const result = await this.bot[ctx].call(
+            GetRoamMessagesOperation,
+            this.uid,
+            Math.floor(Date.now() / 1000),
+            count,
+            GetRoamMessagesDirection.Up
+        );
+        const indermediate = await Promise.all(result.messages.map(msg => this.bot[dispatcher].create(msg, this)));
+        return indermediate.filter(idm => idm !== undefined)
+            .map((idm, index) => this.bot[dispatcher].createFriendMessage(idm, result.messages[index]));
+    }
+
+    /**
      * Send a nudge (gray tip poke) in friend chat
      * @param isSelf Whether to poke yourself (default false => poke the friend)
      */

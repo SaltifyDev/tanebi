@@ -1,7 +1,12 @@
 import { defineApi, Failed, Ok } from '@/api';
 import { zMessageScene } from '@/struct/message/common';
 import { zMilkyOutgoingSegment } from '@/struct/message/outgoing';
-import { transformDanglingIncomingGroupMessage, transformIncomingForwardedMessage, transformIncomingFriendMessage, transformIncomingGroupMessage } from '@/transform/message/incoming';
+import {
+    transformDanglingIncomingGroupMessage,
+    transformIncomingForwardedMessage,
+    transformIncomingFriendMessage,
+    transformIncomingGroupMessage,
+} from '@/transform/message/incoming';
 import { transformOutgoingFriendMessage, transformOutgoingGroupMessage } from '@/transform/message/outgoing';
 import { BotMsgForwardPack, rawMessage } from 'tanebi';
 import z from 'zod';
@@ -22,7 +27,7 @@ export const SendPrivateMessage = defineApi(
         });
         return Ok({
             message_seq: sendRef.sequence,
-            time: sendRef.timestamp, 
+            time: sendRef.timestamp,
         });
     }
 );
@@ -105,8 +110,12 @@ export const GetHistoryMessages = defineApi(
             if (!friend) {
                 return Failed(-404, 'Friend not found');
             }
-            const originSeq = payload.start_message_seq ?? await friend.getLatestMessageSequence();
-            const messages = await friend.getMessages(Math.max(1, originSeq - payload.limit + 1), originSeq);
+            const messages = payload.start_message_seq
+                ? await friend.getMessages(
+                    Math.max(1, payload.start_message_seq - payload.limit + 1),
+                    payload.start_message_seq
+                )
+                : await friend.getLatestMessages(payload.limit);
             return Ok({
                 messages: messages.map((msg) => transformIncomingFriendMessage(friend, msg)),
             });
@@ -115,16 +124,18 @@ export const GetHistoryMessages = defineApi(
             if (!group) {
                 return Failed(-404, 'Group not found');
             }
-            const originSeq = payload.start_message_seq ?? await group.getLatestMessageSequence();
+            const originSeq = payload.start_message_seq ?? (await group.getLatestMessageSequence());
             const messages = await group.getMessages(Math.max(1, originSeq - payload.limit + 1), originSeq);
             return Ok({
-                messages: await Promise.all(messages.map(async (msg) => {
-                    const member = await group.getMember(msg[rawMessage].senderUin);
-                    if (!member) {
-                        return transformDanglingIncomingGroupMessage(group, msg);
-                    }
-                    return transformIncomingGroupMessage(group, member, msg);
-                })),
+                messages: await Promise.all(
+                    messages.map(async (msg) => {
+                        const member = await group.getMember(msg[rawMessage].senderUin);
+                        if (!member) {
+                            return transformDanglingIncomingGroupMessage(group, msg);
+                        }
+                        return transformIncomingGroupMessage(group, member, msg);
+                    })
+                ),
             });
         } else {
             return Failed(-400, 'Unsupported message scene');
@@ -145,7 +156,7 @@ export const GetForwardedMessages = defineApi(
                 recursiveCount: 0, // dummy, not used
                 preview: [], // dummy, not used
             },
-            app.bot,
+            app.bot
         ).download();
         return Ok({
             messages: downloadedMsgs.map(transformIncomingForwardedMessage),

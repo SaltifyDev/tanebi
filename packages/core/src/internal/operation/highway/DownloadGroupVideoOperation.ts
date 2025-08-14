@@ -1,11 +1,11 @@
 import { defineOperation } from '@/internal/operation/OperationBase';
-import { DownloadPrivateImage, DownloadPrivateImageResponse } from '@/internal/packet/oidb/media/Action';
+import { DownloadGroupVideo, DownloadGroupVideoResponse } from '@/internal/packet/oidb/media/Action';
 import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
 import { InferProtoModelInput } from '@/internal/util/pb';
 
-export const DownloadPrivateImageOperation = defineOperation(
-    'OidbSvcTrpcTcp.0x11c5_200',
-    (ctx, node: InferProtoModelInput<typeof IndexNode.fields>) => DownloadPrivateImage.encode({
+export const DownloadGroupVideoOperation = defineOperation(
+    'OidbSvcTrpcTcp.0x11ea_200',
+    (ctx, node: InferProtoModelInput<typeof IndexNode.fields>) => DownloadGroupVideo.encode({
         reqHead: {
             common: {
                 requestId: 1,
@@ -13,19 +13,16 @@ export const DownloadPrivateImageOperation = defineOperation(
             },
             scene: {
                 requestType: 2,
-                businessType: 1,
-                sceneType: 1,
-                c2cExt: {
-                    accountType: 2,
-                    uid: ctx.keystore.uid,
-                }
+                businessType: 2,
+                sceneType: 2,
+                groupExt: {},
             },
             client: { agentType: 2 },
         },
         download: { node },
     }),
     (ctx, payload) => {
-        const response = DownloadPrivateImageResponse.decodeBodyOrThrow(payload).download;
+        const response = DownloadGroupVideoResponse.decodeBodyOrThrow(payload).download;
         if (!response) {
             throw new Error('Invalid response');
         }

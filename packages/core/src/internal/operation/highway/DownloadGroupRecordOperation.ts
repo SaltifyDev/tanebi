@@ -1,21 +1,21 @@
 import { defineOperation } from '@/internal/operation/OperationBase';
 import { DownloadGroupRecord, DownloadGroupRecordResponse } from '@/internal/packet/oidb/media/Action';
 import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
-import { InferProtoModel } from '@/internal/util/pb';
+import { InferProtoModelInput } from '@/internal/util/pb';
 
 export const DownloadGroupRecordOperation = defineOperation(
     'OidbSvcTrpcTcp.0x126e_200',
-    (ctx, groupUin: number, node: InferProtoModel<typeof IndexNode.fields>) => DownloadGroupRecord.encode({
+    (ctx, node: InferProtoModelInput<typeof IndexNode.fields>) => DownloadGroupRecord.encode({
         reqHead: {
             common: {
-                requestId: 4,
+                requestId: 1,
                 command: 200,
             },
             scene: {
                 requestType: 1,
                 businessType: 3,
                 sceneType: 2,
-                groupExt: { groupUin },
+                groupExt: {},
             },
             client: { agentType: 2 },
         },

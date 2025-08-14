@@ -1,11 +1,11 @@
 import { defineOperation } from '@/internal/operation/OperationBase';
 import { DownloadGroupImage, DownloadGroupImageResponse } from '@/internal/packet/oidb/media/Action';
 import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
-import { InferProtoModel } from '@/internal/util/pb';
+import { InferProtoModelInput } from '@/internal/util/pb';
 
 export const DownloadGroupImageOperation = defineOperation(
     'OidbSvcTrpcTcp.0x11c4_200',
-    (ctx, groupUin: number, node: InferProtoModel<typeof IndexNode.fields>) => DownloadGroupImage.encode({
+    (ctx, node: InferProtoModelInput<typeof IndexNode.fields>) => DownloadGroupImage.encode({
         reqHead: {
             common: {
                 requestId: 1,
@@ -15,7 +15,7 @@ export const DownloadGroupImageOperation = defineOperation(
                 requestType: 2,
                 businessType: 1,
                 sceneType: 2,
-                groupExt: { groupUin },
+                groupExt: {},
             },
             client: { agentType: 2 },
         },

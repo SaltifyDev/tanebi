@@ -1,15 +1,14 @@
-import { MessageType } from '@/internal/message';
 import { defineOperation } from '@/internal/operation/OperationBase';
-import { DownloadVideo, DownloadVideoResponse } from '@/internal/packet/oidb/media/Action';
+import { DownloadPrivateVideo, DownloadPrivateVideoResponse } from '@/internal/packet/oidb/media/Action';
 import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
-import { InferProtoModel } from '@/internal/util/pb';
+import { InferProtoModelInput } from '@/internal/util/pb';
 
-export const DownloadVideoOperation = defineOperation(
+export const DownloadPrivateVideoOperation = defineOperation(
     'OidbSvcTrpcTcp.0x11e9_200',
-    (ctx, senderUid: string, node: InferProtoModel<typeof IndexNode.fields>, msgType: MessageType) => DownloadVideo.encode({
+    (ctx, node: InferProtoModelInput<typeof IndexNode.fields>) => DownloadPrivateVideo.encode({
         reqHead: {
             common: {
-                requestId: msgType === MessageType.GroupMessage ? 3 : 34,
+                requestId: 1,
                 command: 200,
             },
             scene: {
@@ -18,7 +17,7 @@ export const DownloadVideoOperation = defineOperation(
                 sceneType: 1,
                 c2cExt: {
                     accountType: 2,
-                    uid: senderUid,
+                    uid: ctx.keystore.uid,
                 }
             },
             client: { agentType: 2 },
@@ -26,7 +25,7 @@ export const DownloadVideoOperation = defineOperation(
         download: { node },
     }),
     (ctx, payload) => {
-        const response = DownloadVideoResponse.decodeBodyOrThrow(payload).download;
+        const response = DownloadPrivateVideoResponse.decodeBodyOrThrow(payload).download;
         if (!response) {
             throw new Error('Invalid response');
         }

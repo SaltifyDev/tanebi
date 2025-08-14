@@ -1,11 +1,11 @@
 import { defineOperation } from '@/internal/operation/OperationBase';
 import { DownloadPrivateRecord, DownloadPrivateRecordResponse } from '@/internal/packet/oidb/media/Action';
 import { IndexNode } from '@/internal/packet/oidb/media/IndexNode';
-import { InferProtoModel } from '@/internal/util/pb';
+import { InferProtoModelInput } from '@/internal/util/pb';
 
 export const DownloadPrivateRecordOperation = defineOperation(
     'OidbSvcTrpcTcp.0x126d_200',
-    (ctx, senderUid: string, node: InferProtoModel<typeof IndexNode.fields>) => DownloadPrivateRecord.encode({
+    (ctx, node: InferProtoModelInput<typeof IndexNode.fields>) => DownloadPrivateRecord.encode({
         reqHead: {
             common: {
                 requestId: 1,
@@ -17,7 +17,7 @@ export const DownloadPrivateRecordOperation = defineOperation(
                 sceneType: 1,
                 c2cExt: {
                     accountType: 2,
-                    uid: senderUid,
+                    uid: ctx.keystore.uid,
                 }
             },
             client: { agentType: 2 },

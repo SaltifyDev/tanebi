@@ -42,6 +42,13 @@ import { BotOfflineOperation } from '@/internal/operation/system/BotOfflineOpera
 import { SendProfileLikeOperation } from '@/internal/operation/friend/SendProfileLikeOperation';
 import TypedEventEmitter from 'typed-emitter';
 import { RequestState } from '@/entity/request/RequestBase';
+import { FileId } from '@/internal/packet/highway/FileId';
+import { DownloadPrivateImageOperation } from '@/internal/operation/highway/DownloadPrivateImageOperation';
+import { DownloadGroupImageOperation } from '@/internal/operation/highway/DownloadGroupImageOperation';
+import { DownloadPrivateRecordOperation } from '@/internal/operation/highway/DownloadPrivateRecordOperation';
+import { DownloadGroupRecordOperation } from '@/internal/operation/highway/DownloadGroupRecordOperation';
+import { DownloadPrivateVideoOperation } from '@/internal/operation/highway/DownloadPrivateVideoOperation';
+import { DownloadGroupVideoOperation } from '@/internal/operation/highway/DownloadGroupVideoOperation';
 
 /**
  * Symbol of the bot context
@@ -772,8 +779,45 @@ export class Bot {
         await this[ctx].call(SendProfileLikeOperation, targetUid, count);
     }
 
+    /**
+     * Get the name of a friend category by its code
+     * @param code Category code
+     */
     getFriendCategoryName(code: number) {
         return this.friendCategories.get(code);
+    }
+
+    async getResourceDownloadUrl(resourceId: string): Promise<string> {
+        this[log].emit('trace', 'Bot', `Getting resource download URL for ${resourceId}`);
+        const normalized = resourceId.replace(/-/g, '+').replace(/_/g, '/');
+        const pad = (4 - normalized.length % 4) % 4;
+        const base64 = normalized.padEnd(normalized.length + pad, '=');
+        const bytes = Buffer.from(base64, 'base64');
+        const fileId = FileId.decode(bytes);
+        const indexNode = {
+            fileUuid: resourceId,
+            storeId: 1,
+            ttl: fileId.ttl,
+        };
+        if (fileId.appId === 1406) {
+            return this[ctx].call(DownloadPrivateImageOperation, indexNode);
+        }
+        if (fileId.appId === 1407) {
+            return this[ctx].call(DownloadGroupImageOperation, indexNode);
+        }
+        if (fileId.appId === 1402) {
+            return this[ctx].call(DownloadPrivateRecordOperation, indexNode);
+        }
+        if (fileId.appId === 1403) {
+            return this[ctx].call(DownloadGroupRecordOperation, indexNode);
+        }
+        if (fileId.appId === 1413) {
+            return this[ctx].call(DownloadPrivateVideoOperation, indexNode);
+        }
+        if (fileId.appId === 1415) {
+            return this[ctx].call(DownloadGroupVideoOperation, indexNode);
+        }
+        throw new Error(`Unsupported resource type: ${fileId.appId}`);
     }
     //#endregion
 

@@ -33,7 +33,7 @@ export class BotMsgBubble implements BotMsgType {
                     }
                     bot[log].emit('warning', 'BotMsgBubble.create', 'Failed to resolve mention');
                 } else if (element.type === 'image') {
-                    return { type: 'image', content: await BotMsgImage.create(element, msg, bot) };
+                    return { type: 'image', content: await BotMsgImage.create(element, bot) };
                 }
             })
         )).filter((e) => e !== undefined));

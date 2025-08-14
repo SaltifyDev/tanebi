@@ -1,8 +1,6 @@
-import { Bot, BotMsgType, ctx, ImageSubType } from '@/index';
+import { Bot, BotMsgType, ImageSubType } from '@/index';
 import { MessageType } from '@/internal/message';
-import { IncomingMessage, IncomingSegmentOf } from '@/internal/message/incoming';
-import { DownloadPrivateImageOperation } from '@/internal/operation/highway/DownloadPrivateImageOperation';
-import { DownloadGroupImageOperation } from '@/internal/operation/highway/DownloadGroupImageOperation';
+import { IncomingSegmentOf } from '@/internal/message/incoming';
 
 export class BotMsgImage implements BotMsgType {
     private constructor(
@@ -14,7 +12,7 @@ export class BotMsgImage implements BotMsgType {
         readonly summary: string,
     ) {}
 
-    static async create(data: IncomingSegmentOf<'image'>, msg: IncomingMessage, bot: Bot) {
+    static async create(data: IncomingSegmentOf<'image'>, bot: Bot) {
         if (data.url) {
             return new BotMsgImage(
                 data.url,
@@ -29,9 +27,7 @@ export class BotMsgImage implements BotMsgType {
         if (data.indexNode) {
             return new BotMsgImage(
                 data.indexNode.fileUuid!,
-                msg.type === MessageType.PrivateMessage ?
-                    await bot[ctx].call(DownloadPrivateImageOperation, msg.senderUid!, data.indexNode) :
-                    await bot[ctx].call(DownloadGroupImageOperation, msg.groupUin, data.indexNode),
+                await bot.getResourceDownloadUrl(data.indexNode.fileUuid!),
                 data.width,
                 data.height,
                 data.subType,
@@ -57,9 +53,7 @@ export class BotMsgImage implements BotMsgType {
         if (data.indexNode) {
             return new BotMsgImage(
                 data.indexNode.fileUuid!,
-                messageType === MessageType.PrivateMessage ?
-                    await bot[ctx].call(DownloadPrivateImageOperation, 'u_B-xbHgFtPzMTjvfvZNVuqw', data.indexNode) :
-                    await bot[ctx].call(DownloadGroupImageOperation, 0, data.indexNode),
+                await bot.getResourceDownloadUrl(data.indexNode.fileUuid!),
                 data.width,
                 data.height,
                 data.subType,

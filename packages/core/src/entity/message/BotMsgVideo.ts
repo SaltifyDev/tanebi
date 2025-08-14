@@ -1,8 +1,7 @@
 import { BotMsgType } from '.';
-import { Bot, ctx } from '@/index';
+import { Bot } from '@/index';
 import { MessageType } from '@/internal/message';
-import { IncomingMessage, IncomingSegmentOf } from '@/internal/message/incoming';
-import { DownloadVideoOperation } from '@/internal/operation/highway/DownloadVideoOperation';
+import { IncomingSegmentOf } from '@/internal/message/incoming';
 
 export class BotMsgVideo implements BotMsgType {
     private constructor(
@@ -13,13 +12,13 @@ export class BotMsgVideo implements BotMsgType {
         readonly url: string,
     ) {}
 
-    static async create(data: IncomingSegmentOf<'video'>, msg: IncomingMessage, bot: Bot) {
+    static async create(data: IncomingSegmentOf<'video'>, bot: Bot) {
         return new BotMsgVideo(
             data.indexNode!.fileUuid!,
             data.indexNode.info?.width ?? 0,
             data.indexNode.info?.height ?? 0,
             data.indexNode.info?.fileSize ?? 0,
-            await bot[ctx].call(DownloadVideoOperation, msg.senderUid!, data.indexNode, msg.type),
+            await bot.getResourceDownloadUrl(data.indexNode.fileUuid!),
         );
     }
 
@@ -29,7 +28,7 @@ export class BotMsgVideo implements BotMsgType {
             data.indexNode.info?.width ?? 0,
             data.indexNode.info?.height ?? 0,
             data.indexNode.info?.fileSize ?? 0,
-            await bot[ctx].call(DownloadVideoOperation, 'u_B-xbHgFtPzMTjvfvZNVuqw', data.indexNode, messageType),
+            await bot.getResourceDownloadUrl(data.indexNode.fileUuid!),
         );
     }
 

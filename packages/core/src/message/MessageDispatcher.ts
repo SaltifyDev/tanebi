@@ -86,21 +86,21 @@ export class MessageDispatcher {
             if (firstSegment.type === 'image') {
                 return {
                     type: 'image',
-                    content: await BotMsgImage.create(firstSegment, incoming, this.bot),
+                    content: await BotMsgImage.create(firstSegment, this.bot),
                 };
             }
 
             if (firstSegment.type === 'record') {
                 return {
                     type: 'record',
-                    content: await BotMsgRecord.create(firstSegment, incoming, this.bot),
+                    content: await BotMsgRecord.create(firstSegment, this.bot),
                 };
             }
 
             if (firstSegment.type === 'video') {
                 return {
                     type: 'video',
-                    content: await BotMsgVideo.create(firstSegment, incoming, this.bot),
+                    content: await BotMsgVideo.create(firstSegment, this.bot),
                 };
             }
 

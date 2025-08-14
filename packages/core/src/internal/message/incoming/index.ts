@@ -1,10 +1,7 @@
 import { PushMsgBody, PushMsgType } from '@/internal/packet/message/PushMsg';
 import { MessageType } from '@/internal/message';
 import { IncomingSegmentCollection } from '@/internal/message/incoming/segment-base';
-import {
-    imageCommonParser,
-    imageNotOnlineParser,
-} from '@/internal/message/incoming/segment/image';
+import { imageCommonParser } from '@/internal/message/incoming/segment/image';
 import { mentionParser } from '@/internal/message/incoming/segment/mention';
 import { textParser } from '@/internal/message/incoming/segment/text';
 import { InferProtoModel } from '@/internal/util/pb';
@@ -24,7 +21,7 @@ const incomingSegments = new IncomingSegmentCollection([
     recordParser,
     videoParser,
     forwardParser,
-    imageNotOnlineParser,
+    // imageNotOnlineParser,
     // imageCustomFaceParser,
     lightAppParser,
 ]);
@@ -67,7 +64,7 @@ export interface GroupMessage extends MessageBase {
         nickname?: string;
         card?: string;
         specialTitle?: string;
-    }
+    };
 }
 
 export type IncomingMessage = PrivateMessage | GroupMessage;
@@ -78,12 +75,12 @@ export function parsePushMsgBody(raw: Buffer): IncomingMessage | undefined {
     if (pushMsgBody.body?.richText?.elements) {
         const elementsDecoded = pushMsgBody.body.richText.elements.map((element) => MessageElement.decode(element));
         for (const element of elementsDecoded) {
-            const previous = result.segments.length === 0 ? undefined :
-                result.segments[result.segments.length - 1];
+            const previous = result.segments.length === 0 ? undefined : result.segments[result.segments.length - 1];
 
             if (!result.repliedSequence && element.srcMsg) {
-                result.repliedSequence = element.srcMsg.pbReserve?.friendSequence // for private message
-                    ?? element.srcMsg.origSeqs?.[0]; // for group message
+                result.repliedSequence =
+                    element.srcMsg.pbReserve?.friendSequence ?? // for private message
+                    element.srcMsg.origSeqs?.[0]; // for group message
                 continue;
             }
 
@@ -97,11 +94,7 @@ export function parsePushMsgBody(raw: Buffer): IncomingMessage | undefined {
 
             const parsed = incomingSegments.parse(element);
             if (parsed) {
-                if (
-                    previous?.type === 'face'
-                    && parsed.type === 'text'
-                    && previous.isInLargeCategory
-                ) continue; // Skip fallback text for large face
+                if (previous?.type === 'face' && parsed.type === 'text' && previous.isInLargeCategory) continue; // Skip fallback text for large face
                 result.segments.push(parsed);
             }
         }

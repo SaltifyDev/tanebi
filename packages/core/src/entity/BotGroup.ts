@@ -339,7 +339,6 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
         this.bot[log].emit('trace', this.moduleName, `Delete group folder ${folderId}`);
         const res = await this.bot[ctx].call(GroupFSDeleteFolderOperation, this.uin, folderId);
         if (res.code !== 0) throw new Error(`Delete folder failed (${res.code}): ${res.message ?? ''}`);
-        return true;
     }
 
     /**
@@ -351,7 +350,6 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
         this.bot[log].emit('trace', this.moduleName, `Rename group folder ${folderId} -> ${newFolderName}`);
         const res = await this.bot[ctx].call(GroupFSRenameFolderOperation, this.uin, folderId, newFolderName);
         if (res.code !== 0) throw new Error(`Rename folder failed (${res.code}): ${res.message ?? ''}`);
-        return true;
     }
     //#endregion
 

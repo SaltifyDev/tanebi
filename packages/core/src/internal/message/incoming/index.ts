@@ -3,7 +3,6 @@ import { MessageType } from '@/internal/message';
 import { IncomingSegmentCollection } from '@/internal/message/incoming/segment-base';
 import {
     imageCommonParser,
-    imageCustomFaceParser,
     imageNotOnlineParser,
 } from '@/internal/message/incoming/segment/image';
 import { mentionParser } from '@/internal/message/incoming/segment/mention';
@@ -26,7 +25,7 @@ const incomingSegments = new IncomingSegmentCollection([
     videoParser,
     forwardParser,
     imageNotOnlineParser,
-    imageCustomFaceParser,
+    // imageCustomFaceParser,
     lightAppParser,
 ]);
 

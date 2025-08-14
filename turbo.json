@@ -1,5 +1,9 @@
 {
   "tasks": {
+    "lint": {
+      "dependsOn": ["^lint"],
+      "outputs": []
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "out/**"]
@@ -9,7 +13,7 @@
       "cache": false
     },
     "tanebi-milky#sea": {
-      "dependsOn": ["build"],
+      "dependsOn": ["lint", "build"],
       "outputs": ["sea/**"]
     }
   }

@@ -18,6 +18,7 @@
   "type": "module",
   "bin": "dist/index.cjs",
   "scripts": {
+    "lint": "eslint ./src --ext .ts",
     "build": "tsc --noEmit && tsup",
     "start": "node dist/index.cjs",
     "sea": "node scripts/sea.js",

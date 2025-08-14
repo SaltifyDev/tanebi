@@ -29,6 +29,7 @@ import { MessageApi } from '@/api/message';
 import { FriendApi } from '@/api/friend';
 import { GroupApi } from '@/api/group';
 import { FileApi } from '@/api/file';
+import { appName, appVersion } from '@/constants';
 
 export class MilkyApp {
     readonly logger: winston.Logger;
@@ -222,6 +223,11 @@ export class MilkyApp {
     }
 
     async start() {
+        this.logger.info(`Starting ${appName}`);
+        this.logger.info(`version: ${appVersion}+${process.env.COMMIT_HASH}`);
+        this.logger.info(`built at: ${process.env.BUILD_DATE}`);
+        this.logger.info(`data directory: ${path.resolve(this.userDataDir)}`);
+        this.logger.info('---');
         if (this.isFirstRun) {
             const qrCodePath = path.join(this.userDataDir, 'qrcode.png');
             await this.bot.qrCodeLogin((url, png) => {

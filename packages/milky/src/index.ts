@@ -225,7 +225,7 @@ export class MilkyApp {
     async start() {
         this.logger.info(`Starting ${appName}`);
         this.logger.info(`version: ${appVersion}+${process.env.COMMIT_HASH}`);
-        this.logger.info(`built at: ${process.env.BUILD_DATE}`);
+        this.logger.info(`built at: ${new Date(process.env.BUILD_DATE!).toLocaleString()}`);
         this.logger.info(`data directory: ${path.resolve(this.userDataDir)}`);
         this.logger.info('---');
         if (this.isFirstRun) {

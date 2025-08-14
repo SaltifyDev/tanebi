@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { CodedReader } from './CodedReader';
 import { CodedWriter } from './CodedWriter';
 import { ProtoDeserializer, ScarlarDeserializerCompiler } from './ProtoDeserializer';

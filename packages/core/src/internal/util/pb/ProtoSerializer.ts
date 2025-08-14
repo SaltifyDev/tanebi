@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CodedWriter } from './CodedWriter';
 import { DoubleSize, Fixed32Size, Fixed64Size, FloatSize } from './Constants';
 import { Converter } from './Converter';

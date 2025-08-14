@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DoubleSize, Fixed32Size, Fixed64Size, FloatSize } from './Constants';
 import { Converter } from './Converter';
 import { kTagLength, ProtoFieldType, ProtoSpec } from './ProtoField';

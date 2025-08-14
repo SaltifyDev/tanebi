@@ -37,7 +37,7 @@
 - [x] /send_group_message
 - [x] /get_message
 - [x] /get_history_messages
-- [ ] /get_resource_temp_url
+- [x] /get_resource_temp_url
 - [x] /get_forwarded_messages
 - [x] /recall_private_message
 - [x] /recall_group_message

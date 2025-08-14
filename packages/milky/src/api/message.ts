@@ -153,6 +153,18 @@ export const GetForwardedMessages = defineApi(
     }
 );
 
+export const GetResourceTempUrl = defineApi(
+    'get_resource_temp_url',
+    z.object({
+        resource_id: z.string(),
+    }),
+    async (app, payload) => {
+        return Ok({
+            url: await app.bot.getResourceDownloadUrl(payload.resource_id),
+        });
+    }
+);
+
 export const RecallPrivateMessage = defineApi(
     'recall_private_message',
     z.object({

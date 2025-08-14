@@ -1,4 +1,4 @@
-import { Bot, ctx, dispatcher, faceCache, groupLatestSeqs, identityService, log } from '@/index';
+import { Bot, ctx, dispatcher, faceCache, identityService, log } from '@/index';
 import { BotContact, BotGroupMember, ReactionType } from '@/entity';
 import { DispatchedMessage, GroupMessageBuilder, type rawMessage } from '@/message';
 import { BotCacheService } from '@/util';
@@ -24,6 +24,7 @@ import { GroupFSDeleteOperation } from '@/internal/operation/file/GroupFSDeleteO
 import { GroupFSDownloadUrlOperation } from '@/internal/operation/file/GroupFSDownloadUrlOperation';
 import { GroupFSUploadOperation } from '@/internal/operation/file/GroupFSUploadOperation';
 import { BotGroupFileSystemEntry } from '@/entity/BotGroupFileSystemEntry';
+import { FetchGroupExtraInfoOperation } from '@/internal/operation/group/FetchGroupExtraInfoOperation';
 
 interface BotGroupDataBinding {
     uin: number;
@@ -176,8 +177,10 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
      * Get the latest message sequence number in this group.
      * This is the sequence number of the last message sent in this group.
      */
-    getLatestMessageSequence() {
-        return this.bot[groupLatestSeqs].get(this.uin) ?? 0;
+    async getLatestMessageSequence() {
+        this.bot[log].emit('trace', this.moduleName, 'Get latest message sequence');
+        const extraInfo = await this.bot[ctx].call(FetchGroupExtraInfoOperation, this.uin);
+        return extraInfo.latestMessageSeq;
     }
 
     /**

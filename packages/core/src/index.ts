@@ -80,11 +80,6 @@ export const faceCache = Symbol('Face cache');
  */
 export const dispatcher = Symbol('Message dispatcher');
 
-/**
- * Symbol to access the latest message sequences of groups
- */
-export const groupLatestSeqs = Symbol('Group latest message sequences');
-
 type TanebiEventEmitter = TypedEventEmitter<{
     forceOffline: (title: string, tip: string) => void;
     keystoreChange: (keystore: Keystore) => void;
@@ -124,7 +119,6 @@ export class Bot {
     readonly [eventsDX] = new EventEmitter() as TanebiEventEmitter;
     readonly [faceCache] = new Map<string, InferProtoModel<typeof FaceDetail.fields>>();
     readonly [dispatcher] = new MessageDispatcher(this);
-    readonly [groupLatestSeqs] = new Map<number, number>();
     private readonly friendCache;
     private readonly groupCache;
     private readonly globalMsg: MessageDispatcher['global'];
@@ -199,9 +193,6 @@ export class Bot {
         this[ctx].events.on('messagePush', (data) => {
             try {
                 if (data) {
-                    if ('groupUin' in data) {
-                        this[groupLatestSeqs].set(data.groupUin, data.sequence);
-                    }
                     this[dispatcher].emit(data);
                 }
             } catch (e) {
@@ -209,11 +200,13 @@ export class Bot {
             }
         });
 
+        /*
         this[ctx].events.on('infoSyncPush', (data) => {
             data.groupSystemNotifications.notifications.forEach(n => {
                 this[groupLatestSeqs].set(n.groupCode, n.endSeq);
             });
         });
+        */
 
         this[ctx].events.on('kickNT', (data) => {
             this[eventsDX].emit('forceOffline', data.title, data.tip);

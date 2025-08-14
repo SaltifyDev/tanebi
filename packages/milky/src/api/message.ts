@@ -115,7 +115,7 @@ export const GetHistoryMessages = defineApi(
             if (!group) {
                 return Failed(-404, 'Group not found');
             }
-            const originSeq = payload.start_message_seq ?? group.getLatestMessageSequence();
+            const originSeq = payload.start_message_seq ?? await group.getLatestMessageSequence();
             const messages = await group.getMessages(Math.max(1, originSeq - payload.limit + 1), originSeq);
             return Ok({
                 messages: await Promise.all(messages.map(async (msg) => {

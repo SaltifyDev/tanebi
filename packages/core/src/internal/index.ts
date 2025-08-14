@@ -1,14 +1,14 @@
 import EventEmitter from 'node:events';
-import { WtLoginLogic } from '@/internal/logic/login/WtLoginLogic';
+import { WtLoginLogic } from '@/internal/logic/WtLoginLogic';
 import { Ecdh } from '@/internal/util/crypto/ecdh';
 import { EventChannel } from '@/internal/event/EventBase';
 import { MessagePushEvent } from '@/internal/event/message/MessagePushEvent';
 import { KickNTEvent } from '@/internal/event/system/KickNTEvent';
-import { NTLoginLogic } from '@/internal/logic/login/NTLoginLogic';
+import { NTLoginLogic } from '@/internal/logic/NTLoginLogic';
 import { AppInfo, CoreConfig, DeviceInfo, Keystore, SignProvider } from '@/common';
-import { SsoLogic } from '@/internal/logic/network/SsoLogic';
+import { SsoLogic } from '@/internal/logic/SsoLogic';
 import { NotifyLogic } from '@/internal/logic/NotifyLogic';
-import { HighwayLogic } from '@/internal/logic/network/HighwayLogic';
+import { HighwayLogic } from '@/internal/logic/HighwayLogic';
 import { DecreaseType, IncreaseType } from '@/internal/packet/message/notify/GroupMemberChange';
 import TypedEventEmitter from 'typed-emitter';
 import { InfoSyncPushEvent } from '@/internal/event/system/InfoSyncPushEvent';

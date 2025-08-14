@@ -1,5 +1,4 @@
 import { defineApi, Failed, Ok } from '@/api';
-import { ReactionType } from 'tanebi';
 import { resolveMilkyUri } from '@/common/download';
 import z from 'zod';
 
@@ -160,9 +159,7 @@ export const SendGroupMessageReaction = defineApi(
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         const code = payload.reaction;
-        const maybeNumber = Number(code);
-        const type = !Number.isNaN(maybeNumber) && maybeNumber >= 100000 ? ReactionType.Emoji : ReactionType.Face;
-        await group.sendReaction(payload.message_seq, code, type, payload.is_add);
+        await group.sendReaction(payload.message_seq, code, payload.is_add);
         return Ok();
     }
 );

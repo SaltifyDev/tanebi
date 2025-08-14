@@ -1,4 +1,4 @@
-import { Bot, ctx, dispatcher, groupLatestSeqs, identityService, log } from '@/index';
+import { Bot, ctx, dispatcher, faceCache, groupLatestSeqs, identityService, log } from '@/index';
 import { BotContact, BotGroupMember, ReactionType } from '@/entity';
 import { DispatchedMessage, GroupMessageBuilder, type rawMessage } from '@/message';
 import { BotCacheService } from '@/util';
@@ -319,8 +319,9 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
      * `1` for `ReactionType.Face`; `2` for `ReactionType.Emoji`.
      * @param isAdd Whether to add the reaction. If false, remove the reaction.
      */
-    async sendReaction(sequence: number, code: string, type: ReactionType, isAdd: boolean) {
+    async sendReaction(sequence: number, code: string, isAdd: boolean) {
         this.bot[log].emit('trace', this.moduleName, `Send reaction ${isAdd ? 'add' : 'remove'} ${code}`);
+        const type = this.bot[faceCache].has(code) ? ReactionType.Face : ReactionType.Emoji;
         if (isAdd) {
             await this.bot[ctx].call(AddGroupReactionOperation, this.uin, sequence, code, type);
         } else {

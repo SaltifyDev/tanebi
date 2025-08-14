@@ -9,7 +9,7 @@
   "endOfLine": "auto",
   "overrides": [
     {
-      "files": "*.ts",
+      "files": "*.{js,ts}",
       "options": {
         "tabWidth": 4
       }

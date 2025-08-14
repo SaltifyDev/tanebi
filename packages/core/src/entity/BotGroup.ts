@@ -235,6 +235,14 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
     }
 
     // #region Group File System
+
+    /**
+     * Upload a file to the group file system.
+     * @param buffer The file content to upload.
+     * @param fileName The name of the file to upload.
+     * @param parentFolderId The folder ID to upload the file to. Default is root folder ('/').
+     * @returns The file ID of the uploaded file.
+     */
     async uploadFile(buffer: Buffer, fileName: string, parentFolderId: string = '/') {
         this.bot[log].emit('trace', this.moduleName, `Upload group file ${fileName} -> ${parentFolderId}`);
         const md5sum = md5(buffer);
@@ -255,11 +263,20 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
         return resp.fileId;
     }
 
+    /**
+     * Get the download URL of a file in the group file system.
+     * @param fileId The file ID to get the download URL for.
+     */
     async getFileDownloadUrl(fileId: string) {
         this.bot[log].emit('trace', this.moduleName, `Get group file download url ${fileId}`);
         return await this.bot[ctx].call(GroupFSDownloadUrlOperation, this.uin, fileId);
     }
 
+    /**
+     * List files in a specific folder in the group file system.
+     * @param parentFolderId The folder ID to list files in. Default is root folder ('/').
+     * @returns An array of file system entries in the specified folder.
+     */
     async listFiles(parentFolderId: string = '/') {
         this.bot[log].emit('trace', this.moduleName, `List group files ${parentFolderId}`);
         const results: Array<BotGroupFileSystemEntry> = [];
@@ -278,6 +295,12 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
         return results;
     }
 
+    /**
+     * Move a file from one folder to another in the group file system.
+     * @param fileId The file ID to move.
+     * @param parentFolderId The folder ID to move the file from.
+     * @param targetFolderId The folder ID to move the file to.
+     */
     async moveFile(fileId: string, parentFolderId: string, targetFolderId: string) {
         this.bot[log].emit(
             'trace',
@@ -287,11 +310,20 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
         await this.bot[ctx].call(GroupFSMoveOperation, this.uin, fileId, parentFolderId, targetFolderId);
     }
 
+    /**
+     * Delete a file from the group file system.
+     * @param fileId The file ID to delete from the group file system.
+     */
     async deleteFile(fileId: string) {
         this.bot[log].emit('trace', this.moduleName, `Delete group file ${fileId}`);
         await this.bot[ctx].call(GroupFSDeleteOperation, this.uin, fileId);
     }
 
+    /**
+     * Create a folder in the group file system.
+     * @param folderName The name of the folder to create.
+     * @returns The ID of the created folder.
+     */
     async createFolder(folderName: string): Promise<string> {
         this.bot[log].emit('trace', this.moduleName, `Create group folder ${folderName}`);
         const res = await this.bot[ctx].call(GroupFSCreateFolderOperation, this.uin, folderName);
@@ -299,6 +331,10 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
         return res.folderId;
     }
 
+    /**
+     * Delete a folder in the group file system.
+     * @param folderId The ID of the folder to delete.
+     */
     async deleteFolder(folderId: string) {
         this.bot[log].emit('trace', this.moduleName, `Delete group folder ${folderId}`);
         const res = await this.bot[ctx].call(GroupFSDeleteFolderOperation, this.uin, folderId);
@@ -306,13 +342,18 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
         return true;
     }
 
+    /**
+     * Rename a folder in the group file system.
+     * @param folderId The ID of the folder to rename.
+     * @param newFolderName The new name of the folder.
+     */
     async renameFolder(folderId: string, newFolderName: string) {
         this.bot[log].emit('trace', this.moduleName, `Rename group folder ${folderId} -> ${newFolderName}`);
         const res = await this.bot[ctx].call(GroupFSRenameFolderOperation, this.uin, folderId, newFolderName);
         if (res.code !== 0) throw new Error(`Rename folder failed (${res.code}): ${res.message ?? ''}`);
         return true;
     }
-    // #endregion
+    //#endregion
 
     /**
      * Send a reaction to a message in this group.

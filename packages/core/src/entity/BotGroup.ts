@@ -23,7 +23,7 @@ import { GroupFSMoveOperation } from '@/internal/operation/file/GroupFSMoveOpera
 import { GroupFSDeleteOperation } from '@/internal/operation/file/GroupFSDeleteOperation';
 import { GroupFSDownloadUrlOperation } from '@/internal/operation/file/GroupFSDownloadUrlOperation';
 import { GroupFSUploadOperation } from '@/internal/operation/file/GroupFSUploadOperation';
-import { BotGroupFileSystemEntry } from '@/entity/BotGroupFileSystemEntry';
+import { BotGroupFileSystemEntry } from '@/entity/file';
 import { FetchGroupExtraInfoOperation } from '@/internal/operation/group/FetchGroupExtraInfoOperation';
 
 interface BotGroupDataBinding {

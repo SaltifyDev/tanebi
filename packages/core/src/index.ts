@@ -4,11 +4,15 @@ import {
     BotFriendMessage,
     BotFriendRequest,
     BotGroup,
+    BotGroupAdminChangeNotification,
     BotGroupInvitationRequest,
     BotGroupInvitedJoinRequest,
     BotGroupJoinRequest,
     BotGroupMember,
+    BotGroupMemberKickNotification,
+    BotGroupMemberLeaveNotification,
     BotGroupMessage,
+    GroupNotificationBase,
 } from '@/entity';
 import { MessageDispatcher } from '@/message';
 import { BotCacheService } from '@/util';
@@ -41,7 +45,7 @@ import { FetchHighwayUrlOperation } from '@/internal/operation/highway/FetchHigh
 import { BotOfflineOperation } from '@/internal/operation/system/BotOfflineOperation';
 import { SendProfileLikeOperation } from '@/internal/operation/friend/SendProfileLikeOperation';
 import TypedEventEmitter from 'typed-emitter';
-import { RequestState } from '@/entity/request/RequestBase';
+import { RequestState } from '@/entity/request/RequestState';
 import { FileId } from '@/internal/packet/highway/FileId';
 import { DownloadPrivateImageOperation } from '@/internal/operation/highway/DownloadPrivateImageOperation';
 import { DownloadGroupImageOperation } from '@/internal/operation/highway/DownloadGroupImageOperation';
@@ -49,6 +53,9 @@ import { DownloadPrivateRecordOperation } from '@/internal/operation/highway/Dow
 import { DownloadGroupRecordOperation } from '@/internal/operation/highway/DownloadGroupRecordOperation';
 import { DownloadPrivateVideoOperation } from '@/internal/operation/highway/DownloadPrivateVideoOperation';
 import { DownloadGroupVideoOperation } from '@/internal/operation/highway/DownloadGroupVideoOperation';
+import { FetchGroupNotifiesOperation } from '@/internal/operation/group/FetchGroupNotifiesOperation';
+import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/FetchGroupFilteredNotifiesOperation';
+import { GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
 
 /**
  * Symbol of the bot context
@@ -181,6 +188,7 @@ export class Bot {
                     createdTime: group.info?.createdTime ?? 0,
                     maxMemberCount: group.info!.memberMax!,
                     memberCount: group.info!.memberCount!,
+                    ownerUid: group.info!.groupOwner!.uid!,
                 }]));
             },
             (bot, data) => new BotGroup(bot, data),
@@ -755,6 +763,34 @@ export class Bot {
             FetchUserInfoGeneralReturn,
             'uin' | EnumToStringKey[K[number]]
         >;
+    }
+
+    /**
+     * Get group notifications
+     * @param isFiltered Whether to fetch filtered notifications
+     * @param startSequence Start sequence number to fetch notifications from
+     * @param count Number of notifications to fetch
+     */
+    async getGroupNotifications(isFiltered: boolean, count: number, startSequence?: bigint): Promise<GroupNotificationBase[]> {
+        this[log].emit('trace', 'Bot', `Getting group notifications (isFiltered=${isFiltered}, startSequence=${startSequence}, count=${count})`);
+        const notifications = isFiltered
+            ? await this[ctx].call(FetchGroupFilteredNotifiesOperation, count, startSequence)
+            : await this[ctx].call(FetchGroupNotifiesOperation, count, startSequence);
+        return (await Promise.all(
+            notifications.map((n) => {
+                if (n.notifyType === GroupNotifyType.JoinRequest) {
+                    return BotGroupJoinRequest.restore(n, isFiltered, this);
+                } else if (n.notifyType === GroupNotifyType.InvitedJoinRequest) {
+                    return BotGroupInvitedJoinRequest.restore(n, isFiltered, this);
+                } else if (n.notifyType === GroupNotifyType.SetAdmin || n.notifyType === GroupNotifyType.UnsetAdmin) {
+                    return BotGroupAdminChangeNotification.restore(n, isFiltered, this);
+                } else if (n.notifyType === GroupNotifyType.ExitGroup) {
+                    return BotGroupMemberLeaveNotification.restore(n, isFiltered, this);
+                } else if (n.notifyType === GroupNotifyType.KickMember) {
+                    return BotGroupMemberKickNotification.restore(n, isFiltered, this);
+                }
+            }).filter(n => n !== undefined),
+        )).filter(n => n !== null);
     }
 
     /**

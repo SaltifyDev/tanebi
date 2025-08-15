@@ -6,4 +6,5 @@ export * from './BotGroupMember';
 
 export * from './file';
 export * from './message';
+export * from './notification';
 export * from './request';

@@ -14,9 +14,11 @@ export const FetchGroupFilteredNotifies = new OidbSvcContract(0x10c0, 2, {
 export enum GroupNotifyType {
     JoinRequest = 1,
     Invitation = 2,
+    SetAdmin = 3,
     KickMember = 6,
     KickSelf = 7,
     ExitGroup = 13,
+    UnsetAdmin = 16,
     InvitedJoinRequest = 22,
 }
 
@@ -30,9 +32,9 @@ export const GroupNotify = ProtoMessage.of({
     notifyType: ProtoField(2, ScalarType.UINT32),
     requestState: ProtoField(3, ScalarType.UINT32),
     group: ProtoField(4, () => ResponseGroup.fields),
-    target: ProtoField(5, () => ResponseUser.fields),
-    invitor: ProtoField(6, () => ResponseUser.fields, true),
-    operator: ProtoField(7, () => ResponseUser.fields, true),
+    user1: ProtoField(5, () => ResponseUser.fields),
+    user2: ProtoField(6, () => ResponseUser.fields, true),
+    user3: ProtoField(7, () => ResponseUser.fields, true),
     time: ProtoField(8, ScalarType.UINT32),
     comment: ProtoField(10, ScalarType.STRING),
 });

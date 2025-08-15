@@ -1,6 +1,6 @@
 export enum RequestState {
     Default = 0,
     Pending = 1,
-    Rejected = 2,
-    Accepted = 3,
+    Accepted = 2,
+    Rejected = 3,
 }

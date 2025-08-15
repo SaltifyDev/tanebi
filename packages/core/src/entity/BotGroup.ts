@@ -35,6 +35,7 @@ interface BotGroupDataBinding {
     createdTime: number;
     maxMemberCount: number;
     memberCount: number;
+    ownerUid: string;
 }
 
 export type BotGroupMessage = {
@@ -111,6 +112,10 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
 
     get memberCount() {
         return this.data.memberCount;
+    }
+
+    get ownerUid() {
+        return this.data.ownerUid;
     }
 
     get moduleName() {

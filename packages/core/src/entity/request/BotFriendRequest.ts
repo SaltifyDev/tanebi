@@ -1,4 +1,4 @@
-import { RequestState } from '@/entity/request/RequestBase';
+import { RequestState } from '@/entity/request/RequestState';
 import { Bot, ctx } from '@/index';
 import { HandleFriendRequestOperation } from '@/internal/operation/friend/HandleFriendRequestOperation';
 

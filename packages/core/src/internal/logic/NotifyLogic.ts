@@ -112,7 +112,7 @@ export class NotifyLogic extends LogicBase {
 
     parseFriendRequest(pushMsgBody: InferProtoModel<typeof PushMsgBody.fields>) {
         const content = FriendRequest.decode(pushMsgBody.body!.msgContent!);
-        if (!content.body) {
+        if (!content.body || !content.body.fromUid) {
             return;
         }
         this.ctx.eventsDX.emit('friendRequest',

@@ -8,6 +8,7 @@ export class BotMsgVideo implements BotMsgType {
         readonly fileId: string,
         readonly width: number,
         readonly height: number,
+        readonly duration: number,
         readonly fileSize: number,
         readonly url: string,
     ) {}
@@ -17,6 +18,7 @@ export class BotMsgVideo implements BotMsgType {
             data.indexNode!.fileUuid!,
             data.indexNode.info?.width ?? 0,
             data.indexNode.info?.height ?? 0,
+            data.indexNode.info?.time ?? 0,
             data.indexNode.info?.fileSize ?? 0,
             await bot.getResourceDownloadUrl(data.indexNode.fileUuid!),
         );
@@ -27,6 +29,7 @@ export class BotMsgVideo implements BotMsgType {
             data.indexNode!.fileUuid!,
             data.indexNode.info?.width ?? 0,
             data.indexNode.info?.height ?? 0,
+            data.indexNode.info?.time ?? 0,
             data.indexNode.info?.fileSize ?? 0,
             await bot.getResourceDownloadUrl(data.indexNode.fileUuid!),
         );

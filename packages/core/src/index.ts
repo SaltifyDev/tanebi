@@ -13,6 +13,7 @@ import {
     BotGroupMemberLeaveNotification,
     BotGroupMessage,
     GroupNotificationBase,
+    GroupRequestOperation,
 } from '@/entity';
 import { MessageDispatcher } from '@/message';
 import { BotCacheService } from '@/util';
@@ -57,6 +58,8 @@ import { FetchGroupNotifiesOperation } from '@/internal/operation/group/FetchGro
 import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/FetchGroupFilteredNotifiesOperation';
 import { GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
 import { FetchFriendRequestsOperation } from '@/internal/operation/friend/FetchFriendRequestsOperation';
+import { AcceptFilteredFriendRequestOperation } from '@/internal/operation/friend/AcceptFilteredFriendRequestOperation';
+import { HandleFriendRequestOperation } from '@/internal/operation/friend/HandleFriendRequestOperation';
 
 /**
  * Symbol of the bot context
@@ -795,6 +798,41 @@ export class Bot {
     }
 
     /**
+     * Handle a friend request
+     * @param requestUid Uid of the friend request to handle
+     * @param isFiltered Whether the request is filtered
+     */
+    async handleFriendRequest(requestUid: string, isFiltered: boolean, isAccept: boolean) {
+        this[log].emit('trace', 'Bot', `Handling friend request ${requestUid} (isFiltered=${isFiltered}, isAccept=${isAccept})`);
+        if (!isFiltered) {
+            await this[ctx].call(HandleFriendRequestOperation, isAccept, requestUid);
+        } else {
+            if (isAccept) {
+                await this[ctx].call(AcceptFilteredFriendRequestOperation, requestUid);
+            }
+        }
+    }
+
+    /**
+     * Handle a group request
+     * @param sequence Sequence number of the group request to handle
+     * @param isFiltered Whether the request is filtered
+     * @param isAccept Whether to accept the request
+     * @param message Reason to reject the request, if applicable
+     */
+    async handleGroupRequest(sequence: bigint, isFiltered: boolean, operation: GroupRequestOperation, message?: string) {
+        this[log].emit('trace', 'Bot', `Handling group request ${sequence}`);
+        const request = await this.getGroupNotifications(isFiltered, 1, sequence);
+        if (request.length === 0) {
+            throw new Error(`No group request found for sequence ${sequence}`);
+        }
+        const req = request[0];
+        if (req instanceof BotGroupJoinRequest || req instanceof BotGroupInvitedJoinRequest) {
+            await req.handle(operation, message);
+        }
+    }
+
+    /**
      * Send likes to a profile
      * @param targetUin Uin of the target user
      * @param count Number of likes to send
@@ -817,6 +855,10 @@ export class Bot {
         return this.friendCategories.get(code);
     }
 
+    /**
+     * Get the download URL for a resource by its ID.
+     * @param resourceId Resource ID to get the download URL for.
+     */
     async getResourceDownloadUrl(resourceId: string): Promise<string> {
         this[log].emit('trace', 'Bot', `Getting resource download URL for ${resourceId}`);
         const normalized = resourceId.replace(/-/g, '+').replace(/_/g, '/');

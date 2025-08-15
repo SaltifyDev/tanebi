@@ -1,8 +1,6 @@
 import { RequestState } from '@/entity/request/RequestState';
-import { Bot, ctx, identityService } from '@/index';
-import { AcceptFilteredFriendRequestOperation } from '@/internal/operation/friend/AcceptFilteredFriendRequestOperation';
+import { Bot, identityService } from '@/index';
 import { FetchFriendRequestsOperation } from '@/internal/operation/friend/FetchFriendRequestsOperation';
-import { HandleFriendRequestOperation } from '@/internal/operation/friend/HandleFriendRequestOperation';
 
 enum FriendRequestState {
     Pending = 1,
@@ -43,13 +41,10 @@ export class BotFriendRequest {
     }
 
     async handle(isAccept: boolean) {
-        if (!this.isFiltered) {
-            await this.bot[ctx].call(HandleFriendRequestOperation, isAccept, this.fromUid);
-        } else {
-            if (isAccept) {
-                await this.bot[ctx].call(AcceptFilteredFriendRequestOperation, this.fromUid);
-            }
+        if (this.fromUid === this.bot.uid) {
+            throw new Error('Cannot handle own friend request');
         }
+        await this.bot.handleFriendRequest(this.fromUid, this.isFiltered, isAccept);
     }
 
     static async restoreNormal(data: ReturnType<typeof FetchFriendRequestsOperation.parse>[number], bot: Bot) {

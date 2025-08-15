@@ -6,6 +6,6 @@ export const GetFriendLatestSequenceOperation = defineOperation(
     (ctx, peerUid: string) => SsoGetPeerSeq.encode({ peerUid }),
     (ctx, payload) => {
         const result = SsoGetPeerSeqResponse.decode(payload);
-        return result.seq1 ?? result.seq2;
+        return Math.max(result.seq1, result.seq2);
     },
 );

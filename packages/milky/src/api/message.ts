@@ -118,6 +118,7 @@ export const GetHistoryMessages = defineApi(
                 : await friend.getLatestMessages(payload.limit);
             return Ok({
                 messages: messages.map((msg) => transformIncomingFriendMessage(friend, msg)),
+                next_message_seq: Math.max(1, payload.start_message_seq ?? 0 - payload.limit),
             });
         } else if (payload.message_scene === 'group') {
             const group = await app.bot.getGroup(payload.peer_id);
@@ -136,6 +137,7 @@ export const GetHistoryMessages = defineApi(
                         return transformIncomingGroupMessage(group, member, msg);
                     })
                 ),
+                next_message_seq: Math.max(1, originSeq - payload.limit),
             });
         } else {
             return Failed(-400, 'Unsupported message scene');

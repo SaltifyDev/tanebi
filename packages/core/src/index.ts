@@ -229,7 +229,7 @@ export class Bot {
 
         this[ctx].eventsDX.on('friendRequest', (fromUin, fromUid, message, via) => {
             this[log].emit('trace', 'Bot', `Received friend request from ${fromUid}`);
-            this[eventsDX].emit('friendRequest', new BotFriendRequest(this, Math.floor(Date.now() / 1000), fromUin, fromUid, message, RequestState.Pending, via));
+            this[eventsDX].emit('friendRequest', new BotFriendRequest(this, Math.floor(Date.now() / 1000), false, fromUin, fromUid, this.uin, this.uid, message, RequestState.Pending, via));
         });
 
         this[ctx].eventsDX.on('friendPoke', async (peerUin, fromUin, toUin, actionStr, actionImgUrl, suffix) => {

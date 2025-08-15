@@ -6,8 +6,11 @@ export class BotFriendRequest {
     constructor(
         private readonly bot: Bot,
         readonly time: number,
+        readonly isFiltered: boolean,
         readonly fromUin: number,
         readonly fromUid: string,
+        readonly toUin: number,
+        readonly toUid: string,
         readonly message: string,
         readonly state: RequestState,
 

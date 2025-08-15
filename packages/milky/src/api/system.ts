@@ -7,10 +7,15 @@ import z from 'zod';
 export const GetLoginInfo = defineApi(
     'get_login_info',
     z.object({}),
-    async (app) => Ok({
-        uin: app.bot.uin,
-        nickname: app.bot.name,
-    }),
+    async (app) => {
+        const profile = await app.bot.getUserInfo(app.bot.uin, [
+            FetchUserInfoKey.Nickname,
+        ]);
+        return Ok({
+            uin: app.bot.uin,
+            nickname: profile.nickname ?? '' + app.bot.uin,
+        });
+    },
 );
 
 export const GetImplInfo = defineApi(

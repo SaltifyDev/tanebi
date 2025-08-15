@@ -30,7 +30,7 @@ export class BotGroupInvitedJoinRequest implements GroupNotificationBase {
 
     async handle(operation: GroupRequestOperation, message?: string) {
         await this.bot[ctx].call(
-            this.isFiltered ? HandleGroupRequestOperation : HandleGroupFilteredRequestOperation,
+            this.isFiltered ? HandleGroupFilteredRequestOperation : HandleGroupRequestOperation,
             this.groupUin,
             this.sequence,
             GroupNotifyType.InvitedJoinRequest,

@@ -7,6 +7,10 @@ export class BotIdentityService {
     constructor(private readonly bot: Bot) {}
 
     async resolveUid(uin: number, groupUin?: number) {
+        if (uin === this.bot.uin) {
+            return this.bot.uid;
+        }
+
         const uid = this.uin2uid.get(uin);
         if (uid) return uid;
         
@@ -26,6 +30,10 @@ export class BotIdentityService {
     }
 
     async resolveUin(uid: string, groupUin?: number) {
+        if (uid === this.bot.uid) {
+            return this.bot.uin;
+        }
+
         const fromCache = this.uid2uin.get(uid);
         if (fromCache) return fromCache;
         

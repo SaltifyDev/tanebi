@@ -50,3 +50,55 @@ export interface MilkyGroupFile {
     uploader_id: number;
     downloaded_times: number;
 }
+
+export interface MilkyGroupJoinRequestNotification {
+    type: 'join_request';
+    group_id: number;
+    notification_seq: number;
+    is_filtered: boolean;
+    initiator_id: number;
+    state: 'pending' | 'accepted' | 'rejected' | 'ignored';
+    operator_id?: number;
+    comment: string;
+}
+
+export interface MilkyGroupAdminChangeNotification {
+    type: 'admin_change';
+    group_id: number;
+    notification_seq: number;
+    target_user_id: number;
+    is_set: boolean;
+    operator_id: number;
+}
+
+export interface MilkyGroupMemberKickNotification {
+    type: 'kick';
+    group_id: number;
+    notification_seq: number;
+    target_user_id: number;
+    operator_id: number;
+}
+
+export interface MilkyGroupMemberQuitNotification {
+    type: 'quit';
+    group_id: number;
+    notification_seq: number;
+    target_user_id: number;
+}
+
+export interface MilkyGroupInvitedJoinRequestNotification {
+    type: 'invited_join_request';
+    group_id: number;
+    notification_seq: number;
+    initiator_id: number;
+    target_user_id: number;
+    state: 'pending' | 'accepted' | 'rejected' | 'ignored';
+    operator_id?: number;
+}
+
+export type MilkyGroupNotification =
+    | MilkyGroupJoinRequestNotification
+    | MilkyGroupAdminChangeNotification
+    | MilkyGroupMemberKickNotification
+    | MilkyGroupMemberQuitNotification
+    | MilkyGroupInvitedJoinRequestNotification;

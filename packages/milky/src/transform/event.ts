@@ -1,6 +1,5 @@
 import { MilkyApp } from '@/index';
 import { transformIncomingFriendMessage, transformIncomingGroupMessage } from '@/transform/message/incoming';
-import { transformFriendRequest, transformGroupInvitation, transformGroupInvitedJoinRequest, transformGroupJoinRequest } from '@/transform/request';
 
 export function configureEventTransformation(app: MilkyApp) {
     app.bot.onEvent('forceOffline', (title, tip) => {
@@ -15,22 +14,6 @@ export function configureEventTransformation(app: MilkyApp) {
 
     app.bot.onGroupMessage((group, member, message) => {
         app.emitEvent('message_receive', transformIncomingGroupMessage(group, member, message));
-    });
-
-    app.bot.onEvent('friendRequest', (request) => {
-        app.emitEvent('friend_request', transformFriendRequest(request));
-    });
-
-    app.bot.onEvent('groupJoinRequest', (group, request) => {
-        app.emitEvent('group_request', transformGroupJoinRequest(request));
-    });
-
-    app.bot.onEvent('groupInvitedJoinRequest', (group, request) => {
-        app.emitEvent('group_request', transformGroupInvitedJoinRequest(request));
-    });
-
-    app.bot.onEvent('groupInvitationRequest', (request) => {
-        app.emitEvent('group_invitation', transformGroupInvitation(request));
     });
 
     app.bot.onEvent('friendPoke', (friend, isSelfSend, isSelfReceive) => {

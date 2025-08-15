@@ -1,5 +1,4 @@
 import { MilkyIncomingMessage } from '@/struct/message/incoming';
-import { MilkyFriendRequest, MilkyGroupInvitation, MilkyGroupRequest } from '@/struct/request';
 
 export interface MilkyEventTypes {
     bot_offline: {
@@ -16,11 +15,33 @@ export interface MilkyEventTypes {
         operator_id: number;
     };
 
-    friend_request: MilkyFriendRequest;
+    friend_request: {
+        initiator_id: number;
+        initiator_uid: string;
+        comment: string;
+        via: string;
+    };
 
-    group_request: MilkyGroupRequest;
+    group_join_request: {
+        group_id: number;
+        notification_seq: number;
+        is_filtered: boolean;
+        initiator_id: number;
+        comment: string;
+    };
 
-    group_invitation: MilkyGroupInvitation;
+    group_invited_join_request: {
+        group_id: number;
+        notification_seq: number;
+        initiator_id: number;
+        target_user_id: number;
+    };
+
+    group_invitation: {
+        group_id: number;
+        invitation_seq: number;
+        initiator_id: number;
+    };
 
     friend_nudge: {
         user_id: number;

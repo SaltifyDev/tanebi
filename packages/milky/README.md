@@ -30,6 +30,8 @@
 - [x] /get_group_info
 - [x] /get_group_member_list
 - [x] /get_group_member_info
+- [ ] /get_cookies
+- [ ] /get_csrf_token
 
 #### 消息 API
 
@@ -46,6 +48,9 @@
 
 - [x] /send_friend_nudge
 - [x] /send_profile_like
+- [ ] /get_friend_requests
+- [ ] /accept_friend_request
+- [ ] /reject_friend_request
 
 #### 群聊 API
 
@@ -63,14 +68,7 @@
 - [x] /quit_group
 - [x] /send_group_message_reaction
 - [x] /send_group_nudge
-
-#### 请求 API
-
-- [ ] /get_friend_requests
-- [ ] /get_group_requests
-- [ ] /get_group_invitations
-- [ ] /accept_friend_request
-- [ ] /reject_friend_request
+- [ ] /get_group_notifications
 - [ ] /accept_group_request
 - [ ] /reject_group_request
 - [ ] /accept_group_invitation
@@ -95,8 +93,9 @@
 - [x] bot_offline
 - [x] message_receive
 - [ ] message_recall
-- [x] friend_request
-- [x] group_request
+- [ ] friend_request
+- [ ] group_join_request
+- [ ] group_invited_join_request
 - [x] group_invitation
 - [x] friend_nudge
 - [ ] friend_file_upload

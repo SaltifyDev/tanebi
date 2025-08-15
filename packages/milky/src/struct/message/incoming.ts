@@ -81,8 +81,8 @@ export type MilkyIncomingImageSegment = MilkyIncomingSegmentOf<
     {
         resource_id: string;
         temp_url: string;
-        summary?: string;
-        sub_type?: 'normal' | 'sticker';
+        summary: string;
+        sub_type: 'normal' | 'sticker';
     }
 >;
 

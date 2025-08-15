@@ -11,7 +11,7 @@ export interface MilkyGroupMember {
     sex: 'male' | 'female' | 'unknown';
     group_id: number;
     card: string;
-    title?: string;
+    title: string;
     level: number;
     role: 'owner' | 'admin' | 'member';
     join_time: number;

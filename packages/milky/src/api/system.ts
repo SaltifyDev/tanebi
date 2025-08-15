@@ -48,16 +48,16 @@ export const GetUserProfile = defineApi(
             FetchUserInfoKey.School,
         ]);
         return Ok({
-            nickname: user.nickname,
-            qid: user.qid,
-            age: user.age,
+            nickname: user.nickname ?? '' + payload.user_id,
+            qid: user.qid ?? '',
+            age: user.age ?? 0,
             sex: transformGender(user.gender ?? UserInfoGender.Unknown),
-            remark: user.remark,
-            bio: user.signature,
-            level: user.level,
-            country: user.country,
-            city: user.city,
-            school: user.school,
+            remark: user.remark ?? '',
+            bio: user.signature ?? '',
+            level: user.level ?? 0,
+            country: user.country ?? '',
+            city: user.city ?? '',
+            school: user.school ?? '',
         });
     }
 );

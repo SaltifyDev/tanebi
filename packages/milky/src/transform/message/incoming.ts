@@ -52,6 +52,7 @@ export function transformDanglingIncomingGroupMessage(
             sex: 'unknown',
             group_id: group.uin,
             card: message[rawMessage].senderName,
+            title: '',
             level: 0,
             role: 'member',
             join_time: 0,

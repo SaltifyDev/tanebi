@@ -4,8 +4,8 @@ export interface MilkyFriendRequest {
     is_filtered: boolean;
     initiator_id: number;
     state: 'pending' | 'accepted' | 'rejected' | 'ignored';
-    comment?: string;
-    via?: string;
+    comment: string;
+    via: string;
 }
 
 export interface MilkyGroupRequestBase {
@@ -20,7 +20,7 @@ export interface MilkyGroupRequestBase {
 
 export interface MilkyGroupJoinRequest extends MilkyGroupRequestBase {
     request_type: 'join';
-    comment?: string;
+    comment: string;
 }
 
 export interface MilkyGroupInvitedJoinRequest extends MilkyGroupRequestBase {

@@ -19,10 +19,10 @@ export function transformGender(gender: UserInfoGender): 'male' | 'female' | 'un
 export function transformFriend(friend: BotFriend): MilkyFriend {
     return {
         user_id: friend.uin,
-        nickname: friend.nickname ?? '',
+        nickname: friend.nickname ?? '' + friend.uin,
         sex: transformGender(friend.gender),
-        qid: friend.qid,
-        remark: friend.remark,
+        qid: friend.qid ?? '',
+        remark: friend.remark ?? '',
         category: {
             category_id: friend.category,
             category_name: friend.bot.getFriendCategoryName(friend.category) ?? '',
@@ -52,7 +52,7 @@ export function transformGroupMember(member: BotGroupMember): MilkyGroupMember {
         sex: 'unknown',
         group_id: member.group.uin,
         card: member.card ?? '',
-        title: member.specialTitle,
+        title: member.specialTitle ?? '',
         level: member.level,
         role: transformGroupMemberRole(member.permission),
         join_time: member.joinTime,

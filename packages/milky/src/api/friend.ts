@@ -42,10 +42,43 @@ export const GetFriendRequests = defineApi(
     },
 );
 
+export const AcceptFriendRequest = defineApi(
+    'accept_friend_request',
+    z.object({
+        initiator_uid: z.string(),
+        is_filtered: z.boolean().default(false),
+    }),
+    async (app, payload) => {
+        await app.bot.handleFriendRequest(
+            payload.initiator_uid,
+            payload.is_filtered,
+            true,
+        );
+        return Ok();
+    },
+);
+
+export const RejectFriendRequest = defineApi(
+    'reject_friend_request',
+    z.object({
+        initiator_uid: z.string(),
+        is_filtered: z.boolean().default(false),
+        reason: z.string().optional(),
+    }),
+    async (app, payload) => {
+        await app.bot.handleFriendRequest(
+            payload.initiator_uid,
+            payload.is_filtered,
+            false,
+        );
+        return Ok();
+    },
+);
+
 export const FriendApi = [
     SendFriendNudge,
     SendProfileLike,
     GetFriendRequests,
+    AcceptFriendRequest,
+    RejectFriendRequest,
 ];
-
-

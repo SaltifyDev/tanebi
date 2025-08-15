@@ -49,8 +49,8 @@
 - [x] /send_friend_nudge
 - [x] /send_profile_like
 - [x] /get_friend_requests
-- [ ] /accept_friend_request
-- [ ] /reject_friend_request
+- [x] /accept_friend_request
+- [x] /reject_friend_request
 
 #### 群聊 API
 

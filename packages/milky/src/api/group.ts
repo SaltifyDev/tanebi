@@ -1,5 +1,6 @@
 import { defineApi, Failed, Ok } from '@/api';
 import { resolveMilkyUri } from '@/common/download';
+import { transformGroupNotification } from '@/transform/notification';
 import z from 'zod';
 
 export const SetGroupName = defineApi(
@@ -180,6 +181,27 @@ export const SendGroupNudge = defineApi(
     }
 );
 
+export const GetGroupNotifications = defineApi(
+    'get_group_notifications',
+    z.object({
+        start_notification_seq: z.number().int().positive().optional(),
+        is_filtered: z.boolean().default(false),
+        count: z.number().int().positive().default(20),
+    }),
+    async (app, payload) => {
+        const notifications = await app.bot.getGroupNotifications(
+            payload.is_filtered,
+            payload.count,
+            BigInt(payload.start_notification_seq ?? 0),
+        );
+        return Ok({
+            notifications: notifications.map(transformGroupNotification),
+            next_notification_seq: notifications.length > 0 ?
+                Math.max(1, Number(notifications[notifications.length - 1].sequence - 1n)) : 1,
+        });
+    }
+);
+
 export const GroupApi = [
     SetGroupName,
     SetGroupAvatar,
@@ -192,6 +214,7 @@ export const GroupApi = [
     QuitGroup,
     SendGroupMessageReaction,
     SendGroupNudge,
+    GetGroupNotifications,
 ];
 
 

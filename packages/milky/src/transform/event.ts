@@ -44,6 +44,15 @@ export function configureEventTransformation(app: MilkyApp) {
         });
     });
 
+    app.bot.onEvent('groupInvitationRequest', (request) => {
+        app.emitEvent('group_invitation', {
+            group_id: request.groupUin,
+            invitation_seq: Number(request.sequence),
+            initiator_id: request.invitorUin,
+        });
+    });
+
+
     app.bot.onEvent('friendPoke', (friend, isSelfSend, isSelfReceive) => {
         app.emitEvent('friend_nudge', {
             user_id: friend.uin,

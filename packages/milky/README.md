@@ -48,7 +48,7 @@
 
 - [x] /send_friend_nudge
 - [x] /send_profile_like
-- [ ] /get_friend_requests
+- [x] /get_friend_requests
 - [ ] /accept_friend_request
 - [ ] /reject_friend_request
 

@@ -1,7 +1,24 @@
 import { RequestState } from '@/entity/request/RequestState';
-import { Bot, ctx } from '@/index';
+import { Bot, ctx, identityService } from '@/index';
 import { AcceptFilteredFriendRequestOperation } from '@/internal/operation/friend/AcceptFilteredFriendRequestOperation';
+import { FetchFriendRequestsOperation } from '@/internal/operation/friend/FetchFriendRequestsOperation';
 import { HandleFriendRequestOperation } from '@/internal/operation/friend/HandleFriendRequestOperation';
+
+enum FriendRequestState {
+    Pending = 1,
+    Accepted = 3,
+    Rejected = 7,
+}
+
+function toRequestState(state: FriendRequestState): RequestState {
+    if (state === FriendRequestState.Pending)
+        return RequestState.Pending;
+    if (state === FriendRequestState.Accepted)
+        return RequestState.Accepted;
+    if (state === FriendRequestState.Rejected)
+        return RequestState.Rejected;
+    return RequestState.Default;
+}
 
 export class BotFriendRequest {
     constructor(
@@ -33,5 +50,25 @@ export class BotFriendRequest {
                 await this.bot[ctx].call(AcceptFilteredFriendRequestOperation, this.fromUid);
             }
         }
+    }
+
+    static async restoreNormal(data: ReturnType<typeof FetchFriendRequestsOperation.parse>[number], bot: Bot) {
+        const fromUin = await bot[identityService].resolveUin(data.sourceUid);
+        const toUin = await bot[identityService].resolveUin(data.targetUid);
+        if (!fromUin || !toUin) {
+            return null;
+        }
+        return new BotFriendRequest(
+            bot,
+            data.timestamp,
+            false,
+            fromUin,
+            data.sourceUid,
+            toUin,
+            data.targetUid,
+            data.comment,
+            toRequestState(data.state),
+            data.source
+        );
     }
 }

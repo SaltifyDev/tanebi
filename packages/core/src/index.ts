@@ -56,6 +56,7 @@ import { DownloadGroupVideoOperation } from '@/internal/operation/highway/Downlo
 import { FetchGroupNotifiesOperation } from '@/internal/operation/group/FetchGroupNotifiesOperation';
 import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/FetchGroupFilteredNotifiesOperation';
 import { GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
+import { FetchFriendRequestsOperation } from '@/internal/operation/friend/FetchFriendRequestsOperation';
 
 /**
  * Symbol of the bot context
@@ -229,6 +230,7 @@ export class Bot {
 
         this[ctx].eventsDX.on('friendRequest', (fromUin, fromUid, message, via) => {
             this[log].emit('trace', 'Bot', `Received friend request from ${fromUid}`);
+            console.log('raw', fromUin, fromUid, message, via);
             this[eventsDX].emit('friendRequest', new BotFriendRequest(this, Math.floor(Date.now() / 1000), false, fromUin, fromUid, this.uin, this.uid, message, RequestState.Pending, via));
         });
 
@@ -748,6 +750,21 @@ export class Bot {
             FetchUserInfoGeneralReturn,
             'uin' | EnumToStringKey[K[number]]
         >;
+    }
+
+    /**
+     * Get friend requests
+     * @param isFiltered Whether to fetch filtered friend requests
+     * @param count Number of friend requests to fetch
+     */
+    async getFriendRequests(isFiltered: boolean, count: number): Promise<BotFriendRequest[]> {
+        this[log].emit('trace', 'Bot', `Getting friend requests (isFiltered=${isFiltered})`);
+        const requests = await this[ctx].call(FetchFriendRequestsOperation, count); // todo: resolve filtered requests
+        return (
+            await Promise.all(
+                requests.map((r) => BotFriendRequest.restoreNormal(r, this))
+            )
+        ).filter(r => r !== null);
     }
 
     /**

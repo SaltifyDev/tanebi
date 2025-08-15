@@ -1,4 +1,5 @@
 import { defineApi, Failed, Ok } from '@/api';
+import { transformFriendRequest } from '@/transform/notification';
 import z from 'zod';
 
 export const SendFriendNudge = defineApi(
@@ -27,9 +28,24 @@ export const SendProfileLike = defineApi(
     }
 );
 
+export const GetFriendRequests = defineApi(
+    'get_friend_requests',
+    z.object({
+        is_filtered: z.boolean().default(false),
+        limit: z.number().int().min(1).default(20),
+    }),
+    async (app, payload) => {
+        const requests = await app.bot.getFriendRequests(payload.is_filtered, payload.limit);
+        return Ok({
+            requests: requests.map(transformFriendRequest),
+        });
+    },
+);
+
 export const FriendApi = [
     SendFriendNudge,
     SendProfileLike,
+    GetFriendRequests,
 ];
 
 

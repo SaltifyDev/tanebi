@@ -1,5 +1,6 @@
+import { MilkyFriendRequest } from '@/struct/friend';
 import { MilkyGroupNotification } from '@/struct/group';
-import { BotGroupAdminChangeNotification, BotGroupInvitedJoinRequest, BotGroupJoinRequest, BotGroupMemberKickNotification, BotGroupMemberLeaveNotification, GroupNotificationBase, RequestState } from 'tanebi';
+import { BotFriendRequest, BotGroupAdminChangeNotification, BotGroupInvitedJoinRequest, BotGroupJoinRequest, BotGroupMemberKickNotification, BotGroupMemberLeaveNotification, GroupNotificationBase, RequestState } from 'tanebi';
 
 export function transformRequestState(state: RequestState): 'pending' | 'accepted' | 'rejected' | 'ignored' {
     if (state === RequestState.Pending)
@@ -9,6 +10,20 @@ export function transformRequestState(state: RequestState): 'pending' | 'accepte
     if (state === RequestState.Rejected)
         return 'rejected';
     return 'ignored';
+}
+
+export function transformFriendRequest(r: BotFriendRequest): MilkyFriendRequest {
+    return {
+        time: r.time,
+        initiator_id: r.fromUin,
+        initiator_uid: r.fromUid,
+        target_user_id: r.toUin,
+        target_user_uid: r.toUid,
+        state: transformRequestState(r.state),
+        comment: r.message,
+        via: r.via,
+        is_filtered: r.isFiltered,
+    };
 }
 
 export function transformGroupNotification(n: GroupNotificationBase): MilkyGroupNotification {

@@ -16,6 +16,34 @@ export function configureEventTransformation(app: MilkyApp) {
         app.emitEvent('message_receive', transformIncomingGroupMessage(group, member, message));
     });
 
+    app.bot.onEvent('friendRequest', (request) => {
+        app.emitEvent('friend_request', {
+            initiator_id: request.fromUin,
+            initiator_uid: request.fromUid,
+            comment: request.message,
+            via: request.via,
+        });
+    });
+
+    app.bot.onEvent('groupJoinRequest', (group, request) => {
+        app.emitEvent('group_join_request', {
+            group_id: request.groupUin,
+            notification_seq: Number(request.sequence),
+            is_filtered: request.isFiltered,
+            initiator_id: request.requestUin,
+            comment: request.comment,
+        });
+    });
+
+    app.bot.onEvent('groupInvitedJoinRequest', (group, request) => {
+        app.emitEvent('group_invited_join_request', {
+            group_id: request.groupUin,
+            notification_seq: Number(request.sequence),
+            initiator_id: request.invitorUin,
+            target_user_id: request.targetUin,
+        });
+    });
+
     app.bot.onEvent('friendPoke', (friend, isSelfSend, isSelfReceive) => {
         app.emitEvent('friend_nudge', {
             user_id: friend.uin,

@@ -93,9 +93,9 @@
 - [x] bot_offline
 - [x] message_receive
 - [ ] message_recall
-- [ ] friend_request
-- [ ] group_join_request
-- [ ] group_invited_join_request
+- [x] friend_request
+- [x] group_join_request
+- [x] group_invited_join_request
 - [x] group_invitation
 - [x] friend_nudge
 - [ ] friend_file_upload

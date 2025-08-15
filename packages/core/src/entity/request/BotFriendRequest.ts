@@ -1,5 +1,6 @@
 import { RequestState } from '@/entity/request/RequestState';
 import { Bot, ctx } from '@/index';
+import { AcceptFilteredFriendRequestOperation } from '@/internal/operation/friend/AcceptFilteredFriendRequestOperation';
 import { HandleFriendRequestOperation } from '@/internal/operation/friend/HandleFriendRequestOperation';
 
 export class BotFriendRequest {
@@ -25,6 +26,12 @@ export class BotFriendRequest {
     }
 
     async handle(isAccept: boolean) {
-        await this.bot[ctx].call(HandleFriendRequestOperation, isAccept, this.fromUid);
+        if (!this.isFiltered) {
+            await this.bot[ctx].call(HandleFriendRequestOperation, isAccept, this.fromUid);
+        } else {
+            if (isAccept) {
+                await this.bot[ctx].call(AcceptFilteredFriendRequestOperation, this.fromUid);
+            }
+        }
     }
 }

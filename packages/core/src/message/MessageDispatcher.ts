@@ -46,6 +46,11 @@ export type DispatchedMessageBody =
           content: BotMsgLightApp;
       };
 
+const groupInviteAppNames = [
+    'com.tencent.qun.invite',
+    'com.tencent.tuwen.lua',
+];
+
 export type DispatchedMessage = DispatchedMessageBody & {
     timestamp: number;
     sequence: number;
@@ -112,7 +117,7 @@ export class MessageDispatcher {
             }
 
             if (firstSegment.type === 'lightApp') {
-                if (firstSegment.app === 'com.tencent.qun.invite' && contact instanceof BotFriend) {
+                if (groupInviteAppNames.includes(firstSegment.app) && contact instanceof BotFriend) {
                     this.bot[eventsDX].emit(
                         'groupInvitationRequest',
                         BotGroupInvitationRequest.create(contact, incoming, firstSegment, this.bot)

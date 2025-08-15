@@ -8,6 +8,7 @@ import { RecallFriendMessageOperation } from '@/internal/operation/message/Recal
 import { SendGrayTipPokeOperation } from '@/internal/operation/message/SendGrayTipPokeOperation';
 import { GetFriendMessagesOperation } from '@/internal/operation/message/GetFriendMessagesOperation';
 import { GetRoamMessagesDirection, GetRoamMessagesOperation } from '@/internal/operation/message/GetRoamMessagesOperation';
+import { GetFriendLatestSequenceOperation } from '@/internal/operation/message/GetFriendLatestSequenceOperation';
 
 export interface BotFriendDataBinding {
     uin: number;
@@ -137,14 +138,10 @@ export class BotFriend extends BotContact<BotFriendDataBinding> {
      */
     async getLatestMessageSequence(): Promise<number> {
         this.bot[log].emit('trace', this.moduleName, 'Get latest message sequence');
-        const result = await this.bot[ctx].call(
-            GetRoamMessagesOperation,
+        return await this.bot[ctx].call(
+            GetFriendLatestSequenceOperation,
             this.uid,
-            Math.floor(Date.now() / 1000),
-            10,
-            GetRoamMessagesDirection.Up
         );
-        return result.messages.length > 0 ? result.messages[0].sequence : 0;
     }
 
     /**

@@ -69,8 +69,8 @@
 - [x] /send_group_message_reaction
 - [x] /send_group_nudge
 - [x] /get_group_notifications
-- [ ] /accept_group_request
-- [ ] /reject_group_request
+- [x] /accept_group_request
+- [x] /reject_group_request
 - [ ] /accept_group_invitation
 - [ ] /reject_group_invitation
 

@@ -1,6 +1,7 @@
 import { defineApi, Failed, Ok } from '@/api';
 import { resolveMilkyUri } from '@/common/download';
 import { transformGroupNotification } from '@/transform/notification';
+import { GroupRequestOperation } from 'tanebi';
 import z from 'zod';
 
 export const SetGroupName = defineApi(
@@ -202,6 +203,40 @@ export const GetGroupNotifications = defineApi(
     }
 );
 
+export const AcceptGroupRequest = defineApi(
+    'accept_group_request',
+    z.object({
+        notification_seq: z.number().int().positive(),
+        is_filtered: z.boolean().default(false),
+    }),
+    async (app, payload) => {
+        await app.bot.handleGroupRequest(
+            BigInt(payload.notification_seq),
+            payload.is_filtered,
+            GroupRequestOperation.Accept,
+        );
+        return Ok();
+    },
+);
+
+export const RejectGroupRequest = defineApi(
+    'reject_group_request',
+    z.object({
+        notification_seq: z.number().int().positive(),
+        is_filtered: z.boolean().default(false),
+        reason: z.string().optional(),
+    }),
+    async (app, payload) => {
+        await app.bot.handleGroupRequest(
+            BigInt(payload.notification_seq),
+            payload.is_filtered,
+            GroupRequestOperation.Reject,
+            payload.reason,
+        );
+        return Ok();
+    },
+);
+
 export const GroupApi = [
     SetGroupName,
     SetGroupAvatar,
@@ -215,6 +250,8 @@ export const GroupApi = [
     SendGroupMessageReaction,
     SendGroupNudge,
     GetGroupNotifications,
+    AcceptGroupRequest,
+    RejectGroupRequest,
 ];
 
 

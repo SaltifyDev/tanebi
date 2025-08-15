@@ -197,7 +197,7 @@ export const GetGroupNotifications = defineApi(
         return Ok({
             notifications: notifications.map(transformGroupNotification),
             next_notification_seq: notifications.length > 0 ?
-                Math.max(1, Number(notifications[notifications.length - 1].sequence - 1n)) : 1,
+                Math.max(1, Number(notifications[notifications.length - 1].sequence - 1n)) : undefined,
         });
     }
 );

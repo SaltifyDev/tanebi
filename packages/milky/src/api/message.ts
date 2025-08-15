@@ -110,15 +110,12 @@ export const GetHistoryMessages = defineApi(
             if (!friend) {
                 return Failed(-404, 'Friend not found');
             }
-            const messages = payload.start_message_seq
-                ? await friend.getMessages(
-                    Math.max(1, payload.start_message_seq - payload.limit + 1),
-                    payload.start_message_seq
-                )
-                : await friend.getLatestMessages(payload.limit);
+            const originSeq = payload.start_message_seq ?? (await friend.getLatestMessageSequence());
+            const oldestSeq = Math.max(1, originSeq - payload.limit + 1);
+            const messages = await friend.getMessages(oldestSeq, originSeq);
             return Ok({
                 messages: messages.map((msg) => transformIncomingFriendMessage(friend, msg)),
-                next_message_seq: Math.max(1, payload.start_message_seq ?? 0 - payload.limit),
+                next_message_seq: oldestSeq > 1 ? oldestSeq - 1 : undefined,
             });
         } else if (payload.message_scene === 'group') {
             const group = await app.bot.getGroup(payload.peer_id);
@@ -126,7 +123,8 @@ export const GetHistoryMessages = defineApi(
                 return Failed(-404, 'Group not found');
             }
             const originSeq = payload.start_message_seq ?? (await group.getLatestMessageSequence());
-            const messages = await group.getMessages(Math.max(1, originSeq - payload.limit + 1), originSeq);
+            const oldestSeq = Math.max(1, originSeq - payload.limit + 1);
+            const messages = await group.getMessages(oldestSeq, originSeq);
             return Ok({
                 messages: await Promise.all(
                     messages.map(async (msg) => {
@@ -137,7 +135,7 @@ export const GetHistoryMessages = defineApi(
                         return transformIncomingGroupMessage(group, member, msg);
                     })
                 ),
-                next_message_seq: Math.max(1, originSeq - payload.limit),
+                next_message_seq: oldestSeq > 1 ? oldestSeq - 1 : undefined,
             });
         } else {
             return Failed(-400, 'Unsupported message scene');

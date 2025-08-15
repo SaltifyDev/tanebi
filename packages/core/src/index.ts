@@ -58,8 +58,9 @@ import { FetchGroupNotifiesOperation } from '@/internal/operation/group/FetchGro
 import { FetchGroupFilteredNotifiesOperation } from '@/internal/operation/group/FetchGroupFilteredNotifiesOperation';
 import { GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
 import { FetchFriendRequestsOperation } from '@/internal/operation/friend/FetchFriendRequestsOperation';
-import { AcceptFilteredFriendRequestOperation } from '@/internal/operation/friend/AcceptFilteredFriendRequestOperation';
+import { AcceptFriendFilteredRequestOperation } from '@/internal/operation/friend/AcceptFriendFilteredRequestOperation';
 import { HandleFriendRequestOperation } from '@/internal/operation/friend/HandleFriendRequestOperation';
+import { FetchFriendFilteredRequestsOperation } from '@/internal/operation/friend/FetchFriendFilteredRequestsOperation';
 
 /**
  * Symbol of the bot context
@@ -761,12 +762,21 @@ export class Bot {
      */
     async getFriendRequests(isFiltered: boolean, count: number): Promise<BotFriendRequest[]> {
         this[log].emit('trace', 'Bot', `Getting friend requests (isFiltered=${isFiltered})`);
-        const requests = await this[ctx].call(FetchFriendRequestsOperation, count); // todo: resolve filtered requests
-        return (
-            await Promise.all(
-                requests.map((r) => BotFriendRequest.restoreNormal(r, this))
-            )
-        ).filter(r => r !== null);
+        if (!isFiltered) {
+            const requests = await this[ctx].call(FetchFriendRequestsOperation, count);
+            return (
+                await Promise.all(
+                    requests.map((r) => BotFriendRequest.restoreNormal(r, this))
+                )
+            ).filter(r => r !== null);
+        } else {
+            const requests = await this[ctx].call(FetchFriendFilteredRequestsOperation, count);
+            return (
+                await Promise.all(
+                    requests.map((r) => BotFriendRequest.restoreFiltered(r, this))
+                )
+            ).filter(r => r !== null);
+        }
     }
 
     /**
@@ -808,7 +818,7 @@ export class Bot {
             await this[ctx].call(HandleFriendRequestOperation, isAccept, requestUid);
         } else {
             if (isAccept) {
-                await this[ctx].call(AcceptFilteredFriendRequestOperation, requestUid);
+                await this[ctx].call(AcceptFriendFilteredRequestOperation, requestUid);
             }
         }
     }

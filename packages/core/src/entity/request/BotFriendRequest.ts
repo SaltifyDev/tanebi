@@ -1,5 +1,6 @@
 import { RequestState } from '@/entity/request/RequestState';
 import { Bot, identityService } from '@/index';
+import { FetchFriendFilteredRequestsOperation } from '@/internal/operation/friend/FetchFriendFilteredRequestsOperation';
 import { FetchFriendRequestsOperation } from '@/internal/operation/friend/FetchFriendRequestsOperation';
 
 enum FriendRequestState {
@@ -63,6 +64,25 @@ export class BotFriendRequest {
             data.targetUid,
             data.comment,
             toRequestState(data.state),
+            data.source
+        );
+    }
+
+    static async restoreFiltered(data: ReturnType<typeof FetchFriendFilteredRequestsOperation.parse>[number], bot: Bot) {
+        const fromUin = await bot[identityService].resolveUin(data.sourceUid);
+        if (!fromUin) {
+            return null;
+        }
+        return new BotFriendRequest(
+            bot,
+            data.timestamp,
+            true,
+            fromUin,
+            data.sourceUid,
+            bot.uin,
+            bot.uid,
+            data.comment,
+            RequestState.Pending, // Filtered requests is always pending
             data.source
         );
     }

@@ -35,10 +35,5 @@ export function newKeystore(): Keystore {
             sessionDate: new Date(),
             sequence: 0,
         },
-        info: {
-            age: 0,
-            gender: 0,
-            name: '',
-        },
     };
 }

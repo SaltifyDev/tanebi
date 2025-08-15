@@ -487,17 +487,6 @@ export class Bot {
         return this[ctx].keystore.uid!;
     }
 
-    get name() {
-        return this[ctx].keystore.info.name;
-    }
-
-    get gender() {
-        return this[ctx].keystore.info.gender;
-    }
-
-    get age() {
-        return this[ctx].keystore.info.age;
-    }
     //#endregion
     
     //#region Lifecycle
@@ -560,14 +549,10 @@ export class Bot {
         this[ctx].keystore.session.tempPassword = loginResult.session.tempPassword;
         this[ctx].keystore.session.sessionDate = loginResult.session.sessionDate;
 
-        this[ctx].keystore.info = loginResult.info;
-
         this[eventsDX].emit('keystoreChange', this[ctx].keystore);
 
         this[log].emit('trace', 'Bot', `Keystore: ${JSON.stringify(this[ctx].keystore)}`);
         this[log].emit('info', 'Bot', `Credentials for user ${this.uin} successfully retrieved`);
-        this[log].emit('info', 'Bot',
-            `Name: ${this[ctx].keystore.info.name}; Gender: ${this[ctx].keystore.info.gender}; Age: ${this[ctx].keystore.info.age}`);
 
         await this.botOnline();
     }

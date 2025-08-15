@@ -44,11 +44,6 @@ export interface KeystoreSerialized {
         noPicSig?: BufferSerialized;
         sequence: number;
     };
-    info: {
-        age: number;
-        gender: number;
-        name: string;
-    };
 }
 
 function serializeBuffer(data?: Buffer) {
@@ -128,11 +123,6 @@ export function serializeKeystore(data: Keystore): KeystoreSerialized {
             noPicSig: serializeBuffer(data.session.noPicSig),
             sequence: data.session.sequence,
         },
-        info: {
-            age: data.info.age,
-            gender: data.info.gender,
-            name: data.info.name,
-        }
     };
 }
 
@@ -166,11 +156,6 @@ export function deserializeKeystore(data: KeystoreSerialized): Keystore {
             tempPassword: deserializeBuffer(data.session.tempPassword),
             noPicSig: deserializeBuffer(data.session.noPicSig),
             sequence: data.session.sequence,
-        },
-        info: {
-            age: data.info.age,
-            gender: data.info.gender,
-            name: data.info.name,
         },
     };
 }

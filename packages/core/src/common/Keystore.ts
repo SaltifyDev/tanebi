@@ -71,12 +71,4 @@ export interface Keystore {
 
         sequence: number;
     };
-
-    info: {
-        age: number;
-
-        gender: number;
-
-        name: string;
-    };
 }

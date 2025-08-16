@@ -1,5 +1,4 @@
-import { MilkyFriendRequest } from '@/struct/friend';
-import { MilkyGroupNotification } from '@/struct/group';
+import { FriendRequest, GroupNotification } from '@saltify/milky-types';
 import { BotFriendRequest, BotGroupAdminChangeNotification, BotGroupInvitedJoinRequest, BotGroupJoinRequest, BotGroupMemberKickNotification, BotGroupMemberLeaveNotification, GroupNotificationBase, RequestState } from 'tanebi';
 
 export function transformRequestState(state: RequestState): 'pending' | 'accepted' | 'rejected' | 'ignored' {
@@ -12,7 +11,7 @@ export function transformRequestState(state: RequestState): 'pending' | 'accepte
     return 'ignored';
 }
 
-export function transformFriendRequest(r: BotFriendRequest): MilkyFriendRequest {
+export function transformFriendRequest(r: BotFriendRequest): FriendRequest {
     return {
         time: r.time,
         initiator_id: r.fromUin,
@@ -26,7 +25,7 @@ export function transformFriendRequest(r: BotFriendRequest): MilkyFriendRequest 
     };
 }
 
-export function transformGroupNotification(n: GroupNotificationBase): MilkyGroupNotification {
+export function transformGroupNotification(n: GroupNotificationBase): GroupNotification {
     if (n instanceof BotGroupJoinRequest) {
         return {
             type: 'join_request',

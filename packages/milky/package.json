@@ -27,12 +27,13 @@
   "devDependencies": {
     "@hono/node-server": "^1.14.4",
     "@hono/node-ws": "^1.2.0",
+    "@saltify/milky-types": "1.0.0-draft.3",
     "chalk": "^5.4.1",
     "hono": "^4.8.3",
     "music-metadata": "^11.6.0",
     "tanebi": "workspace:*",
     "ts-qrcode-terminal": "^1.0.1",
     "winston": "^3.17.0",
-    "zod": "^4.0.14"
+    "zod": "^4.0.17"
   }
 }

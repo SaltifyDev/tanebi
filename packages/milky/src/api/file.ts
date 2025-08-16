@@ -1,17 +1,28 @@
-import { defineApi, Failed, Ok } from '@/api';
+import {
+    CreateGroupFolderInput,
+    CreateGroupFolderOutput,
+    DeleteGroupFileInput,
+    DeleteGroupFolderInput,
+    GetGroupFileDownloadUrlInput,
+    GetGroupFileDownloadUrlOutput,
+    GetGroupFilesInput,
+    GetGroupFilesOutput,
+    GroupFileEntity,
+    GroupFolderEntity,
+    MoveGroupFileInput,
+    RenameGroupFolderInput,
+    UploadGroupFileInput,
+    UploadGroupFileOutput,
+} from '@saltify/milky-types';
 import z from 'zod';
+import { defineApi, Failed, Ok } from '@/common/api';
 import { resolveMilkyUri } from '@/common/download';
-import type { MilkyGroupFile, MilkyGroupFolder } from '@/struct/group';
 import { transformGroupFile, transformGroupFolder } from '@/transform/entity';
 
 export const UploadGroupFile = defineApi(
     'upload_group_file',
-    z.object({
-        group_id: z.number().int().positive(),
-        parent_folder_id: z.string().optional(),
-        file_uri: z.string(),
-        file_name: z.string(),
-    }),
+    UploadGroupFileInput,
+    UploadGroupFileOutput,
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
@@ -23,10 +34,8 @@ export const UploadGroupFile = defineApi(
 
 export const GetGroupFileDownloadUrl = defineApi(
     'get_group_file_download_url',
-    z.object({
-        group_id: z.number().int().positive(),
-        file_id: z.string(),
-    }),
+    GetGroupFileDownloadUrlInput,
+    GetGroupFileDownloadUrlOutput,
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
@@ -37,18 +46,16 @@ export const GetGroupFileDownloadUrl = defineApi(
 
 export const GetGroupFiles = defineApi(
     'get_group_files',
-    z.object({
-        group_id: z.number().int().positive(),
-        parent_folder_id: z.string().optional(),
-    }),
+    GetGroupFilesInput,
+    GetGroupFilesOutput,
     async (app, p) => {
         const group = await app.bot.getGroup(p.group_id);
         if (!group) return Failed(-404, 'Group not found');
         const entries = await group.listFiles(p.parent_folder_id ?? '/');
-        const files: MilkyGroupFile[] = entries
+        const files: GroupFileEntity[] = entries
             .filter(e => e.type === 'file')
             .map(e => transformGroupFile(group, e));
-        const folders: MilkyGroupFolder[] = entries
+        const folders: GroupFolderEntity[] = entries
             .filter(e => e.type === 'folder')
             .map(e => transformGroupFolder(group, e));
         return Ok({ files, folders });
@@ -57,40 +64,32 @@ export const GetGroupFiles = defineApi(
 
 export const MoveGroupFile = defineApi(
     'move_group_file',
-    z.object({
-        group_id: z.number().int().positive(),
-        file_id: z.string(),
-        parent_folder_id: z.string().optional(),
-        target_folder_id: z.string().optional(),
-    }),
+    MoveGroupFileInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         await group.moveFile(payload.file_id, payload.parent_folder_id ?? '/', payload.target_folder_id ?? '/');
-        return Ok();
+        return Ok({});
     }
 );
 
 export const DeleteGroupFile = defineApi(
     'delete_group_file',
-    z.object({
-        group_id: z.number().int().positive(),
-        file_id: z.string(),
-    }),
+    DeleteGroupFileInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         await group.deleteFile(payload.file_id);
-        return Ok();
+        return Ok({});
     }
 );
 
 export const CreateGroupFolder = defineApi(
     'create_group_folder',
-    z.object({
-        group_id: z.number().int().positive(),
-        folder_name: z.string(),
-    }),
+    CreateGroupFolderInput,
+    CreateGroupFolderOutput,
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
@@ -101,30 +100,25 @@ export const CreateGroupFolder = defineApi(
 
 export const RenameGroupFolder = defineApi(
     'rename_group_folder',
-    z.object({
-        group_id: z.number().int().positive(),
-        folder_id: z.string(),
-        new_folder_name: z.string(),
-    }),
+    RenameGroupFolderInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         await group.renameFolder(payload.folder_id, payload.new_folder_name);
-        return Ok();
+        return Ok({});
     }
 );
 
 export const DeleteGroupFolder = defineApi(
     'delete_group_folder',
-    z.object({
-        group_id: z.number().int().positive(),
-        folder_id: z.string(),
-    }),
+    DeleteGroupFolderInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         await group.deleteFolder(payload.folder_id);
-        return Ok();
+        return Ok({});
     }
 );
 

@@ -1,6 +1,6 @@
 import { Config } from '@/common/config';
 import { MilkyApp } from '@/index';
-import { Failed } from '@/api';
+import { Failed } from '@/common/api';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
@@ -72,13 +72,13 @@ export class MilkyHttpHandler {
         router.post('/api/:endpoint', async (c) => {
             const endpoint = c.req.param('endpoint');
             const payload = await c.req.json();
-            if (!this.app.apiHandler.hasApi(endpoint)) {
+            if (!this.app.apiCollection.hasApi(endpoint)) {
                 this.logger.warn(`${c.env.incoming.socket.remoteAddress} -> ${c.req.path} (API not found)`);
                 return c.json(Failed(404, 'API not found'), 404);
             }
 
             const start = Date.now();
-            const response = await this.app.apiHandler.handle(endpoint, payload);
+            const response = await this.app.apiCollection.handle(endpoint, payload);
             const end = Date.now();
             this.logger.info(
                 `${c.env.incoming.socket.remoteAddress} -> ${c.req.path} (${

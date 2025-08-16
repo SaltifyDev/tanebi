@@ -2,7 +2,7 @@
 
 import { Config, defaultProfile, exampleConfig, zConfig, zProfile } from '@/common/config';
 import { NTSilkBinding } from '@/common/silk';
-import { ApiHandler as MilkyApiHandler } from '@/api';
+import { MilkyApiCollection } from '@/common/api';
 import { MilkyHttpHandler } from '@/network/http';
 import chalk from 'chalk';
 import {
@@ -22,7 +22,7 @@ import { QRErrorCorrectLevel, generate } from 'ts-qrcode-terminal';
 import winston, { transports, format } from 'winston';
 import fs from 'node:fs';
 import path from 'node:path';
-import { MilkyEventTypes } from '@/struct/event';
+import { MilkyEventTypes } from '@/common/event';
 import { configureEventTransformation } from '@/transform/event';
 import { SystemApi } from '@/api/system';
 import { MessageApi } from '@/api/message';
@@ -34,7 +34,7 @@ import { MilkyWebhookHandler } from '@/network/webhook';
 
 export class MilkyApp {
     readonly logger: winston.Logger;
-    readonly apiHandler = new MilkyApiHandler(this, [
+    readonly apiCollection = new MilkyApiCollection(this, [
         ...SystemApi,
         ...MessageApi,
         ...FriendApi,

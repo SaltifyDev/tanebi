@@ -1,96 +1,97 @@
-import { defineApi, Failed, Ok } from '@/api';
+import { defineApi, Failed, Ok } from '@/common/api';
 import { resolveMilkyUri } from '@/common/download';
 import { transformGroupNotification } from '@/transform/notification';
 import { GroupRequestOperation } from 'tanebi';
+import {
+    SetGroupNameInput,
+    SetGroupAvatarInput,
+    SetGroupMemberCardInput,
+    SetGroupMemberSpecialTitleInput,
+    SetGroupMemberAdminInput,
+    SetGroupMemberMuteInput,
+    SetGroupWholeMuteInput,
+    KickGroupMemberInput,
+    QuitGroupInput,
+    SendGroupMessageReactionInput,
+    SendGroupNudgeInput,
+    GetGroupNotificationsInput,
+    GetGroupNotificationsOutput,
+    AcceptGroupRequestInput,
+    RejectGroupRequestInput,
+} from '@saltify/milky-types';
 import z from 'zod';
 
 export const SetGroupName = defineApi(
     'set_group_name',
-    z.object({
-        group_id: z.number().int().positive(),
-        new_group_name: z.string(),
-    }),
+    SetGroupNameInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         await group.setName(payload.new_group_name);
-        return Ok();
+        return Ok({});
     }
 );
 
 export const SetGroupAvatar = defineApi(
     'set_group_avatar',
-    z.object({
-        group_id: z.number().int().positive(),
-        image_uri: z.string(),
-    }),
+    SetGroupAvatarInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         const image = await resolveMilkyUri(payload.image_uri);
         await group.setAvatar(image);
-        return Ok();
+        return Ok({});
     }
 );
 
 export const SetGroupMemberCard = defineApi(
     'set_group_member_card',
-    z.object({
-        group_id: z.number().int().positive(),
-        user_id: z.number().int().positive(),
-        card: z.string(),
-    }),
+    SetGroupMemberCardInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         const member = await group.getMember(payload.user_id);
         if (!member) return Failed(-404, 'Member not found');
         await member.setCard(payload.card);
-        return Ok();
+        return Ok({});
     }
 );
 
 export const SetGroupMemberSpecialTitle = defineApi(
     'set_group_member_special_title',
-    z.object({
-        group_id: z.number().int().positive(),
-        user_id: z.number().int().positive(),
-        special_title: z.string(),
-    }),
+    SetGroupMemberSpecialTitleInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         const member = await group.getMember(payload.user_id);
         if (!member) return Failed(-404, 'Member not found');
         await member.setSpecialTitle(payload.special_title);
-        return Ok();
+        return Ok({});
     }
 );
 
 export const SetGroupMemberAdmin = defineApi(
     'set_group_member_admin',
-    z.object({
-        group_id: z.number().int().positive(),
-        user_id: z.number().int().positive(),
-        is_set: z.boolean().default(true),
-    }),
+    SetGroupMemberAdminInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         const member = await group.getMember(payload.user_id);
         if (!member) return Failed(-404, 'Member not found');
         await member.setAdmin(payload.is_set);
-        return Ok();
+        return Ok({});
     }
 );
 
 export const SetGroupMemberMute = defineApi(
     'set_group_member_mute',
-    z.object({
-        group_id: z.number().int().positive(),
-        user_id: z.number().int().positive(),
-        duration: z.number().int().min(0).default(0),
-    }),
+    SetGroupMemberMuteInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
@@ -101,98 +102,83 @@ export const SetGroupMemberMute = defineApi(
         } else {
             await member.mute(payload.duration);
         }
-        return Ok();
+        return Ok({});
     }
 );
 
 export const SetGroupWholeMute = defineApi(
     'set_group_whole_mute',
-    z.object({
-        group_id: z.number().int().positive(),
-        is_mute: z.boolean().default(true),
-    }),
+    SetGroupWholeMuteInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         await group.setMuteAll(payload.is_mute);
-        return Ok();
+        return Ok({});
     }
 );
 
 export const KickGroupMember = defineApi(
     'kick_group_member',
-    z.object({
-        group_id: z.number().int().positive(),
-        user_id: z.number().int().positive(),
-        reject_add_request: z.boolean().default(true),
-    }),
+    KickGroupMemberInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         const member = await group.getMember(payload.user_id);
         if (!member) return Failed(-404, 'Member not found');
         await member.kick(payload.reject_add_request);
-        return Ok();
+        return Ok({});
     }
 );
 
 export const QuitGroup = defineApi(
     'quit_group',
-    z.object({
-        group_id: z.number().int().positive(),
-    }),
+    QuitGroupInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         await group.leave();
-        return Ok();
+        return Ok({});
     }
 );
 
 export const SendGroupMessageReaction = defineApi(
     'send_group_message_reaction',
-    z.object({
-        group_id: z.number().int().positive(),
-        message_seq: z.number().int().positive(),
-        reaction: z.string(),
-        is_add: z.boolean().default(true),
-    }),
+    SendGroupMessageReactionInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         const code = payload.reaction;
         await group.sendReaction(payload.message_seq, code, payload.is_add);
-        return Ok();
+        return Ok({});
     }
 );
 
 export const SendGroupNudge = defineApi(
     'send_group_nudge',
-    z.object({
-        group_id: z.number().int().positive(),
-        user_id: z.number().int().positive(),
-    }),
+    SendGroupNudgeInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         const member = await group.getMember(payload.user_id);
         if (!member) return Failed(-404, 'Member not found');
         await member.sendGrayTipPoke();
-        return Ok();
+        return Ok({});
     }
 );
 
 export const GetGroupNotifications = defineApi(
     'get_group_notifications',
-    z.object({
-        start_notification_seq: z.number().int().positive().optional(),
-        is_filtered: z.boolean().default(false),
-        count: z.number().int().positive().default(20),
-    }),
+    GetGroupNotificationsInput,
+    GetGroupNotificationsOutput,
     async (app, payload) => {
         const notifications = await app.bot.getGroupNotifications(
             payload.is_filtered,
-            payload.count,
+            payload.limit,
             BigInt(payload.start_notification_seq ?? 0),
         );
         return Ok({
@@ -205,27 +191,22 @@ export const GetGroupNotifications = defineApi(
 
 export const AcceptGroupRequest = defineApi(
     'accept_group_request',
-    z.object({
-        notification_seq: z.number().int().positive(),
-        is_filtered: z.boolean().default(false),
-    }),
+    AcceptGroupRequestInput,
+    z.object(),
     async (app, payload) => {
         await app.bot.handleGroupRequest(
             BigInt(payload.notification_seq),
             payload.is_filtered,
             GroupRequestOperation.Accept,
         );
-        return Ok();
+        return Ok({});
     },
 );
 
 export const RejectGroupRequest = defineApi(
     'reject_group_request',
-    z.object({
-        notification_seq: z.number().int().positive(),
-        is_filtered: z.boolean().default(false),
-        reason: z.string().optional(),
-    }),
+    RejectGroupRequestInput,
+    z.object(),
     async (app, payload) => {
         await app.bot.handleGroupRequest(
             BigInt(payload.notification_seq),
@@ -233,7 +214,7 @@ export const RejectGroupRequest = defineApi(
             GroupRequestOperation.Reject,
             payload.reason,
         );
-        return Ok();
+        return Ok({});
     },
 );
 

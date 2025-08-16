@@ -1,11 +1,10 @@
 import { resolveMilkyUri } from '@/common/download';
 import { convert } from '@/common/silk';
 import { MilkyApp } from '@/index';
-import { MilkyOutgoingForwardSegment, MilkyOutgoingImageSegment, MilkyOutgoingSegment, zMilkyOutgoingSegment } from '@/struct/message/outgoing';
+import { OutgoingForwardedMessage, OutgoingSegment } from '@saltify/milky-types';
 import { BotFriend, BotGroup, ForwardedMessageBuilder, ForwardedMessagePacker, GroupMessageBuilder, ImageSubType, PrivateMessageBuilder } from 'tanebi';
-import z from 'zod';
 
-export function transformMilkyImageSubType(subType: MilkyOutgoingImageSegment['data']['sub_type']): ImageSubType {
+export function transformMilkyImageSubType(subType: 'normal' | 'sticker' | string): ImageSubType {
     if (subType === 'normal')
         return ImageSubType.Picture;
     if (subType === 'sticker')
@@ -17,7 +16,7 @@ export async function transformOutgoingFriendMessage(
     app: MilkyApp,
     contact: BotFriend,
     b: PrivateMessageBuilder,
-    segments: MilkyOutgoingSegment[]
+    segments: OutgoingSegment[]
 ) {
     for (const segment of segments) {
         if (segment.type === 'text') {
@@ -45,7 +44,7 @@ export async function transformOutgoingFriendMessage(
             }
         } else if (segment.type === 'forward') {
             b.forward(async (p) => {
-                await transformOutgoingForwardMessages(app, p, segment.data.messages);
+                await transformOutgoingForwardMessages(app, p, segment.data.messages as OutgoingForwardedMessage[]);
             });
         }
     }
@@ -55,7 +54,7 @@ export async function transformOutgoingGroupMessage(
     app: MilkyApp,
     contact: BotGroup,
     b: GroupMessageBuilder,
-    segments: MilkyOutgoingSegment[]
+    segments: OutgoingSegment[]
 ) {
     for (const segment of segments) {
         if (segment.type === 'text') {
@@ -87,22 +86,20 @@ export async function transformOutgoingGroupMessage(
             }
         } else if (segment.type === 'forward') {
             b.forward(async (p) => {
-                await transformOutgoingForwardMessages(app, p, segment.data.messages);
+                await transformOutgoingForwardMessages(app, p, segment.data.messages as OutgoingForwardedMessage[]);
             });
         }
     }
 }
 
-const zForwardedMessageSegment = z.array(zMilkyOutgoingSegment);
-
 export async function transformOutgoingForwardMessages(
     app: MilkyApp,
     p: ForwardedMessagePacker,
-    messages: MilkyOutgoingForwardSegment['data']['messages']
+    messages: OutgoingForwardedMessage[]
 ) {
     for (const message of messages) {
         p.fake(message.user_id, message.sender_name, async (b) => {
-            await transformOutgoingForwardSegments(app, b, zForwardedMessageSegment.parse(message.segments));
+            await transformOutgoingForwardSegments(app, b, message.segments as OutgoingSegment[]);
         });
     }
 }
@@ -110,7 +107,7 @@ export async function transformOutgoingForwardMessages(
 export async function transformOutgoingForwardSegments(
     app: MilkyApp,
     b: ForwardedMessageBuilder,
-    segments: MilkyOutgoingSegment[]
+    segments: OutgoingSegment[]
 ) {
     for (const segment of segments) {
         if (segment.type === 'text') {
@@ -122,7 +119,7 @@ export async function transformOutgoingForwardSegments(
             b.image(image, transformMilkyImageSubType(segment.data.sub_type), segment.data.summary);
         } else if (segment.type === 'forward') {
             b.forward(async (p) => {
-                await transformOutgoingForwardMessages(app, p, segment.data.messages);
+                await transformOutgoingForwardMessages(app, p, segment.data.messages as OutgoingForwardedMessage[]);
             });
         }
     }

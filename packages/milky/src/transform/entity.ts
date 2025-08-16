@@ -1,5 +1,4 @@
-import { MilkyFriend } from '@/struct/friend';
-import { MilkyGroup, MilkyGroupFile, MilkyGroupFolder, MilkyGroupMember } from '@/struct/group';
+import { FriendEntity, GroupEntity, GroupFileEntity, GroupFolderEntity, GroupMemberEntity } from '@saltify/milky-types';
 import {
     BotFriend,
     BotGroup,
@@ -16,7 +15,7 @@ export function transformGender(gender: UserInfoGender): 'male' | 'female' | 'un
     return 'unknown';
 }
 
-export function transformFriend(friend: BotFriend): MilkyFriend {
+export function transformFriend(friend: BotFriend): FriendEntity {
     return {
         user_id: friend.uin,
         nickname: friend.nickname ?? '' + friend.uin,
@@ -30,7 +29,7 @@ export function transformFriend(friend: BotFriend): MilkyFriend {
     };
 }
 
-export function transformGroup(group: BotGroup): MilkyGroup {
+export function transformGroup(group: BotGroup): GroupEntity {
     return {
         group_id: group.uin,
         group_name: group.name,
@@ -39,13 +38,13 @@ export function transformGroup(group: BotGroup): MilkyGroup {
     };
 }
 
-export function transformGroupMemberRole(role: GroupMemberPermission): 'owner' | 'admin' | 'member' {
+export function transformGroupMemberRole(role: GroupMemberPermission): GroupMemberEntity['role'] {
     if (role === GroupMemberPermission.Owner) return 'owner';
     if (role === GroupMemberPermission.Admin) return 'admin';
     return 'member';
 }
 
-export function transformGroupMember(member: BotGroupMember): MilkyGroupMember {
+export function transformGroupMember(member: BotGroupMember): GroupMemberEntity {
     return {
         user_id: member.uin,
         nickname: member.nickname ?? '',
@@ -61,7 +60,7 @@ export function transformGroupMember(member: BotGroupMember): MilkyGroupMember {
     };
 }
 
-export function transformGroupFile(group: BotGroup, file: BotGroupFile): MilkyGroupFile {
+export function transformGroupFile(group: BotGroup, file: BotGroupFile): GroupFileEntity {
     return {
         group_id: group.uin,
         file_id: file.fileId,
@@ -75,7 +74,7 @@ export function transformGroupFile(group: BotGroup, file: BotGroupFile): MilkyGr
     };
 }
 
-export function transformGroupFolder(group: BotGroup, folder: BotGroupFolder): MilkyGroupFolder {
+export function transformGroupFolder(group: BotGroup, folder: BotGroupFolder): GroupFolderEntity {
     return {
         group_id: group.uin,
         folder_id: folder.folderId,

@@ -1,12 +1,32 @@
-import { defineApi, Failed, Ok } from '@/api';
+import { defineApi, Failed, Ok } from '@/common/api';
 import { appName, appVersion } from '@/constants';
 import { transformFriend, transformGender, transformGroup, transformGroupMember } from '@/transform/entity';
+import { transformProtocolOsType } from '@/transform/system';
+import {
+    GetImplInfoOutput,
+    GetLoginInfoOutput,
+    GetUserProfileInput,
+    GetUserProfileOutput,
+    GetFriendListInput,
+    GetFriendListOutput,
+    GetFriendInfoInput,
+    GetFriendInfoOutput,
+    GetGroupListInput,
+    GetGroupListOutput,
+    GetGroupInfoInput,
+    GetGroupInfoOutput,
+    GetGroupMemberListInput,
+    GetGroupMemberListOutput,
+    GetGroupMemberInfoInput,
+    GetGroupMemberInfoOutput,
+} from '@saltify/milky-types';
 import { ctx, FetchUserInfoKey, UserInfoGender } from 'tanebi';
 import z from 'zod';
 
 export const GetLoginInfo = defineApi(
     'get_login_info',
-    z.object({}),
+    z.object(),
+    GetLoginInfoOutput,
     async (app) => {
         const profile = await app.bot.getUserInfo(app.bot.uin, [
             FetchUserInfoKey.Nickname,
@@ -20,25 +40,21 @@ export const GetLoginInfo = defineApi(
 
 export const GetImplInfo = defineApi(
     'get_impl_info',
-    z.object({}),
+    z.object(),
+    GetImplInfoOutput,
     async (app) => Ok({
         impl_name: appName,
         impl_version: appVersion,
         qq_protocol_version: app.bot[ctx].appInfo.CurrentVersion,
-        qq_protocol_type: {
-            'Windows': 'windows',
-            'Linux': 'linux',
-            'Mac': 'macos'
-        }[app.bot[ctx].appInfo.Os] ?? 'linux',
+        qq_protocol_type: transformProtocolOsType(app.bot[ctx].appInfo.Os),
         milky_version: '1.0',
     }),
 );
 
 export const GetUserProfile = defineApi(
     'get_user_profile',
-    z.object({
-        user_id: z.number().int().positive(),
-    }),
+    GetUserProfileInput,
+    GetUserProfileOutput,
     async (app, payload) => {
         const user = await app.bot.getUserInfo(payload.user_id, [
             FetchUserInfoKey.Nickname,
@@ -69,9 +85,8 @@ export const GetUserProfile = defineApi(
 
 export const GetFriendList = defineApi(
     'get_friend_list',
-    z.object({
-        no_cache: z.boolean().default(false),
-    }),
+    GetFriendListInput,
+    GetFriendListOutput,
     async (app, payload) => {
         const friends = await app.bot.getFriends(payload.no_cache);
         return Ok({
@@ -82,10 +97,8 @@ export const GetFriendList = defineApi(
 
 export const GetFriendInfo = defineApi(
     'get_friend_info',
-    z.object({
-        user_id: z.number().int().positive(),
-        no_cache: z.boolean().default(false),
-    }),
+    GetFriendInfoInput,
+    GetFriendInfoOutput,
     async (app, payload) => {
         const friend = await app.bot.getFriend(payload.user_id, payload.no_cache);
         if (!friend) {
@@ -99,9 +112,8 @@ export const GetFriendInfo = defineApi(
 
 export const GetGroupList = defineApi(
     'get_group_list',
-    z.object({
-        no_cache: z.boolean().default(false),
-    }),
+    GetGroupListInput,
+    GetGroupListOutput,
     async (app, payload) => {
         const groups = await app.bot.getGroups(payload.no_cache);
         return Ok({
@@ -112,10 +124,8 @@ export const GetGroupList = defineApi(
 
 export const GetGroupInfo = defineApi(
     'get_group_info',
-    z.object({
-        group_id: z.number().int().positive(),
-        no_cache: z.boolean().default(false),
-    }),
+    GetGroupInfoInput,
+    GetGroupInfoOutput,
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id, payload.no_cache);
         if (!group) {
@@ -129,10 +139,8 @@ export const GetGroupInfo = defineApi(
 
 export const GetGroupMemberList = defineApi(
     'get_group_member_list',
-    z.object({
-        group_id: z.number().int().positive(),
-        no_cache: z.boolean().default(false),
-    }),
+    GetGroupMemberListInput,
+    GetGroupMemberListOutput,
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id, payload.no_cache);
         if (!group) {
@@ -147,11 +155,8 @@ export const GetGroupMemberList = defineApi(
 
 export const GetGroupMemberInfo = defineApi(
     'get_group_member_info',
-    z.object({
-        group_id: z.number().int().positive(),
-        user_id: z.number().int().positive(),
-        no_cache: z.boolean().default(false),
-    }),
+    GetGroupMemberInfoInput,
+    GetGroupMemberInfoOutput,
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id, payload.no_cache);
         if (!group) {

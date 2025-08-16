@@ -1,6 +1,4 @@
-import { defineApi, Failed, Ok } from '@/api';
-import { zMessageScene } from '@/struct/message/common';
-import { zMilkyOutgoingSegment } from '@/struct/message/outgoing';
+import { defineApi, Failed, Ok } from '@/common/api';
 import {
     transformDanglingIncomingGroupMessage,
     transformIncomingForwardedMessage,
@@ -8,15 +6,29 @@ import {
     transformIncomingGroupMessage,
 } from '@/transform/message/incoming';
 import { transformOutgoingFriendMessage, transformOutgoingGroupMessage } from '@/transform/message/outgoing';
+import {
+    GetForwardedMessagesInput,
+    GetForwardedMessagesOutput,
+    GetHistoryMessagesInput,
+    GetHistoryMessagesOutput,
+    GetMessageInput,
+    GetMessageOutput,
+    GetResourceTempUrlInput,
+    GetResourceTempUrlOutput,
+    RecallGroupMessageInput,
+    RecallPrivateMessageInput,
+    SendGroupMessageInput,
+    SendGroupMessageOutput,
+    SendPrivateMessageInput,
+    SendPrivateMessageOutput,
+} from '@saltify/milky-types';
 import { BotMsgForwardPack, rawMessage } from 'tanebi';
 import z from 'zod';
 
 export const SendPrivateMessage = defineApi(
     'send_private_message',
-    z.object({
-        user_id: z.number().int().positive(),
-        message: z.array(zMilkyOutgoingSegment),
-    }),
+    SendPrivateMessageInput,
+    SendPrivateMessageOutput,
     async (app, payload) => {
         const friend = await app.bot.getFriend(payload.user_id);
         if (!friend) {
@@ -34,10 +46,8 @@ export const SendPrivateMessage = defineApi(
 
 export const SendGroupMessage = defineApi(
     'send_group_message',
-    z.object({
-        group_id: z.number().int().positive(),
-        message: z.array(zMilkyOutgoingSegment),
-    }),
+    SendGroupMessageInput,
+    SendGroupMessageOutput,
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) {
@@ -55,11 +65,8 @@ export const SendGroupMessage = defineApi(
 
 export const GetMessage = defineApi(
     'get_message',
-    z.object({
-        message_scene: zMessageScene,
-        peer_id: z.number().int().positive(),
-        message_seq: z.number().int().positive(),
-    }),
+    GetMessageInput,
+    GetMessageOutput,
     async (app, payload) => {
         if (payload.message_scene === 'friend') {
             const friend = await app.bot.getFriend(payload.peer_id);
@@ -98,12 +105,8 @@ export const GetMessage = defineApi(
 
 export const GetHistoryMessages = defineApi(
     'get_history_messages',
-    z.object({
-        message_scene: zMessageScene,
-        peer_id: z.number().int().positive(),
-        start_message_seq: z.number().int().positive().optional(),
-        limit: z.number().int().min(1).max(100).default(20),
-    }),
+    GetHistoryMessagesInput,
+    GetHistoryMessagesOutput,
     async (app, payload) => {
         if (payload.message_scene === 'friend') {
             const friend = await app.bot.getFriend(payload.peer_id);
@@ -145,9 +148,8 @@ export const GetHistoryMessages = defineApi(
 
 export const GetForwardedMessages = defineApi(
     'get_forwarded_messages',
-    z.object({
-        forward_id: z.string(),
-    }),
+    GetForwardedMessagesInput,
+    GetForwardedMessagesOutput,
     async (app, payload) => {
         const downloadedMsgs = await new BotMsgForwardPack(
             {
@@ -166,9 +168,8 @@ export const GetForwardedMessages = defineApi(
 
 export const GetResourceTempUrl = defineApi(
     'get_resource_temp_url',
-    z.object({
-        resource_id: z.string(),
-    }),
+    GetResourceTempUrlInput,
+    GetResourceTempUrlOutput,
     async (app, payload) => {
         return Ok({
             url: await app.bot.getResourceDownloadUrl(payload.resource_id),
@@ -178,33 +179,29 @@ export const GetResourceTempUrl = defineApi(
 
 export const RecallPrivateMessage = defineApi(
     'recall_private_message',
-    z.object({
-        user_id: z.number().int().positive(),
-        message_seq: z.number().int().positive(),
-    }),
+    RecallPrivateMessageInput,
+    z.object(),
     async (app, payload) => {
         const friend = await app.bot.getFriend(payload.user_id);
         if (!friend) {
             return Failed(-404, 'Friend not found');
         }
         await friend.recallMsg(payload.message_seq);
-        return Ok();
+        return Ok({});
     }
 );
 
 export const RecallGroupMessage = defineApi(
     'recall_group_message',
-    z.object({
-        group_id: z.number().int().positive(),
-        message_seq: z.number().int().positive(),
-    }),
+    RecallGroupMessageInput,
+    z.object(),
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) {
             return Failed(-404, 'Group not found');
         }
         await group.recallMsg(payload.message_seq);
-        return Ok();
+        return Ok({});
     }
 );
 

@@ -1,11 +1,11 @@
-import { MilkyIncomingForwardedMessage, MilkyIncomingFriendMessage, MilkyIncomingGroupMessage, MilkyIncomingSegment } from '@/struct/message/incoming';
 import { transformFriend, transformGroup, transformGroupMember } from '@/transform/entity';
+import { IncomingForwardedMessage, IncomingMessage, IncomingSegment } from '@saltify/milky-types';
 import { BotFriend, BotFriendMessage, BotGroup, BotGroupMember, BotGroupMessage, DispatchedMessageBody, ForwardedMessage, ForwardedMessageBody, ImageSubType, rawMessage } from 'tanebi';
 
 export function transformIncomingFriendMessage(
     friend: BotFriend,
     message: BotFriendMessage,
-): MilkyIncomingFriendMessage {
+): IncomingMessage {
     return {
         message_scene: 'friend',
         peer_id: friend.uin,
@@ -21,7 +21,7 @@ export function transformIncomingGroupMessage(
     group: BotGroup,
     member: BotGroupMember,
     message: BotGroupMessage,
-): MilkyIncomingGroupMessage {
+): IncomingMessage {
     return {
         message_scene: 'group',
         peer_id: group.uin,
@@ -37,7 +37,7 @@ export function transformIncomingGroupMessage(
 export function transformDanglingIncomingGroupMessage(
     group: BotGroup,
     message: BotGroupMessage,
-): MilkyIncomingGroupMessage {
+): IncomingMessage {
     return {
         message_scene: 'group',
         peer_id: group.uin,
@@ -64,8 +64,8 @@ export function transformDanglingIncomingGroupMessage(
 export function transformIncomingSegment(
     message: DispatchedMessageBody,
     repliedSequence?: number
-): MilkyIncomingSegment[] {
-    const segments: MilkyIncomingSegment[] = [];
+): IncomingSegment[] {
+    const segments: IncomingSegment[] = [];
     if (repliedSequence) {
         segments.push({
             type: 'reply',
@@ -76,7 +76,7 @@ export function transformIncomingSegment(
     }
 
     if (message.type === 'bubble') {
-        segments.push(...message.content.segments.map<MilkyIncomingSegment>((s) => {
+        segments.push(...message.content.segments.map<IncomingSegment>((s) => {
             if (s.type === 'text') {
                 return {
                     type: 'text',
@@ -94,13 +94,15 @@ export function transformIncomingSegment(
             } else if (s.type === 'mentionAll') {
                 return {
                     type: 'mention_all',
-                    data: {},
+                    data: {} as Record<string, never>,
                 };
             } else if (s.type === 'image') {
                 return {
                     type: 'image',
                     data: {
                         resource_id: s.content.fileId,
+                        width: s.content.width,
+                        height: s.content.height,
                         temp_url: s.content.url,
                         summary: s.content.summary,
                         sub_type: transformImageSubType(s.content.subType),
@@ -120,6 +122,8 @@ export function transformIncomingSegment(
             type: 'image',
             data: {
                 resource_id: message.content.fileId,
+                width: message.content.width,
+                height: message.content.height,
                 temp_url: message.content.url,
                 summary: message.content.summary,
                 sub_type: transformImageSubType(message.content.subType),
@@ -139,6 +143,9 @@ export function transformIncomingSegment(
             type: 'video',
             data: {
                 resource_id: message.content.fileId,
+                width: message.content.width,
+                height: message.content.height,
+                duration: message.content.duration,
                 temp_url: message.content.url,
             },
         });
@@ -166,7 +173,7 @@ export function transformImageSubType(type: ImageSubType): 'normal' | 'sticker' 
     return 'normal';
 }
 
-export function transformIncomingForwardedMessage(forwarded: ForwardedMessage): MilkyIncomingForwardedMessage {
+export function transformIncomingForwardedMessage(forwarded: ForwardedMessage): IncomingForwardedMessage {
     return {
         sender_name: forwarded.senderName,
         avatar_url: forwarded.senderAvatarUrl,
@@ -177,9 +184,9 @@ export function transformIncomingForwardedMessage(forwarded: ForwardedMessage): 
 
 export function transformIncomingForwardedSegment(
     forwarded: ForwardedMessageBody,
-): MilkyIncomingSegment[] {
+): IncomingSegment[] {
     if (forwarded.type === 'bubble') {
-        return forwarded.content.segments.map<MilkyIncomingSegment>((s) => {
+        return forwarded.content.segments.map<IncomingSegment>((s) => {
             if (s.type === 'text') {
                 return {
                     type: 'text',
@@ -197,13 +204,15 @@ export function transformIncomingForwardedSegment(
             } else if (s.type === 'mentionAll') {
                 return {
                     type: 'mention_all',
-                    data: {},
+                    data: {} as Record<string, never>,
                 };
             } else if (s.type === 'image') {
                 return {
                     type: 'image',
                     data: {
                         resource_id: s.content.fileId,
+                        width: s.content.width,
+                        height: s.content.height,
                         temp_url: s.content.url,
                         summary: s.content.summary,
                         sub_type: transformImageSubType(s.content.subType),
@@ -223,6 +232,8 @@ export function transformIncomingForwardedSegment(
             type: 'image',
             data: {
                 resource_id: forwarded.content.fileId,
+                width: forwarded.content.width,
+                height: forwarded.content.height,
                 temp_url: forwarded.content.url,
                 summary: forwarded.content.summary,
                 sub_type: transformImageSubType(forwarded.content.subType),
@@ -233,6 +244,9 @@ export function transformIncomingForwardedSegment(
             type: 'video',
             data: {
                 resource_id: forwarded.content.fileId,
+                width: forwarded.content.width,
+                height: forwarded.content.height,
+                duration: forwarded.content.duration,
                 temp_url: forwarded.content.url,
             },
         }];

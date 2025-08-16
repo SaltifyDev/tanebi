@@ -1,44 +1,53 @@
 import { MilkyApp } from '@/index';
-import z from 'zod';
+import { z, ZodType } from 'zod';
 
-export interface MilkyApiResponse {
-    status: 'ok' | 'async' | 'failed';
+export interface MilkyApiOkResponse<T> {
+    status: 'ok';
+    retcode: 0;
+    data: T;
+}
+
+export interface MilkyApiFailedResponse {
+    status: 'failed';
     retcode: number;
-    data?: unknown;
-    message?: string;
+    message: string;
 }
 
-export function Ok(data?: unknown): MilkyApiResponse {
-    return { status: 'ok', retcode: 0, data: data ?? {} };
+export type MilkyApiResponse<T = unknown> = MilkyApiOkResponse<T> | MilkyApiFailedResponse;
+
+export interface MilkyApiHandler {
+    endpoint: string;
+    validator: ZodType;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    handler: (app: MilkyApp, payload: any) => Promise<MilkyApiResponse<unknown>>;
 }
 
-export function Failed(retcode: number, message: string): MilkyApiResponse {
+export function defineApi<Z extends ZodType, OZ extends ZodType>(
+    endpoint: string,
+    validator: Z,
+    outputTypeInfo: OZ,
+    handler: (app: MilkyApp, payload: z.infer<Z>) => Promise<MilkyApiResponse<z.infer<OZ>>>,
+): MilkyApiHandler {
+    return { endpoint, validator, handler };
+}
+
+export function Ok<OT>(data: OT): MilkyApiOkResponse<OT> {
+    return { status: 'ok', retcode: 0, data };
+}
+
+export function Failed(retcode: number, message: string): MilkyApiFailedResponse {
     return { status: 'failed', retcode, message };
 }
 
-export interface MilkyApi {
-    endpoint: string;
-    validator: z.ZodType;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handler: (app: MilkyApp, payload: any) => MilkyApiResponse | Promise<MilkyApiResponse>;
-}
-
-export function defineApi<T extends z.ZodType>(
-    endpoint: string,
-    validator: T,
-    handler: (app: MilkyApp, payload: z.infer<T>) => MilkyApiResponse | Promise<MilkyApiResponse>,
-): MilkyApi {
-    return { endpoint, validator, handler };
-}
 
 function encodeZodIssues(issues: z.core.$ZodIssue[]): string {
     return issues.map((issue) => `[${issue.code}] ${issue.path.join('/')}: ${issue.message}`).join('; ');
 }
 
-export class ApiHandler {
-    readonly apiMap = new Map<string, MilkyApi>();
+export class MilkyApiCollection {
+    readonly apiMap = new Map<string, MilkyApiHandler>();
 
-    constructor(private app: MilkyApp, apiList: MilkyApi[]) {
+    constructor(private app: MilkyApp, apiList: MilkyApiHandler[]) {
         apiList.forEach((api) => {
             if (this.apiMap.has(api.endpoint)) {
                 throw new Error(`API endpoint "${api.endpoint}" is already defined.`);

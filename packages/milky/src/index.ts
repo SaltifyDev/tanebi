@@ -136,8 +136,8 @@ export class MilkyApp {
             );
         });
     
-        this.bot.onEvent('friendRecall', (friend, seq, tip) =>
-            this.logger.info(`${friend} 撤回了一条消息 [${seq}] ${tip}`, {
+        this.bot.onEvent('friendRecall', (friend, seq, tip, isSelfRecall) =>
+            this.logger.info(`${isSelfRecall ? `[${friend}] 你` : `${friend} `}撤回了一条消息 [${seq}] ${tip}`, {
                 module: 'FriendRecall',
             })
         );

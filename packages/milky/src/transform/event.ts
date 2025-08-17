@@ -16,6 +16,27 @@ export function configureEventTransformation(app: MilkyApp) {
         app.emitEvent('message_receive', transformIncomingGroupMessage(group, member, message));
     });
 
+    app.bot.onEvent('friendRecall', (friend, sequence, tip, isSelfRecall) => {
+        const senderUin = isSelfRecall ? friend.uin : app.bot.uin;
+        app.emitEvent('message_recall', {
+            message_scene: 'friend',
+            peer_id: friend.uin,
+            message_seq: sequence,
+            sender_id: senderUin,
+            operator_id: senderUin,
+        });
+    });
+
+    app.bot.onEvent('groupRecall', (group, sequence, tip, operator) => {
+        app.emitEvent('message_recall', {
+            message_scene: 'group',
+            peer_id: group.uin,
+            message_seq: sequence,
+            sender_id: operator.uin,
+            operator_id: operator.uin,
+        });
+    });
+
     app.bot.onEvent('friendRequest', (request) => {
         app.emitEvent('friend_request', {
             initiator_id: request.fromUin,

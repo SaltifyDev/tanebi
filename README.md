@@ -11,7 +11,6 @@ PC NTQQ 协议的 TypeScript 实现
 - [`core`](packages/core) ([npm](https://www.npmjs.com/package/tanebi)) - 项目的核心模块，实现基础功能并提供 API
 - [`milky`](packages/milky) <!--([npm](https://www.npmjs.com/package/tanebi-milky))--> - 基于 tanebi 的 [Milky](https://milky.ntqqrev.org/) 协议实现
 - [`examples`](packages/examples) - Core API 的使用示例
-- [`protobuf`](https://github.com/SaltifyDev/tanebi-protobuf) ([npm](https://www.npmjs.com/package/@tanebijs/protobuf)) - 高效的 ProtoBuf 基础设施
 
 ## Tasks
 

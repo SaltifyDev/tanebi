@@ -188,7 +188,7 @@ export class NotifyLogic extends LogicBase {
         const content = wrapper.recall!;
         content.recallMessages.forEach((recall) => {
             this.ctx.eventsDX.emit('groupRecall',
-                wrapper.groupUin, recall.sequence, content.tipInfo?.tip ?? '', content.operatorUid);
+                wrapper.groupUin, recall.sequence, content.tipInfo?.tip ?? '', recall.authorUid, content.operatorUid);
         });
     }
 

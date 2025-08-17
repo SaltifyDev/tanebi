@@ -202,9 +202,13 @@ export class MilkyApp {
             })
         );
     
-        this.bot.onEvent('groupRecall', (group, seq, tip, operator) =>
-            this.logger.info(`[${group}] ${operator} 撤回了一条消息 [${seq}] ${tip}`, { module: 'GroupRecall' })
-        );
+        this.bot.onEvent('groupRecall', (group, seq, tip, senderUin, operator) => {
+            if (senderUin !== operator.uin) {
+                this.logger.info(`[${group}] ${operator} 撤回了成员 (${senderUin}) 的消息 [${seq}] ${tip}`, { module: 'GroupRecall' });
+            } else {
+                this.logger.info(`[${group}] ${operator} 撤回了一条消息 [${seq}] ${tip}`, { module: 'GroupRecall' });
+            }
+        });
     
         this.bot.onEvent('groupPoke', (group, sender, receiver, actionStr, _, suffix) =>
             this.logger.info(

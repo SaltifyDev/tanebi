@@ -8,7 +8,7 @@ export const GroupRecall = ProtoMessage.of({
         random: ProtoField(3, ScalarType.UINT32, false, false),
         type: ProtoField(4, ScalarType.UINT32, false, false),
         flag: ProtoField(5, ScalarType.UINT32, false, false),
-        authorUid: ProtoField(6, ScalarType.STRING, true, false),
+        authorUid: ProtoField(6, ScalarType.STRING),
     }), false, true),
     userDef: ProtoField(5, ScalarType.BYTES, true, false),
     groupType: ProtoField(6, ScalarType.INT32, false, false),

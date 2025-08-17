@@ -112,7 +112,7 @@ type TanebiEventEmitter = TypedEventEmitter<{
     groupMuteAll: (group: BotGroup, operator: BotGroupMember, isSet: boolean) => void;
     groupPoke: (group: BotGroup, sender: BotGroupMember, receiver: BotGroupMember, actionStr: string, actionImgUrl: string, suffix?: string) => void;
     groupEssenceMessageChange: (group: BotGroup, sequence: number, operator: BotGroupMember, isAdd: boolean) => void;
-    groupRecall: (group: BotGroup, sequence: number, tip: string, operator: BotGroupMember) => void;
+    groupRecall: (group: BotGroup, sequence: number, tip: string, senderUin: number, operator: BotGroupMember) => void;
     groupReaction: (group: BotGroup, sequence: number, member: BotGroupMember, reactionCode: string, isAdd: boolean, count: number) => void;
     groupNameChange: (group: BotGroup, name: string, operator: BotGroupMember) => void;
 }>;
@@ -437,16 +437,18 @@ export class Bot {
             }
         });
 
-        this[ctx].eventsDX.on('groupRecall', async (groupUin, sequence, tip, operatorUid) => {
+        this[ctx].eventsDX.on('groupRecall', async (groupUin, sequence, tip, senderUid, operatorUid) => {
             this[log].emit('trace', 'Bot', `Received recall in group ${groupUin} for message ${sequence} by ${operatorUid}`);
             try {
                 const group = await this.getGroup(groupUin);
                 if (group) {
+                    const senderUin = await this[identityService].resolveUin(senderUid);
+                    if (!senderUin) return;
                     const operatorUin = await this[identityService].resolveUin(operatorUid);
                     if (!operatorUin) return;
                     const operator = await group.getMember(operatorUin);
                     if (operator) {
-                        this[eventsDX].emit('groupRecall', group, sequence, tip, operator);
+                        this[eventsDX].emit('groupRecall', group, sequence, tip, senderUin, operator);
                     }
                 }
             } catch (e) {

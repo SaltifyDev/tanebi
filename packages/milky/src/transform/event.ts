@@ -34,12 +34,15 @@ export function configureEventTransformation(app: MilkyApp) {
         });
     });
 
-    app.bot.onEvent('groupRecall', (group, sequence, tip, operator) => {
+    app.bot.onEvent('groupRecall', (group, sequence, tip, senderUin, operator) => {
+        if (senderUin === app.bot.uin && !app.config.reportSelfMessage) {
+            return;
+        }
         app.emitEvent('message_recall', {
             message_scene: 'group',
             peer_id: group.uin,
             message_seq: sequence,
-            sender_id: operator.uin,
+            sender_id: senderUin,
             operator_id: operator.uin,
         });
     });

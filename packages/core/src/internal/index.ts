@@ -27,7 +27,7 @@ type InternalEventEmitter = TypedEventEmitter<{
     groupMuteAll: (groupUin: number, operatorUid: string, isSet: boolean) => void;
     groupPoke: (groupUin: number, fromUin: number, toUin: number, actionStr: string, actionImgUrl: string, suffix?: string) => void;
     groupEssenceMessageChange: (groupUin: number, sequence: number, operatorUin: number, isAdd: boolean, tip?: string) => void;
-    groupRecall: (groupUin: number, sequence: number, tip: string, operatorUid: string) => void;
+    groupRecall: (groupUin: number, sequence: number, tip: string, senderUid: string, operatorUid: string) => void;
     groupReaction: (groupUin: number, sequence: number, operatorUid: string, reactionCode: string, isAdd: boolean, count: number) => void;
     groupNameChange: (groupUin: number, name: string, operatorUid: string) => void;
 }>;

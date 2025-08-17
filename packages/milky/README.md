@@ -43,6 +43,7 @@
 - [x] /get_forwarded_messages
 - [x] /recall_private_message
 - [x] /recall_group_message
+- [ ] /mark_message_as_read
 
 #### 好友 API
 
@@ -65,6 +66,8 @@
 - [ ] /get_group_announcement_list
 - [ ] /send_group_announcement
 - [ ] /delete_group_announcement
+- [ ] /get_group_essence_messages
+- [ ] /set_group_essence_message
 - [x] /quit_group
 - [x] /send_group_message_reaction
 - [x] /send_group_nudge

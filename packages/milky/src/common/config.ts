@@ -53,7 +53,7 @@ export const exampleConfig: Config = {
         },
     },
     signApiUrl: 'https://sign.lagrangecore.org/api/sign/30366',
-    reportSelfMessage: false,
+    reportSelfMessage: true,
     enableNtSilk: false,
     onForcedOffline: 'noAction',
     milky: {

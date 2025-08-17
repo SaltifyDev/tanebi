@@ -9,14 +9,21 @@ export function configureEventTransformation(app: MilkyApp) {
     });
 
     app.bot.onPrivateMessage((friend, message) => {
-        app.emitEvent('message_receive', transformIncomingFriendMessage(friend, message));
+        if ((!message.isSelf) || app.config.reportSelfMessage) {
+            app.emitEvent('message_receive', transformIncomingFriendMessage(friend, message));
+        }
     });
 
     app.bot.onGroupMessage((group, member, message) => {
-        app.emitEvent('message_receive', transformIncomingGroupMessage(group, member, message));
+        if (!(member.uin === app.bot.uin) || app.config.reportSelfMessage) {
+            app.emitEvent('message_receive', transformIncomingGroupMessage(group, member, message));
+        }
     });
 
     app.bot.onEvent('friendRecall', (friend, sequence, tip, isSelfRecall) => {
+        if (isSelfRecall && !app.config.reportSelfMessage) {
+            return;
+        }
         const senderUin = isSelfRecall ? friend.uin : app.bot.uin;
         app.emitEvent('message_recall', {
             message_scene: 'friend',

@@ -55,7 +55,7 @@ export function transformGroupMember(member: BotGroupMember): GroupMemberEntity 
         level: member.level,
         role: transformGroupMemberRole(member.permission),
         join_time: member.joinTime,
-        last_sent_time: member.lastMsgTime,
+        last_sent_time: member.lastMsgTime || member.joinTime,
         shut_up_end_time: member.shutUpEndTime,
     };
 }

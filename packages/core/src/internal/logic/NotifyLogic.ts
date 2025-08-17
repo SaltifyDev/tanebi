@@ -44,7 +44,7 @@ export class NotifyLogic extends LogicBase {
                 this.parseFriendRequest(pushMsgBody);
             } else if (subType === Event0x210SubType.FriendGrayTip) {
                 this.parseFriendGrayTip(pushMsgBody);
-            } else if (subType === Event0x210SubType.FriendRecall) {
+            } else if (subType === Event0x210SubType.FriendRecall || subType === Event0x210SubType.FriendSelfRecall) {
                 this.parseFriendRecall(pushMsgBody);
             }
         } else if (type === PushMsgType.Event0x2DC) {
@@ -138,7 +138,13 @@ export class NotifyLogic extends LogicBase {
 
     parseFriendRecall(pushMsgBody: InferProtoModel<typeof PushMsgBody.fields>) {
         const content = FriendRecall.decode(pushMsgBody.body!.msgContent!).body;
-        this.ctx.eventsDX.emit('friendRecall', content.fromUid, content.clientSequence, content.tipInfo.tip);
+        this.ctx.eventsDX.emit(
+            'friendRecall',
+            content.fromUid,
+            content.toUid,
+            content.sequence,
+            content.tipInfo.tip
+        );
     }
 
     parseGroupMute(pushMsgBody: InferProtoModel<typeof PushMsgBody.fields>) {

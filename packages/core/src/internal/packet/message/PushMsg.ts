@@ -50,6 +50,7 @@ export enum Event0x210SubType {
     GroupMemberEnter = 38,
     FriendDeleteOrPinChanged = 39,
     FriendRecall = 138,
+    FriendSelfRecall = 139,
     ServicePinChange = 199,             // e.g: My computer | QQ Wallet | ...
     FriendGrayTip = 290,
     GroupKick = 212,

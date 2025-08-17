@@ -99,7 +99,7 @@ type TanebiEventEmitter = TypedEventEmitter<{
     friendRequest: (request: BotFriendRequest) => void;
     groupInvitationRequest: (request: BotGroupInvitationRequest) => void;
     friendPoke: (friend: BotFriend, isSelfSend: boolean, isSelfReceive: boolean, actionStr: string, actionImgUrl: string, suffix?: string) => void;
-    friendRecall: (friend: BotFriend, clientSequence: number, tip: string) => void;
+    friendRecall: (friend: BotFriend, sequence: number, tip: string, isSelfRecall: boolean) => void;
     groupJoinRequest: (group: BotGroup, request: BotGroupJoinRequest) => void;
     groupInvitedJoinRequest: (group: BotGroup, request: BotGroupInvitedJoinRequest) => void;
     groupAdminChange: (group: BotGroup, member: BotGroupMember, isPromote: boolean) => void;
@@ -250,14 +250,21 @@ export class Bot {
             }
         });
 
-        this[ctx].eventsDX.on('friendRecall', async (fromUid, clientSequence, tip) => {
+        this[ctx].eventsDX.on('friendRecall', async (fromUid, toUid, sequence, tip) => {
             this[log].emit('trace', 'Bot', `Received recall from ${fromUid}`);
             try {
-                const friendUin = await this[identityService].resolveUin(fromUid);
+                let friendUin: number | undefined;
+                let isSelfRecall = false;
+                if (this.uid === fromUid) {
+                    friendUin = await this[identityService].resolveUin(toUid);
+                    isSelfRecall = true;
+                } else {
+                    friendUin = await this[identityService].resolveUin(fromUid);
+                }
                 if (!friendUin) return;
                 const friend = await this.getFriend(friendUin);
                 if (friend) {
-                    this[eventsDX].emit('friendRecall', friend, clientSequence, tip);
+                    this[eventsDX].emit('friendRecall', friend, sequence, tip, isSelfRecall);
                 }
             } catch (e) {
                 this[log].emit('warning', 'Bot', 'Failed to handle friend recall', e);

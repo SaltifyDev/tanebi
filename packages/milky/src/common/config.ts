@@ -9,8 +9,19 @@ export const defaultProfile: Profile = {
     name: 'default',
 };
 
+const zLogLevel = z.enum(['debug', 'info', 'warn', 'error', 'fatal']);
+
 export const zConfig = z.object({
-    logLevel: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']),
+    logging: z.object({
+        console: z.object({
+            enable: z.boolean(),
+            level: zLogLevel,
+        }),
+        file: z.object({
+            enable: z.boolean(),
+            level: zLogLevel,
+        }),
+    }),
     signApiUrl: z.url().transform((url) => (url.endsWith('/') ? url.substring(0, url.length - 1) : url)),
     reportSelfMessage: z.boolean(),
     enableNtSilk: z.boolean(),
@@ -31,7 +42,16 @@ export const zConfig = z.object({
 export type Config = z.infer<typeof zConfig>
 
 export const exampleConfig: Config = {
-    logLevel: 'info',
+    logging: {
+        console: {
+            enable: true,
+            level: 'info',
+        },
+        file: {
+            enable: true,
+            level: 'info',
+        },
+    },
     signApiUrl: 'https://sign.lagrangecore.org/api/sign/30366',
     reportSelfMessage: false,
     enableNtSilk: false,

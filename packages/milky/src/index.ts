@@ -59,8 +59,9 @@ export class MilkyApp {
         this.logger = winston.createLogger({
             transports: [
                 new transports.File({
+                    silent: !config.logging.file.enable,
                     filename: path.join(logDir, `${new Date().toISOString().replaceAll(':', '')}.log`),
-                    level: 'debug',
+                    level: config.logging.file.level,
                     maxsize: 5 * 1024 * 1024, // 5MB
                     maxFiles: 5,
                     format: format.combine(
@@ -73,7 +74,8 @@ export class MilkyApp {
                     ),
                 }),
                 new transports.Console({
-                    level: config.logLevel === 'trace' ? 'debug' : config.logLevel,
+                    silent: !config.logging.console.enable,
+                    level: config.logging.console.level,
                     format: format.combine(
                         format.timestamp({ format: 'HH:mm:ss' }),
                         format.colorize(),
@@ -86,9 +88,7 @@ export class MilkyApp {
             ],
         });
 
-        if (config.logLevel === 'trace') {
-            this.bot.onTrace((module, message) => this.logger.debug(`${message}`, { module }));
-        }
+        this.bot.onTrace((module, message) => this.logger.debug(`${message}`, { module }));
         this.bot.onInfo((module, message) => this.logger.info(`${message}`, { module }));
         this.bot.onWarning((module, message, error) =>
             this.logger.warn(`${message} caused by ${error instanceof Error ? error.stack : error}`, { module })

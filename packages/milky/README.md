@@ -85,7 +85,7 @@
 - [x] /get_group_file_download_url
 - [x] /get_group_files
 - [x] /move_group_file
-- [ ] /rename_group_file
+- [x] /rename_group_file
 - [x] /delete_group_file
 - [x] /create_group_folder
 - [x] /rename_group_folder

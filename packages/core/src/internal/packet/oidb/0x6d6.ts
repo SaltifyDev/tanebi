@@ -27,6 +27,13 @@ export const OidbSvcTrpcTcp0x6D6 = ProtoMessage.of({
         busId: ProtoField(3, ScalarType.UINT32),
         fileId: ProtoField(5, ScalarType.STRING),
     }), true, false),
+    rename: ProtoField(5, () => ({
+        groupUin: ProtoField(1, ScalarType.UINT32),
+        busId: ProtoField(3, ScalarType.UINT32),
+        fileId: ProtoField(4, ScalarType.STRING),
+        parentDirectory: ProtoField(5, ScalarType.STRING),
+        newFileName: ProtoField(6, ScalarType.STRING),
+    })),
     move: ProtoField(6, () => ({
         groupUin: ProtoField(1, ScalarType.UINT32),
         appId: ProtoField(2, ScalarType.UINT32),
@@ -88,6 +95,11 @@ export const GroupFSDownloadUrlResponse = new OidbSvcContract(
 
 export const GroupFSDeleteRequest = new OidbSvcContract(
     0x6d6, 3,
+    OidbSvcTrpcTcp0x6D6.fields,
+);
+
+export const GroupFSRenameRequest = new OidbSvcContract(
+    0x6d6, 4,
     OidbSvcTrpcTcp0x6D6.fields,
 );
 

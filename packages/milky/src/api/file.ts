@@ -10,6 +10,7 @@ import {
     GroupFileEntity,
     GroupFolderEntity,
     MoveGroupFileInput,
+    RenameGroupFileInput,
     RenameGroupFolderInput,
     UploadGroupFileInput,
     UploadGroupFileOutput,
@@ -27,7 +28,7 @@ export const UploadGroupFile = defineApi(
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
         const data = await resolveMilkyUri(payload.file_uri);
-        const fileId = await group.uploadFile(data, payload.file_name, payload.parent_folder_id ?? '/');
+        const fileId = await group.uploadFile(data, payload.file_name, payload.parent_folder_id);
         return Ok({ file_id: fileId });
     }
 );
@@ -51,7 +52,7 @@ export const GetGroupFiles = defineApi(
     async (app, p) => {
         const group = await app.bot.getGroup(p.group_id);
         if (!group) return Failed(-404, 'Group not found');
-        const entries = await group.listFiles(p.parent_folder_id ?? '/');
+        const entries = await group.listFiles(p.parent_folder_id);
         const files: GroupFileEntity[] = entries
             .filter(e => e.type === 'file')
             .map(e => transformGroupFile(group, e));
@@ -69,7 +70,19 @@ export const MoveGroupFile = defineApi(
     async (app, payload) => {
         const group = await app.bot.getGroup(payload.group_id);
         if (!group) return Failed(-404, 'Group not found');
-        await group.moveFile(payload.file_id, payload.parent_folder_id ?? '/', payload.target_folder_id ?? '/');
+        await group.moveFile(payload.file_id, payload.parent_folder_id, payload.target_folder_id);
+        return Ok({});
+    }
+);
+
+export const RenameGroupFile = defineApi(
+    'rename_group_file',
+    RenameGroupFileInput,
+    z.object(),
+    async (app, payload) => {
+        const group = await app.bot.getGroup(payload.group_id);
+        if (!group) return Failed(-404, 'Group not found');
+        await group.renameFile(payload.file_id, payload.new_file_name, payload.parent_folder_id);
         return Ok({});
     }
 );
@@ -127,6 +140,7 @@ export const FileApi = [
     GetGroupFileDownloadUrl,
     GetGroupFiles,
     MoveGroupFile,
+    RenameGroupFile,
     DeleteGroupFile,
     CreateGroupFolder,
     RenameGroupFolder,

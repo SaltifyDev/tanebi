@@ -25,6 +25,7 @@ import { GroupFSDownloadUrlOperation } from '@/internal/operation/file/GroupFSDo
 import { GroupFSUploadOperation } from '@/internal/operation/file/GroupFSUploadOperation';
 import { BotGroupFileSystemEntry } from '@/entity/file';
 import { FetchGroupExtraInfoOperation } from '@/internal/operation/group/FetchGroupExtraInfoOperation';
+import { GroupFSRenameOperation } from '@/internal/operation/file/GroupFSRenameOperation';
 
 interface BotGroupDataBinding {
     uin: number;
@@ -298,6 +299,21 @@ export class BotGroup extends BotContact<BotGroupDataBinding> {
             startIndex += 20;
         }
         return results;
+    }
+
+    /**
+     * Rename a file in the group file system.
+     * @param fileId The ID of the file to rename.
+     * @param newFileName The new name of the file.
+     * @param parentFolderId The ID of the folder containing the file.
+     */
+    async renameFile(fileId: string, newFileName: string, parentFolderId: string = '/') {
+        this.bot[log].emit(
+            'trace',
+            this.moduleName,
+            `Rename group file ${fileId} -> ${newFileName} (${parentFolderId})`
+        );
+        await this.bot[ctx].call(GroupFSRenameOperation, this.uin, fileId, newFileName, parentFolderId);
     }
 
     /**

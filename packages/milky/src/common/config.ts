@@ -54,7 +54,8 @@ export const exampleConfig: Config = {
     },
     signApiUrl: 'https://sign.lagrangecore.org/api/sign/30366',
     reportSelfMessage: true,
-    enableNtSilk: false,
+    enableNtSilk: (process.platform === 'win32' || process.platform === 'linux')
+        && process.arch === 'x64',
     onForcedOffline: 'noAction',
     milky: {
         http: {

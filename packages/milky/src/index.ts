@@ -31,6 +31,7 @@ import { GroupApi } from '@/api/group';
 import { FileApi } from '@/api/file';
 import { appName, appVersion } from '@/constants';
 import { MilkyWebhookHandler } from '@/network/webhook';
+import { milkyPackageVersion, milkyVersion } from '@saltify/milky-types';
 
 export class MilkyApp {
     readonly logger: winston.Logger;
@@ -226,11 +227,22 @@ export class MilkyApp {
     }
 
     async start() {
-        this.logger.info(`Starting ${appName}`);
-        this.logger.info(`version: ${appVersion}+${process.env.COMMIT_HASH}`);
-        this.logger.info(`built at: ${new Date(process.env.BUILD_DATE!).toLocaleString()}`);
-        this.logger.info(`data directory: ${path.resolve(this.userDataDir)}`);
-        this.logger.info('---');
+        this.logger.info(`Starting ${appName} v${appVersion}
+····································································
+:     __                   __    _                 _ ____          :
+:    / /_____ _____  ___  / /_  (_)     ____ ___  (_) / /____  __  :
+:   / __/ __ \`/ __ \\/ _ \\/ __ \\/ /_____/ __ \`__ \\/ / / //_/ / / /  :
+:  / /_/ /_/ / / / /  __/ /_/ / /_____/ / / / / / / / ,< / /_/ /   :
+:  \\__/\\__,_/_/ /_/\\___/_.___/_/     /_/ /_/ /_/_/_/_/|_|\\__, /    :
+:                                                       /____/     :
+····································································
+app version:      ${appVersion}
+commit:           ${process.env.COMMIT_HASH}
+milky version:    ${milkyVersion}
+milky package:    @saltify/milky-types@${milkyPackageVersion}
+built at:         ${new Date(process.env.BUILD_DATE!).toLocaleString()}
+data directory:   ${path.resolve(this.userDataDir)}
+----------------`);
         if (this.isFirstRun) {
             const qrCodePath = path.join(this.userDataDir, 'qrcode.png');
             await this.bot.qrCodeLogin((url, png) => {

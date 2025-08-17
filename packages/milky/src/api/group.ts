@@ -18,6 +18,8 @@ import {
     GetGroupNotificationsOutput,
     AcceptGroupRequestInput,
     RejectGroupRequestInput,
+    AcceptGroupInvitationInput,
+    RejectGroupInvitationInput,
 } from '@saltify/milky-types';
 import z from 'zod';
 
@@ -218,6 +220,34 @@ export const RejectGroupRequest = defineApi(
     },
 );
 
+export const AcceptGroupInvitation = defineApi(
+    'accept_group_invitation',
+    AcceptGroupInvitationInput,
+    z.object(),
+    async (app, payload) => {
+        await app.bot.handleGroupInvitation(
+            payload.group_id,
+            BigInt(payload.invitation_seq),
+            GroupRequestOperation.Accept
+        );
+        return Ok({});
+    },
+);
+
+export const RejectGroupInvitation = defineApi(
+    'reject_group_invitation',
+    RejectGroupInvitationInput,
+    z.object(),
+    async (app, payload) => {
+        await app.bot.handleGroupInvitation(
+            payload.group_id,
+            BigInt(payload.invitation_seq),
+            GroupRequestOperation.Reject
+        );
+        return Ok({});
+    },
+);
+
 export const GroupApi = [
     SetGroupName,
     SetGroupAvatar,
@@ -233,6 +263,6 @@ export const GroupApi = [
     GetGroupNotifications,
     AcceptGroupRequest,
     RejectGroupRequest,
+    AcceptGroupInvitation,
+    RejectGroupInvitation,
 ];
-
-

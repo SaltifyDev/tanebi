@@ -1,10 +1,8 @@
 import { BotFriend, GroupRequestOperation } from '@/entity';
-import { Bot, ctx } from '@/index';
+import { Bot } from '@/index';
 import { IncomingMessage, IncomingSegmentOf } from '@/internal/message/incoming';
-import { GroupNotifyType } from '@/internal/packet/oidb/0x10c0';
 import { URL } from 'node:url';
 import { z } from 'zod';
-import { HandleGroupRequestOperation } from '@/internal/operation/group/HandleGroupRequestOperation';
 
 const lightAppGroupInvitationPattern = z.object({
     meta: z.object({
@@ -27,14 +25,11 @@ export class BotGroupInvitationRequest {
         return `(${this.invitorUin}) invited you to join group (${this.groupUin})`;
     }
 
-    async handle(isAccept: boolean, message?: string) {
-        await this.bot[ctx].call(
-            HandleGroupRequestOperation,
+    async handle(isAccept: boolean) {
+        await this.bot.handleGroupInvitation(
             this.groupUin,
             this.sequence,
-            GroupNotifyType.Invitation,
             isAccept ? GroupRequestOperation.Accept : GroupRequestOperation.Reject,
-            message ?? ''
         );
     }
 

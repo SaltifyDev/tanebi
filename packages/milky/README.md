@@ -74,8 +74,8 @@
 - [x] /get_group_notifications
 - [x] /accept_group_request
 - [x] /reject_group_request
-- [ ] /accept_group_invitation
-- [ ] /reject_group_invitation
+- [x] /accept_group_invitation
+- [x] /reject_group_invitation
 
 #### 文件 API
 

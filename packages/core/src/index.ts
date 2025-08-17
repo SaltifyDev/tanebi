@@ -61,6 +61,7 @@ import { FetchFriendRequestsOperation } from '@/internal/operation/friend/FetchF
 import { AcceptFriendFilteredRequestOperation } from '@/internal/operation/friend/AcceptFriendFilteredRequestOperation';
 import { HandleFriendRequestOperation } from '@/internal/operation/friend/HandleFriendRequestOperation';
 import { FetchFriendFilteredRequestsOperation } from '@/internal/operation/friend/FetchFriendFilteredRequestsOperation';
+import { HandleGroupRequestOperation } from '@/internal/operation/group/HandleGroupRequestOperation';
 
 /**
  * Symbol of the bot context
@@ -840,6 +841,18 @@ export class Bot {
         if (req instanceof BotGroupJoinRequest || req instanceof BotGroupInvitedJoinRequest) {
             await req.handle(operation, message);
         }
+    }
+
+    async handleGroupInvitation(groupUin: number, sequence: bigint, operation: GroupRequestOperation) {
+        this[log].emit('trace', 'Bot', `Handling group invitation ${sequence}`);
+        await this[ctx].call(
+            HandleGroupRequestOperation,
+            groupUin,
+            sequence,
+            GroupNotifyType.Invitation,
+            operation,
+            ''
+        );
     }
 
     /**

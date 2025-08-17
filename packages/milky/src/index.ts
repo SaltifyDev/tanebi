@@ -29,7 +29,7 @@ import { MessageApi } from '@/api/message';
 import { FriendApi } from '@/api/friend';
 import { GroupApi } from '@/api/group';
 import { FileApi } from '@/api/file';
-import { appName, appVersion } from '@/constants';
+import { appName, appVersion, coreVersion } from '@/constants';
 import { MilkyWebhookHandler } from '@/network/webhook';
 import { milkyPackageVersion, milkyVersion } from '@saltify/milky-types';
 
@@ -241,6 +241,7 @@ export class MilkyApp {
 :                                                       /____/     :
 ····································································
 app version:      ${appVersion}
+core version:     ${coreVersion}
 commit:           ${process.env.COMMIT_HASH}
 milky version:    ${milkyVersion}
 milky package:    @saltify/milky-types@${milkyPackageVersion}

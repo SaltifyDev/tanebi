@@ -19,6 +19,7 @@ import {
     UrlSignProvider,
 } from 'tanebi';
 import { QRErrorCorrectLevel, generate } from 'ts-qrcode-terminal';
+import 'source-map-support/register';
 import winston, { transports, format } from 'winston';
 import fs from 'node:fs';
 import path from 'node:path';

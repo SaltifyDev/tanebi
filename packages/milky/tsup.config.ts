@@ -22,4 +22,6 @@ export default defineConfig({
         COMMIT_HASH,
         BUILD_DATE: new Date().toISOString(),
     },
+    sourcemap: 'inline',
+    clean: true,
 });

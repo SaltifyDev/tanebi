@@ -98,22 +98,53 @@ type TanebiEventEmitter = TypedEventEmitter<{
     keystoreChange: (keystore: Keystore) => void;
     friendRequest: (request: BotFriendRequest) => void;
     groupInvitationRequest: (request: BotGroupInvitationRequest) => void;
-    friendPoke: (friend: BotFriend, isSelfSend: boolean, isSelfReceive: boolean, actionStr: string, actionImgUrl: string, suffix?: string) => void;
+    friendPoke: (
+        friend: BotFriend,
+        isSelfSend: boolean,
+        isSelfReceive: boolean,
+        actionStr: string,
+        actionImgUrl: string,
+        suffix?: string
+    ) => void;
     friendRecall: (friend: BotFriend, sequence: number, tip: string, isSelfRecall: boolean) => void;
     groupJoinRequest: (group: BotGroup, request: BotGroupJoinRequest) => void;
     groupInvitedJoinRequest: (group: BotGroup, request: BotGroupInvitedJoinRequest) => void;
     groupAdminChange: (group: BotGroup, member: BotGroupMember, isPromote: boolean) => void;
-    groupMemberIncrease: (group: BotGroup, member: BotGroupMember, increaseType: IncreaseType, invitor?: BotGroupMember) => void;
+    groupMemberIncrease: (
+        group: BotGroup,
+        member: BotGroupMember,
+        increaseType: IncreaseType,
+        operatorOrInvitor?: BotGroupMember,
+    ) => void;
     groupMemberLeave: (group: BotGroup, uin: number) => void;
-    groupMemberCardChange: (group: BotGroup, member: BotGroupMember, oldMemberCard: string, newMemberCard: string) => void;
+    groupMemberCardChange: (
+        group: BotGroup,
+        member: BotGroupMember,
+        oldMemberCard: string,
+        newMemberCard: string
+    ) => void;
     groupMemberKick: (group: BotGroup, uin: number, operator?: BotGroupMember) => void;
     groupMute: (group: BotGroup, member: BotGroupMember, operator: BotGroupMember, duration: number) => void;
-    groupUnmute: (group: BotGroup, member: BotGroupMember, operator: BotGroupMember) => void
+    groupUnmute: (group: BotGroup, member: BotGroupMember, operator: BotGroupMember) => void;
     groupMuteAll: (group: BotGroup, operator: BotGroupMember, isSet: boolean) => void;
-    groupPoke: (group: BotGroup, sender: BotGroupMember, receiver: BotGroupMember, actionStr: string, actionImgUrl: string, suffix?: string) => void;
+    groupPoke: (
+        group: BotGroup,
+        sender: BotGroupMember,
+        receiver: BotGroupMember,
+        actionStr: string,
+        actionImgUrl: string,
+        suffix?: string
+    ) => void;
     groupEssenceMessageChange: (group: BotGroup, sequence: number, operator: BotGroupMember, isAdd: boolean) => void;
     groupRecall: (group: BotGroup, sequence: number, tip: string, senderUin: number, operator: BotGroupMember) => void;
-    groupReaction: (group: BotGroup, sequence: number, member: BotGroupMember, reactionCode: string, isAdd: boolean, count: number) => void;
+    groupReaction: (
+        group: BotGroup,
+        sequence: number,
+        member: BotGroupMember,
+        reactionCode: string,
+        isAdd: boolean,
+        count: number
+    ) => void;
     groupNameChange: (group: BotGroup, name: string, operator: BotGroupMember) => void;
 }>;
 
@@ -150,7 +181,7 @@ export class Bot {
         coreConfig: CoreConfig,
         deviceInfo: DeviceInfo,
         keystore: Keystore,
-        signProvider: SignProvider,
+        signProvider: SignProvider
     ) {
         this[ctx] = new BotContext(appInfo, coreConfig, deviceInfo, keystore, signProvider);
 
@@ -166,38 +197,43 @@ export class Bot {
                 const mappedData = new Map<number, BotFriendDataBinding>();
                 do {
                     const data = await bot[ctx].call(FetchFriendsOperation, nextUin);
-                    data.friends.forEach(friend => {
+                    data.friends.forEach((friend) => {
                         this[identityService].uin2uid.set(friend.uin, friend.uid);
                         this[identityService].uid2uin.set(friend.uid, friend.uin);
                         mappedData.set(friend.uin, friend);
                     });
-                    data.friendCategories.forEach(category => {
+                    data.friendCategories.forEach((category) => {
                         this.friendCategories.set(category.code, category.value ?? '');
                     });
                     nextUin = data.nextUin;
                 } while (nextUin);
                 return mappedData;
             },
-            (bot, data) => new BotFriend(bot, data),
+            (bot, data) => new BotFriend(bot, data)
         );
 
         this.groupCache = new BotCacheService<number, BotGroup>(
             this,
             async (bot) => {
                 const groupList = (await bot[ctx].call(FetchGroupsOperation)).groups;
-                return new Map(groupList.map(group => [group.groupUin, {
-                    uin: group.groupUin,
-                    name: group.info!.groupName!,
-                    description: group.info?.description,
-                    question: group.info?.question,
-                    announcement: group.info?.announcement,
-                    createdTime: group.info?.createdTime ?? 0,
-                    maxMemberCount: group.info!.memberMax!,
-                    memberCount: group.info!.memberCount!,
-                    ownerUid: group.info!.groupOwner!.uid!,
-                }]));
+                return new Map(
+                    groupList.map((group) => [
+                        group.groupUin,
+                        {
+                            uin: group.groupUin,
+                            name: group.info!.groupName!,
+                            description: group.info?.description,
+                            question: group.info?.question,
+                            announcement: group.info?.announcement,
+                            createdTime: group.info?.createdTime ?? 0,
+                            maxMemberCount: group.info!.memberMax!,
+                            memberCount: group.info!.memberCount!,
+                            ownerUid: group.info!.groupOwner!.uid!,
+                        },
+                    ])
+                );
             },
-            (bot, data) => new BotGroup(bot, data),
+            (bot, data) => new BotGroup(bot, data)
         );
         //#endregion
 
@@ -226,16 +262,29 @@ export class Bot {
             this[eventsDX].emit('forceOffline', data.title, data.tip);
         });
 
-        this[ctx].log.on('trace', (module, message) =>
-            this[log].emit('trace', `${module}@Internal`, message));
-        this[ctx].log.on('info', (module, message) =>
-            this[log].emit('info', `${module}@Internal`, message));
+        this[ctx].log.on('trace', (module, message) => this[log].emit('trace', `${module}@Internal`, message));
+        this[ctx].log.on('info', (module, message) => this[log].emit('info', `${module}@Internal`, message));
         this[ctx].log.on('warning', (module, message, e) =>
-            this[log].emit('warning', `${module}@Internal`, message, e));
+            this[log].emit('warning', `${module}@Internal`, message, e)
+        );
 
         this[ctx].eventsDX.on('friendRequest', (fromUin, fromUid, message, via) => {
             this[log].emit('trace', 'Bot', `Received friend request from ${fromUid}`);
-            this[eventsDX].emit('friendRequest', new BotFriendRequest(this, Math.floor(Date.now() / 1000), false, fromUin, fromUid, this.uin, this.uid, message, RequestState.Pending, via));
+            this[eventsDX].emit(
+                'friendRequest',
+                new BotFriendRequest(
+                    this,
+                    Math.floor(Date.now() / 1000),
+                    false,
+                    fromUin,
+                    fromUid,
+                    this.uin,
+                    this.uid,
+                    message,
+                    RequestState.Pending,
+                    via
+                )
+            );
         });
 
         this[ctx].eventsDX.on('friendPoke', async (peerUin, fromUin, toUin, actionStr, actionImgUrl, suffix) => {
@@ -243,7 +292,15 @@ export class Bot {
             try {
                 const friend = await this.getFriend(peerUin);
                 if (friend) {
-                    this[eventsDX].emit('friendPoke', friend, fromUin === this.uin, toUin === this.uin, actionStr, actionImgUrl, suffix);
+                    this[eventsDX].emit(
+                        'friendPoke',
+                        friend,
+                        fromUin === this.uin,
+                        toUin === this.uin,
+                        actionStr,
+                        actionImgUrl,
+                        suffix
+                    );
                 }
             } catch (e) {
                 this[log].emit('warning', 'Bot', 'Failed to handle friend poke', e);
@@ -285,7 +342,11 @@ export class Bot {
         });
 
         this[ctx].eventsDX.on('groupInvitedJoinRequest', async (groupUin, targetUid, invitorUid) => {
-            this[log].emit('trace', 'Bot', `Received invited join request from ${invitorUid} to ${targetUid} in group ${groupUin}`);
+            this[log].emit(
+                'trace',
+                'Bot',
+                `Received invited join request from ${invitorUid} to ${targetUid} in group ${groupUin}`
+            );
             try {
                 const request = await BotGroupInvitedJoinRequest.create(groupUin, targetUid, invitorUid, this);
                 const group = await this.getGroup(groupUin);
@@ -314,7 +375,7 @@ export class Bot {
             }
         });
 
-        this[ctx].eventsDX.on('groupMemberIncrease', async (groupUin, memberUid, type, invitorUid) => {
+        this[ctx].eventsDX.on('groupMemberIncrease', async (groupUin, memberUid, type, operatorOrInvitorUid) => {
             this[log].emit('trace', 'Bot', `Received member increase in group ${groupUin} for ${memberUid}`);
             try {
                 const group = await this.getGroup(groupUin);
@@ -323,16 +384,14 @@ export class Bot {
                     if (!uin) return;
                     const member = await group.getMember(uin);
                     if (member) {
-                        if (invitorUid) {
-                            const invitorUin = await this[identityService].resolveUin(invitorUid);
-                            if (!invitorUin) return;
-                            const invitor = await group.getMember(invitorUin);
-                            if (invitor) {
-                                this[eventsDX].emit('groupMemberIncrease', group, member, type, invitor);
-                            }
-                        } else {
-                            this[eventsDX].emit('groupMemberIncrease', group, member, type);
+                        let operatorOrInvitor: BotGroupMember | undefined;
+                        if (operatorOrInvitorUid) {
+                            const operatorOrInvitorUin = await this[identityService].resolveUin(operatorOrInvitorUid);
+                            if (!operatorOrInvitorUin) return;
+                            operatorOrInvitor = await group.getMember(operatorOrInvitorUin);
+                            if (!operatorOrInvitor) return;
                         }
+                        this[eventsDX].emit('groupMemberIncrease', group, member, type, operatorOrInvitor);
                     }
                 }
             } catch (e) {
@@ -438,7 +497,11 @@ export class Bot {
         });
 
         this[ctx].eventsDX.on('groupRecall', async (groupUin, sequence, tip, senderUid, operatorUid) => {
-            this[log].emit('trace', 'Bot', `Received recall in group ${groupUin} for message ${sequence} by ${operatorUid}`);
+            this[log].emit(
+                'trace',
+                'Bot',
+                `Received recall in group ${groupUin} for message ${sequence} by ${operatorUid}`
+            );
             try {
                 const group = await this.getGroup(groupUin);
                 if (group) {
@@ -457,7 +520,11 @@ export class Bot {
         });
 
         this[ctx].eventsDX.on('groupReaction', async (groupUin, sequence, operatorUid, reactionCode, isAdd, count) => {
-            this[log].emit('trace', 'Bot', `Received reaction in group ${groupUin} for message ${sequence} by ${operatorUid}`);
+            this[log].emit(
+                'trace',
+                'Bot',
+                `Received reaction in group ${groupUin} for message ${sequence} by ${operatorUid}`
+            );
             try {
                 const group = await this.getGroup(groupUin);
                 if (group) {
@@ -468,7 +535,7 @@ export class Bot {
                         this[eventsDX].emit('groupReaction', group, sequence, operator, reactionCode, isAdd, count);
                     }
                 }
-            } catch(e) {
+            } catch (e) {
                 this[log].emit('warning', 'Bot', 'Failed to handle group reaction', e);
             }
         });
@@ -503,7 +570,7 @@ export class Bot {
     }
 
     //#endregion
-    
+
     //#region Lifecycle
     /**
      * Login with QR code, accepts a callback function to handle QR code
@@ -512,7 +579,7 @@ export class Bot {
      */
     async qrCodeLogin(
         onQrCode: (qrCodeUrl: string, qrCodePng: Buffer) => unknown,
-        queryQrCodeResultInterval: number = 5000,
+        queryQrCodeResultInterval: number = 5000
     ) {
         queryQrCodeResultInterval = Math.max(queryQrCodeResultInterval, 2000);
 
@@ -536,7 +603,10 @@ export class Bot {
                         this[ctx].keystore.stub.tgtgtKey = res.tgtgtKey;
                         resolve();
                     } else {
-                        if (res.state === TransEmp12_QrCodeState.CodeExpired || res.state === TransEmp12_QrCodeState.Canceled) {
+                        if (
+                            res.state === TransEmp12_QrCodeState.CodeExpired ||
+                            res.state === TransEmp12_QrCodeState.Canceled
+                        ) {
                             clearInterval(this.qrCodeQueryIntervalRef);
                             reject(new Error('Session expired or cancelled'));
                         }
@@ -553,7 +623,9 @@ export class Bot {
 
         const loginResult = await this[ctx].call(WtLoginOperation);
         if (!loginResult.success) {
-            throw new Error(`Login failed (state=${loginResult.state} tag=${loginResult.tag} message=${loginResult.message})`);
+            throw new Error(
+                `Login failed (state=${loginResult.state} tag=${loginResult.tag} message=${loginResult.message})`
+            );
         }
 
         this[ctx].keystore.uid = loginResult.uid;
@@ -579,7 +651,7 @@ export class Bot {
     async fastLogin() {
         try {
             await this.botOnline();
-        } catch(e) {
+        } catch (e) {
             try {
                 this[log].emit('warning', 'Bot', 'Failed to go online, refreshing session', e);
                 await this[ctx].renewSsoLogic();
@@ -588,8 +660,13 @@ export class Bot {
                 this[ctx].keystore.session.d2Key = BUF16;
                 await this.keyExchange();
                 await this.ntEasyLogin();
-            } catch(e2) {
-                this[log].emit('fatal', 'Bot', 'Still failed to re-login, please delete keystore.json and try again', e2);
+            } catch (e2) {
+                this[log].emit(
+                    'fatal',
+                    'Bot',
+                    'Still failed to re-login, please delete keystore.json and try again',
+                    e2
+                );
             }
         }
     }
@@ -621,7 +698,7 @@ export class Bot {
         this[ctx].keystore.session.sessionDate = easyLoginResult.sessionDate;
 
         this[eventsDX].emit('keystoreChange', this[ctx].keystore);
-        
+
         this[log].emit('trace', 'Bot', `Keystore: ${JSON.stringify(this[ctx].keystore)}`);
         this[log].emit('info', 'Bot', `Credentials for user ${this.uin} successfully retrieved`);
 
@@ -633,7 +710,7 @@ export class Bot {
      */
     async botOnline() {
         const onlineResult = await this[ctx].call(BotOnlineOperation);
-        if (!(onlineResult?.includes('register success'))) {
+        if (!onlineResult?.includes('register success')) {
             throw new Error(`Failed to go online (${onlineResult})`);
         }
 
@@ -644,11 +721,11 @@ export class Bot {
             try {
                 await this[ctx].call(HeartbeatOperation);
                 this[log].emit('trace', 'Bot', 'Heartbeat sent');
-            } catch(e) {
+            } catch (e) {
                 this[log].emit('warning', 'Bot', 'Failed to send heartbeat', e);
             }
         }, 4.5 * 60 * 1000 /* 4.5 minute */);
-        
+
         await this.postOnline();
     }
 
@@ -658,7 +735,7 @@ export class Bot {
             await this[ctx].ssoLogic.connectToMsfServer();
             this.loggedIn = false;
             while (!this.loggedIn) {
-                await new Promise(resolve => setTimeout(resolve, 5000));
+                await new Promise((resolve) => setTimeout(resolve, 5000));
                 try {
                     await this.fastLogin();
                 } catch (e) {
@@ -669,7 +746,7 @@ export class Bot {
 
         try {
             const faceDetails = await this[ctx].call(FetchFaceDetailsOperation);
-            faceDetails.forEach(face => {
+            faceDetails.forEach((face) => {
                 this[faceCache].set(face.qSid, face);
             });
         } catch (e) {
@@ -748,21 +825,20 @@ export class Bot {
      * @param keys Keys to fetch; at least one
      * @returns User info of specified keys
      */
-    async getUserInfo<const K extends FetchUserInfoKey[] = []>(
-        uinOrUid: number | string, keys?: K
-    ) {
+    async getUserInfo<const K extends FetchUserInfoKey[] = []>(uinOrUid: number | string, keys?: K) {
         this[log].emit('trace', 'Bot', `Getting user info for ${uinOrUid}`);
         const uid = typeof uinOrUid === 'number' ? await this[identityService].resolveUid(uinOrUid) : uinOrUid;
         if (!uid) {
             throw new Error(`Failed to resolve UID for ${uinOrUid}`);
         }
-        const userInfo = await this[ctx].call(FetchUserInfoOperation, uid, keys ?? [
-            FetchUserInfoKey.Age // at least one key is required
-        ]);
-        return userInfo as Pick<
-            FetchUserInfoGeneralReturn,
-            'uin' | EnumToStringKey[K[number]]
-        >;
+        const userInfo = await this[ctx].call(
+            FetchUserInfoOperation,
+            uid,
+            keys ?? [
+                FetchUserInfoKey.Age, // at least one key is required
+            ]
+        );
+        return userInfo as Pick<FetchUserInfoGeneralReturn, 'uin' | EnumToStringKey[K[number]]>;
     }
 
     /**
@@ -774,18 +850,14 @@ export class Bot {
         this[log].emit('trace', 'Bot', `Getting friend requests (isFiltered=${isFiltered})`);
         if (!isFiltered) {
             const requests = await this[ctx].call(FetchFriendRequestsOperation, count);
-            return (
-                await Promise.all(
-                    requests.map((r) => BotFriendRequest.restoreNormal(r, this))
-                )
-            ).filter(r => r !== null);
+            return (await Promise.all(requests.map((r) => BotFriendRequest.restoreNormal(r, this)))).filter(
+                (r) => r !== null
+            );
         } else {
             const requests = await this[ctx].call(FetchFriendFilteredRequestsOperation, count);
-            return (
-                await Promise.all(
-                    requests.map((r) => BotFriendRequest.restoreFiltered(r, this))
-                )
-            ).filter(r => r !== null);
+            return (await Promise.all(requests.map((r) => BotFriendRequest.restoreFiltered(r, this)))).filter(
+                (r) => r !== null
+            );
         }
     }
 
@@ -795,26 +867,41 @@ export class Bot {
      * @param startSequence Start sequence number to fetch notifications from
      * @param count Number of notifications to fetch
      */
-    async getGroupNotifications(isFiltered: boolean, count: number, startSequence?: bigint): Promise<GroupNotificationBase[]> {
-        this[log].emit('trace', 'Bot', `Getting group notifications (isFiltered=${isFiltered}, startSequence=${startSequence}, count=${count})`);
+    async getGroupNotifications(
+        isFiltered: boolean,
+        count: number,
+        startSequence?: bigint
+    ): Promise<GroupNotificationBase[]> {
+        this[log].emit(
+            'trace',
+            'Bot',
+            `Getting group notifications (isFiltered=${isFiltered}, startSequence=${startSequence}, count=${count})`
+        );
         const notifications = isFiltered
             ? await this[ctx].call(FetchGroupFilteredNotifiesOperation, count, startSequence)
             : await this[ctx].call(FetchGroupNotifiesOperation, count, startSequence);
-        return (await Promise.all(
-            notifications.map((n) => {
-                if (n.notifyType === GroupNotifyType.JoinRequest) {
-                    return BotGroupJoinRequest.restore(n, isFiltered, this);
-                } else if (n.notifyType === GroupNotifyType.InvitedJoinRequest) {
-                    return BotGroupInvitedJoinRequest.restore(n, isFiltered, this);
-                } else if (n.notifyType === GroupNotifyType.SetAdmin || n.notifyType === GroupNotifyType.UnsetAdmin) {
-                    return BotGroupAdminChangeNotification.restore(n, isFiltered, this);
-                } else if (n.notifyType === GroupNotifyType.ExitGroup) {
-                    return BotGroupMemberLeaveNotification.restore(n, isFiltered, this);
-                } else if (n.notifyType === GroupNotifyType.KickMember) {
-                    return BotGroupMemberKickNotification.restore(n, isFiltered, this);
-                }
-            }).filter(n => n !== undefined),
-        )).filter(n => n !== null);
+        return (
+            await Promise.all(
+                notifications
+                    .map((n) => {
+                        if (n.notifyType === GroupNotifyType.JoinRequest) {
+                            return BotGroupJoinRequest.restore(n, isFiltered, this);
+                        } else if (n.notifyType === GroupNotifyType.InvitedJoinRequest) {
+                            return BotGroupInvitedJoinRequest.restore(n, isFiltered, this);
+                        } else if (
+                            n.notifyType === GroupNotifyType.SetAdmin ||
+                            n.notifyType === GroupNotifyType.UnsetAdmin
+                        ) {
+                            return BotGroupAdminChangeNotification.restore(n, isFiltered, this);
+                        } else if (n.notifyType === GroupNotifyType.ExitGroup) {
+                            return BotGroupMemberLeaveNotification.restore(n, isFiltered, this);
+                        } else if (n.notifyType === GroupNotifyType.KickMember) {
+                            return BotGroupMemberKickNotification.restore(n, isFiltered, this);
+                        }
+                    })
+                    .filter((n) => n !== undefined)
+            )
+        ).filter((n) => n !== null);
     }
 
     /**
@@ -823,7 +910,11 @@ export class Bot {
      * @param isFiltered Whether the request is filtered
      */
     async handleFriendRequest(requestUid: string, isFiltered: boolean, isAccept: boolean) {
-        this[log].emit('trace', 'Bot', `Handling friend request ${requestUid} (isFiltered=${isFiltered}, isAccept=${isAccept})`);
+        this[log].emit(
+            'trace',
+            'Bot',
+            `Handling friend request ${requestUid} (isFiltered=${isFiltered}, isAccept=${isAccept})`
+        );
         if (!isFiltered) {
             await this[ctx].call(HandleFriendRequestOperation, isAccept, requestUid);
         } else {
@@ -840,7 +931,12 @@ export class Bot {
      * @param isAccept Whether to accept the request
      * @param message Reason to reject the request, if applicable
      */
-    async handleGroupRequest(sequence: bigint, isFiltered: boolean, operation: GroupRequestOperation, message?: string) {
+    async handleGroupRequest(
+        sequence: bigint,
+        isFiltered: boolean,
+        operation: GroupRequestOperation,
+        message?: string
+    ) {
         this[log].emit('trace', 'Bot', `Handling group request ${sequence}`);
         const request = await this.getGroupNotifications(isFiltered, 1, sequence);
         if (request.length === 0) {
@@ -894,7 +990,7 @@ export class Bot {
     async getResourceDownloadUrl(resourceId: string): Promise<string> {
         this[log].emit('trace', 'Bot', `Getting resource download URL for ${resourceId}`);
         const normalized = resourceId.replace(/-/g, '+').replace(/_/g, '/');
-        const pad = (4 - normalized.length % 4) % 4;
+        const pad = (4 - (normalized.length % 4)) % 4;
         const base64 = normalized.padEnd(normalized.length + pad, '=');
         const bytes = Buffer.from(base64, 'base64');
         const fileId = FileId.decode(bytes);
@@ -980,7 +1076,7 @@ export class Bot {
         this[log].on('fatal', listener);
     }
     //#endregion
-    
+
     /**
      * Create a new Bot instance and complete necessary initialization
      */
@@ -989,7 +1085,7 @@ export class Bot {
         coreConfig: CoreConfig,
         deviceInfo: DeviceInfo,
         keystore: Keystore,
-        signProvider: SignProvider,
+        signProvider: SignProvider
     ) {
         const bot = new Bot(appInfo, coreConfig, deviceInfo, keystore, signProvider);
         await bot[ctx].ssoLogic.connectToMsfServer();

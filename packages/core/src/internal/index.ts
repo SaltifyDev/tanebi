@@ -15,20 +15,52 @@ import { InfoSyncPushEvent } from '@/internal/event/system/InfoSyncPushEvent';
 
 type InternalEventEmitter = TypedEventEmitter<{
     friendRequest: (fromUin: number, fromUid: string, message: string, via: string) => void;
-    friendPoke: (peerUin: number, fromUin: number, toUin: number, action: string, actionImgUrl: string, suffix?: string) => void;
+    friendPoke: (
+        peerUin: number,
+        fromUin: number,
+        toUin: number,
+        action: string,
+        actionImgUrl: string,
+        suffix?: string
+    ) => void;
     friendRecall: (fromUid: string, toUid: string, sequence: number, tip: string) => void;
     groupJoinRequest: (groupUin: number, memberUid: string) => void;
     groupInvitedJoinRequest: (groupUin: number, targetUid: string, invitorUid: string) => void;
     groupInvitationRequest: (groupUin: number, invitorUid: string) => void;
     groupAdminChange: (groupUin: number, targetUid: string, isPromote: boolean) => void;
-    groupMemberIncrease: (groupUin: number, memberUid: string, type: IncreaseType, invitorUid?: string) => void;
+    groupMemberIncrease: (
+        groupUin: number,
+        memberUid: string,
+        type: IncreaseType,
+        operatorOrInvitorUid?: string,
+    ) => void;
     groupMemberDecrease: (groupUin: number, memberUid: string, type: DecreaseType, operatorUid?: string) => void;
     groupMute: (groupUin: number, operatorUid: string, targetUid: string, duration: number) => void;
     groupMuteAll: (groupUin: number, operatorUid: string, isSet: boolean) => void;
-    groupPoke: (groupUin: number, fromUin: number, toUin: number, actionStr: string, actionImgUrl: string, suffix?: string) => void;
-    groupEssenceMessageChange: (groupUin: number, sequence: number, operatorUin: number, isAdd: boolean, tip?: string) => void;
+    groupPoke: (
+        groupUin: number,
+        fromUin: number,
+        toUin: number,
+        actionStr: string,
+        actionImgUrl: string,
+        suffix?: string
+    ) => void;
+    groupEssenceMessageChange: (
+        groupUin: number,
+        sequence: number,
+        operatorUin: number,
+        isAdd: boolean,
+        tip?: string
+    ) => void;
     groupRecall: (groupUin: number, sequence: number, tip: string, senderUid: string, operatorUid: string) => void;
-    groupReaction: (groupUin: number, sequence: number, operatorUid: string, reactionCode: string, isAdd: boolean, count: number) => void;
+    groupReaction: (
+        groupUin: number,
+        sequence: number,
+        operatorUid: string,
+        reactionCode: string,
+        isAdd: boolean,
+        count: number
+    ) => void;
     groupNameChange: (groupUin: number, name: string, operatorUid: string) => void;
 }>;
 
@@ -53,11 +85,7 @@ export class BotContext {
 
     call = this.ssoLogic.callOperation.bind(this.ssoLogic);
 
-    events = new EventChannel(this, [
-        MessagePushEvent,
-        InfoSyncPushEvent,
-        KickNTEvent,
-    ]);
+    events = new EventChannel(this, [MessagePushEvent, InfoSyncPushEvent, KickNTEvent]);
 
     eventsDX = new EventEmitter() as InternalEventEmitter;
 
@@ -66,9 +94,8 @@ export class BotContext {
         public coreConfig: CoreConfig,
         public deviceInfo: DeviceInfo,
         public keystore: Keystore,
-        public signProvider: SignProvider,
-    ) {
-    }
+        public signProvider: SignProvider
+    ) {}
 
     async renewSsoLogic() {
         this.ssoLogic.socket.destroy();

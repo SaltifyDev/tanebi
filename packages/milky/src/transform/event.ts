@@ -1,5 +1,6 @@
 import { MilkyApp } from '@/index';
 import { transformIncomingFriendMessage, transformIncomingGroupMessage } from '@/transform/message/incoming';
+import { IncreaseType } from 'tanebi';
 
 export function configureEventTransformation(app: MilkyApp) {
     app.bot.onEvent('forceOffline', (title, tip) => {
@@ -108,11 +109,12 @@ export function configureEventTransformation(app: MilkyApp) {
         });
     });
 
-    app.bot.onEvent('groupMemberIncrease', (group, user, increaseType, invitor) => {
+    app.bot.onEvent('groupMemberIncrease', (group, user, increaseType, operatorOrInvitor) => {
         app.emitEvent('group_member_increase', {
             group_id: group.uin,
             user_id: user.uin,
-            invitor_id: invitor?.uin,
+            operator_id: increaseType === IncreaseType.Approve ? operatorOrInvitor?.uin : undefined,
+            invitor_id: increaseType === IncreaseType.Invite ? operatorOrInvitor?.uin : undefined,
         });
     });
 

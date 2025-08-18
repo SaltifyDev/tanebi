@@ -97,9 +97,9 @@ export class NotifyLogic extends LogicBase {
 
     parseGroupMemberIncrease(pushMsgBody: InferProtoModel<typeof PushMsgBody.fields>) {
         const content = GroupMemberChange.decode(pushMsgBody.body!.msgContent!);
-        const operatorUidOrEmpty = content.operatorInfo ? content.operatorInfo.toString() : undefined;
+        const operatorOrInvitorUid = content.operatorInfo?.toString();
         this.ctx.eventsDX.emit('groupMemberIncrease', content.groupUin, content.memberUid, content.type,
-            operatorUidOrEmpty);
+            operatorOrInvitorUid);
     }
 
     parseGroupMemberDecrease(pushMsgBody: InferProtoModel<typeof PushMsgBody.fields>) {

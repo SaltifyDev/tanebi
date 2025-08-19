@@ -1,10 +1,4 @@
-<div align="center">
-
-<h1>tanebi</h1>
-
-PC NTQQ 协议的 TypeScript 实现
-
-</div>
+![banner](https://socialify.git.ci/SaltifyDev/tanebi/image?custom_description=PC+NTQQ+%E5%8D%8F%E8%AE%AE%E7%9A%84+TypeScript+%E5%AE%9E%E7%8E%B0&description=1&font=Bitter&forks=1&issues=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F208890061%3Fs%3D400%26u%3D49580f4a3a7837cdd8d43a532d0789b2488a2ffb%26v%3D4&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Light)
 
 ## Packages
 

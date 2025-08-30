@@ -32,6 +32,7 @@ export function configureEventTransformation(app: MilkyApp) {
             message_seq: sequence,
             sender_id: senderUin,
             operator_id: senderUin,
+            display_suffix: tip,
         });
     });
 
@@ -45,6 +46,7 @@ export function configureEventTransformation(app: MilkyApp) {
             message_seq: sequence,
             sender_id: senderUin,
             operator_id: operator.uin,
+            display_suffix: tip,
         });
     });
 
@@ -85,11 +87,14 @@ export function configureEventTransformation(app: MilkyApp) {
     });
 
 
-    app.bot.onEvent('friendPoke', (friend, isSelfSend, isSelfReceive) => {
+    app.bot.onEvent('friendPoke', (friend, isSelfSend, isSelfReceive, actionStr, actionImgUrl, suffix) => {
         app.emitEvent('friend_nudge', {
             user_id: friend.uin,
             is_self_send: isSelfSend,
             is_self_receive: isSelfReceive,
+            display_action: actionStr,
+            display_suffix: suffix ?? '',
+            display_action_img_url: actionImgUrl,
         });
     });
 
@@ -177,11 +182,14 @@ export function configureEventTransformation(app: MilkyApp) {
         });
     });
 
-    app.bot.onEvent('groupPoke', (group, sender, receiver) => {
+    app.bot.onEvent('groupPoke', (group, sender, receiver, actionStr, actionImgUrl, suffix) => {
         app.emitEvent('group_nudge', {
             group_id: group.uin,
             sender_id: sender.uin,
             receiver_id: receiver.uin,
+            display_action: actionStr,
+            display_suffix: suffix ?? '',
+            display_action_img_url: actionImgUrl,
         });
     });
 }

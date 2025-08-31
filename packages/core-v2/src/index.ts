@@ -38,10 +38,16 @@ export class Bot {
     }
 
     //#region Metainfo
+    /**
+     * Bot 账号的 uin（QQ 号）。
+     */
     get uin() {
         return this[ctx].keystore.uin;
     }
 
+    /**
+     * Bot 账号的 uid。
+     */
     get uid() {
         if (this[ctx].keystore.uid === undefined) {
             throw new Error('UID is not available before login');
@@ -77,9 +83,8 @@ export class Bot {
 
     //#region Lifecycle API
     /**
-     * Login with QR code, accepts a callback function to handle QR code
-     * @param onQrCode Callback function to handle QR code
-     * @param queryQrCodeResultInterval Interval to query QR code result, >= 2000ms, 5000ms by default
+     * 进行二维码登录。
+     * @param queryQrCodeResultInterval 查询二维码结果的间隔（单位：ms），默认为 5000ms
      */
     async qrCodeLogin(queryQrCodeResultInterval: number = 5000) {
         queryQrCodeResultInterval = Math.max(queryQrCodeResultInterval, 2000);
@@ -148,6 +153,11 @@ export class Bot {
     //#endregion
 
     //#region Event API
+    /**
+     * 监听事件。
+     * @param clazz 事件类，继承自 TanebiEvent
+     * @param listener 事件监听器，接受事件对象作为参数
+     */
     onEvent<T extends TanebiEvent>(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         clazz: new (...args: any[]) => T,
@@ -156,6 +166,13 @@ export class Bot {
         this.events.on(clazz.name, listener);
     }
 
+    /**
+     * 监听日志。
+     * @param level 日志级别，分为 trace、info、warning 和 fatal
+     * @param listener 日志监听器。
+     * 对于 trace / info 级别，参数为 `(moduleName: string, message: string) => void` 的函数；
+     * 对于 warning / fatal 级别，参数为 `(moduleName: string, message: string, error?: unknown) => void` 的函数
+     */
     onLog = this.log.on.bind(this.log);
     //#endregion
 }

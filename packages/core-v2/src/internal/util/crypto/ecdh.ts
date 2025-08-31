@@ -44,3 +44,6 @@ export class Ecdh {
         return this.shareKey;
     }
 }
+
+export const ecdh192 = new Ecdh('secp192k1', true);
+export const ecdh256 = new Ecdh('prime256v1', false);

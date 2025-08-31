@@ -1,0 +1,6 @@
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
+
+export const GroupInvitation = ProtoMessage.of({
+    groupUin: ProtoField(1, ScalarType.UINT32),
+    invitorUid: ProtoField(5, ScalarType.STRING),
+});

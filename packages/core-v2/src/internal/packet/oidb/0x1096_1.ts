@@ -1,0 +1,8 @@
+import { OidbSvcContract } from '@/internal/util/oidb';
+import { ProtoField, ScalarType } from '@/internal/util/pb';
+
+export const SetMemberAdmin = new OidbSvcContract(0x1096, 1, {
+    groupUin: ProtoField(1, ScalarType.UINT32),
+    memberUid: ProtoField(2, ScalarType.STRING),
+    isSet: ProtoField(3, ScalarType.BOOL),
+});

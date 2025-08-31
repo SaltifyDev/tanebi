@@ -1,0 +1,28 @@
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
+
+export const VideoFileElement = ProtoMessage.of({
+    fileUuid: ProtoField(1, ScalarType.STRING, true, false),
+    fileMd5: ProtoField(2, ScalarType.BYTES, true, false),
+    fileName: ProtoField(3, ScalarType.STRING, true, false),
+    fileFormat: ProtoField(4, ScalarType.INT32, false, false),
+    fileTime: ProtoField(5, ScalarType.INT32, false, false),
+    fileSize: ProtoField(6, ScalarType.INT32, false, false),
+    thumbWidth: ProtoField(7, ScalarType.INT32, false, false),
+    thumbHeight: ProtoField(8, ScalarType.INT32, false, false),
+    thumbFileMd5: ProtoField(9, ScalarType.BYTES, true, false),
+    source: ProtoField(10, ScalarType.BYTES, true, false),
+    thumbFileSize: ProtoField(11, ScalarType.INT32, false, false),
+    busiType: ProtoField(12, ScalarType.INT32, false, false),
+    fromChatType: ProtoField(13, ScalarType.INT32, false, false),
+    toChatType: ProtoField(14, ScalarType.INT32, false, false),
+    boolSupportProgressive: ProtoField(15, ScalarType.BOOL, false, false),
+    fileWidth: ProtoField(16, ScalarType.INT32, false, false),
+    fileHeight: ProtoField(17, ScalarType.INT32, false, false),
+    subBusiType: ProtoField(18, ScalarType.INT32, false, false),
+    videoAttr: ProtoField(19, ScalarType.INT32, false, false),
+    bytesThumbFileUrls: ProtoField(20, ScalarType.BYTES, false, true),
+    bytesVideoFileUrls: ProtoField(21, ScalarType.BYTES, false, true),
+    thumbDownloadFlag: ProtoField(22, ScalarType.INT32, false, false),
+    videoDownloadFlag: ProtoField(23, ScalarType.INT32, false, false),
+    pbReserve: ProtoField(24, ScalarType.BYTES, true, false),
+});

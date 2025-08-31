@@ -1,0 +1,63 @@
+import { OidbSvcContract } from '@/internal/util/oidb';
+import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
+
+export const FetchGroupNotifies = new OidbSvcContract(0x10c0, 1, {
+    count: ProtoField(1, ScalarType.UINT32),
+    nextSequence: ProtoField(2, ScalarType.UINT64),
+});
+
+export const FetchGroupFilteredNotifies = new OidbSvcContract(0x10c0, 2, {
+    count: ProtoField(1, ScalarType.UINT32),
+    nextSequence: ProtoField(2, ScalarType.UINT64),
+});
+
+export enum GroupNotifyType {
+    JoinRequest = 1,
+    Invitation = 2,
+    SetAdmin = 3,
+    KickMember = 6,
+    KickSelf = 7,
+    ExitGroup = 13,
+    UnsetAdmin = 16,
+    InvitedJoinRequest = 22,
+}
+
+export enum GroupRequestState {
+    WaitingForAction = 1,
+    Completed = 2,
+}
+
+export const GroupNotify = ProtoMessage.of({
+    sequence: ProtoField(1, ScalarType.UINT64),
+    notifyType: ProtoField(2, ScalarType.UINT32),
+    requestState: ProtoField(3, ScalarType.UINT32),
+    group: ProtoField(4, () => ResponseGroup.fields),
+    user1: ProtoField(5, () => ResponseUser.fields),
+    user2: ProtoField(6, () => ResponseUser.fields, true),
+    user3: ProtoField(7, () => ResponseUser.fields, true),
+    time: ProtoField(8, ScalarType.UINT32),
+    comment: ProtoField(10, ScalarType.STRING),
+});
+
+export const FetchGroupNotifiesGeneralResponse = ProtoMessage.of({
+    requests: ProtoField(1, () => GroupNotify.fields, false, true),
+    newLatestSequence: ProtoField(3, ScalarType.UINT64),
+});
+
+export const FetchGroupNotifiesResponse = new OidbSvcContract(0x10c0, 1, FetchGroupNotifiesGeneralResponse.fields);
+
+export const FetchGroupFilteredNotifiesResponse = new OidbSvcContract(
+    0x10c0,
+    2,
+    FetchGroupNotifiesGeneralResponse.fields
+);
+
+const ResponseGroup = ProtoMessage.of({
+    groupUin: ProtoField(1, ScalarType.UINT32),
+    groupName: ProtoField(2, ScalarType.STRING),
+});
+
+const ResponseUser = ProtoMessage.of({
+    uid: ProtoField(1, ScalarType.STRING),
+    nickname: ProtoField(2, ScalarType.STRING),
+});

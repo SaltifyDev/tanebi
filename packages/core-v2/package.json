@@ -1,0 +1,34 @@
+{
+  "name": "@saltify/tanebi",
+  "version": "0.1.0",
+  "description": "NTQQ Node.js Protocol Implementation",
+  "keywords": [
+    "qq",
+    "oicq"
+  ],
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SaltifyDev/tanebi.git"
+  },
+  "license": "GPL-3.0-or-later",
+  "author": "Young",
+  "type": "module",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "lint": "eslint ./src --ext .ts",
+    "build": "tsup",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "async-mutex": "^0.5.0",
+    "fast-xml-parser": "^5.2.5",
+    "image-size": "^2.0.2",
+    "smart-arraybuffer": "^1.0.0",
+    "typed-emitter": "^2.1.0",
+    "zod": "^4.1.5"
+  }
+}

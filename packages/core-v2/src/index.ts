@@ -20,8 +20,14 @@ export class Bot {
     ) {
     }
 
-    [emitLog](level: 'trace' | 'info' | 'warning' | 'fatal', thisRefOrModuleName: string | object, message: string, error?: unknown) {
-        const moduleName = typeof thisRefOrModuleName === 'string' ? thisRefOrModuleName : thisRefOrModuleName.constructor.name;
+    [emitLog](
+        level: 'trace' | 'info' | 'warning' | 'fatal',
+        thisRefOrModuleName: string | object,
+        message: string,
+        error?: unknown
+    ) {
+        const moduleName =
+            typeof thisRefOrModuleName === 'string' ? thisRefOrModuleName : thisRefOrModuleName.constructor.name;
         this.log.emit(level, moduleName, message, error);
     }
 

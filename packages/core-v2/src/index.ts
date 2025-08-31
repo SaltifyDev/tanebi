@@ -6,13 +6,18 @@ import { QueryQrCodeResultOperation } from '@/internal/operation/system/QueryQrC
 import { FetchQrCodeOperation } from '@/internal/operation/system/FetchQrCodeOperation';
 import { TransEmp12_QrCodeState } from '@/internal/packet/login/wtlogin/TransEmp12';
 import { WtLoginOperation } from '@/internal/operation/system/WtLoginOperation';
+import { TanebiEvent } from '@/event/base';
+import { KeystoreChangeEvent, QrCodeGeneratedEvent } from '@/event';
 
 export const ctx = Symbol('Internal context');
+export const emitNewEvent = Symbol('Internal emit new event');
+export const emitEvent = Symbol('Internal emit event');
 export const emitLog = Symbol('Internal emit log');
 
 export class Bot {
     //#region Internal Field
     private readonly [ctx]: BotContext;
+    private readonly events = new EventEmitter();
     private readonly log = new EventEmitter() as TypedEventEmitter<{
         trace: (moduleName: string, message: string) => void;
         info: (moduleName: string, message: string) => void;
@@ -45,6 +50,18 @@ export class Bot {
     //#endregion
 
     //#region Internal API
+    [emitNewEvent]<T extends TanebiEvent, Args extends unknown[]>(
+        eventClass: new (...args: Args) => T,
+        ...args: Args
+    ) {
+        const event = new eventClass(...args);
+        this.events.emit(eventClass.name, event);
+    }
+
+    [emitEvent](event: TanebiEvent) {
+        this.events.emit(event.constructor.name, event);
+    }
+
     [emitLog](
         level: 'trace' | 'info' | 'warning' | 'fatal',
         thisRefOrModuleName: string | object,
@@ -57,15 +74,13 @@ export class Bot {
     }
     //#endregion
 
+    //#region Lifecycle API
     /**
      * Login with QR code, accepts a callback function to handle QR code
      * @param onQrCode Callback function to handle QR code
      * @param queryQrCodeResultInterval Interval to query QR code result, >= 2000ms, 5000ms by default
      */
-    async qrCodeLogin(
-        onQrCode: (qrCodeUrl: string, qrCodePng: Buffer) => unknown,
-        queryQrCodeResultInterval: number = 5000
-    ) {
+    async qrCodeLogin(queryQrCodeResultInterval: number = 5000) {
         queryQrCodeResultInterval = Math.max(queryQrCodeResultInterval, 2000);
 
         const qrCodeInfo = await this[ctx].call(FetchQrCodeOperation);
@@ -74,7 +89,7 @@ export class Bot {
         this[ctx].keystore.session.qrSign = qrCodeInfo.signature;
         this[ctx].keystore.session.qrString = qrCodeInfo.qrSig;
         this[ctx].keystore.session.qrUrl = qrCodeInfo.url;
-        onQrCode(qrCodeInfo.url, qrCodeInfo.qrCode);
+        this[emitNewEvent](QrCodeGeneratedEvent, qrCodeInfo.url, qrCodeInfo.qrCode);
 
         await new Promise<void>((resolve, reject) => {
             this.qrCodeQueryIntervalRef = setInterval(async () => {
@@ -121,8 +136,7 @@ export class Bot {
         this[ctx].keystore.session.tempPassword = loginResult.session.tempPassword;
         this[ctx].keystore.session.sessionDate = loginResult.session.sessionDate;
 
-        // todo: emit keystore change event
-        // this[eventsDX].emit('keystoreChange', this[ctx].keystore);
+        this[emitNewEvent](KeystoreChangeEvent, this[ctx].keystore);
 
         this[emitLog]('trace', this, `Keystore: ${JSON.stringify(this[ctx].keystore)}`);
         this[emitLog]('info', this, `Credentials for user ${this.uin} successfully retrieved`);
@@ -130,8 +144,17 @@ export class Bot {
         // todo: implement online
         // await this.botOnline();
     }
+    //#endregion
 
-    //#region Log listeners
+    //#region Event API
+    onEvent<T extends TanebiEvent>(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        clazz: new (...args: any[]) => T,
+        listener: (event: T) => void
+    ) {
+        this.events.on(clazz.name, listener);
+    }
+
     onTrace(listener: (moduleName: string, message: string) => void) {
         this.log.on('trace', listener);
     }

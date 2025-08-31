@@ -8,6 +8,7 @@ import { TransEmp12_QrCodeState } from '@/internal/packet/login/wtlogin/TransEmp
 import { WtLoginOperation } from '@/internal/operation/system/WtLoginOperation';
 import { TanebiEvent } from '@/event/base';
 import { KeystoreChangeEvent, QrCodeGeneratedEvent } from '@/event';
+import { UrlSignProvider } from '@/util/sign';
 
 export const ctx = Symbol('Internal context');
 export const emitNewEvent = Symbol('Internal emit new event');
@@ -174,3 +175,6 @@ export class Bot {
 }
 
 export * from './common';
+export * from './entity';
+export * from './event';
+export { UrlSignProvider };

@@ -156,21 +156,7 @@ export class Bot {
         this.events.on(clazz.name, listener);
     }
 
-    onTrace(listener: (moduleName: string, message: string) => void) {
-        this.log.on('trace', listener);
-    }
-
-    onInfo(listener: (moduleName: string, message: string) => void) {
-        this.log.on('info', listener);
-    }
-
-    onWarning(listener: (moduleName: string, message: string, error?: unknown) => void) {
-        this.log.on('warning', listener);
-    }
-
-    onFatal(listener: (moduleName: string, message: string, error?: unknown) => void) {
-        this.log.on('fatal', listener);
-    }
+    onLog = this.log.on.bind(this.log);
     //#endregion
 }
 

@@ -9,6 +9,9 @@ import { WtLoginOperation } from '@/internal/operation/system/WtLoginOperation';
 import { TanebiEvent } from '@/event/base';
 import { KeystoreChangeEvent, QrCodeGeneratedEvent } from '@/event';
 import { UrlSignProvider } from '@/util/sign';
+import { BotOnlineOperation } from '@/internal/operation/system/BotOnlineOperation';
+import { HeartbeatOperation } from '@/internal/operation/system/HeartbeatOperation';
+import { BotOfflineOperation } from '@/internal/operation/system/BotOfflineOperation';
 
 export const ctx = Symbol('Internal context');
 export const emitNewEvent = Symbol('Internal emit new event');
@@ -26,6 +29,8 @@ export class Bot {
         fatal: (moduleName: string, message: string, error?: unknown) => void;
     }>;
     private qrCodeQueryIntervalRef: NodeJS.Timeout | undefined;
+    private heartbeatIntervalRef: NodeJS.Timeout | undefined;
+    private loggedIn = false;
     //#endregion
 
     constructor(
@@ -54,6 +59,13 @@ export class Bot {
         }
         return this[ctx].keystore.uid;
     }
+
+    /**
+     * Bot 账号是否已登录。
+     */
+    get isLoggedIn() {
+        return this.loggedIn;
+    }
     //#endregion
 
     //#region Internal API
@@ -78,6 +90,25 @@ export class Bot {
         const moduleName =
             typeof thisRefOrModuleName === 'string' ? thisRefOrModuleName : thisRefOrModuleName.constructor.name;
         this.log.emit(level, moduleName, message, error);
+    }
+
+    private async postOnline() {
+        this[ctx].ssoLogic.socket.once('error', async (e) => {
+            this[emitLog]('warning', this, 'An error occurred in connection', e);
+            clearInterval(this.heartbeatIntervalRef);
+            this.heartbeatIntervalRef = undefined;
+            await this[ctx].ssoLogic.connectToMsfServer();
+            this.loggedIn = false;
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+            try {
+                await this.tryFastLogin();
+            } catch (e) {
+                this[emitLog]('warning', this, 'Failed to re-login', e);
+            }
+        });
+        // todo: post online logic
+        // - fetch face details
+        // - fetch highway url
     }
     //#endregion
 
@@ -149,6 +180,58 @@ export class Bot {
 
         // todo: implement online
         // await this.botOnline();
+    }
+
+    /**
+     * 在**已经有登录凭据**的情况下，尝试让 Bot 上线。
+     * 不应该手动调用这一方法，而应该调用 {@link tryFastLogin}，除非你知道自己在做什么。
+     */
+    async setOnline() {
+        const onlineResult = await this[ctx].call(BotOnlineOperation);
+        if (onlineResult === 'register success') {
+            throw new Error(`Failed to go online (${onlineResult})`);
+        }
+        this.loggedIn = true;
+        this[emitLog]('info', this, `Bot ${this.uin} is now online`);
+
+        this.heartbeatIntervalRef = setInterval(async () => {
+            try {
+                await this[ctx].call(HeartbeatOperation);
+                this[emitLog]('trace', this, 'Heartbeat sent');
+            } catch (e) {
+                this[emitLog]('fatal', this, 'Failed to send heartbeat', e);
+            }
+        }, 4.5 * 60 * 1000 /* 4.5 minute */);
+
+        await this.postOnline();
+    }
+
+    /**
+     * 尝试在已有凭据的情况下{@link setOnline|快速登录}，若失败则使用二维码登录。
+     * 在初次登录时，应当调用 {@link qrCodeLogin} 方法。
+     */
+    async tryFastLogin() {
+        try {
+            await this.setOnline();
+        } catch (e) {
+            this[emitLog]('warning', this, 'Bot online failed, try QR code login', e);
+            await this.qrCodeLogin();
+        }
+    }
+
+    /**
+     * 进行下线操作。注意这一操作完成后将无法用同一 Bot 实例重新上线。
+     */
+    async setOffline() {
+        if (this.qrCodeQueryIntervalRef) {
+            clearInterval(this.qrCodeQueryIntervalRef);
+        }
+        if (this.heartbeatIntervalRef) {
+            clearInterval(this.heartbeatIntervalRef);
+        }
+        await this[ctx].call(BotOfflineOperation);
+        this[ctx].ssoLogic.socket.destroy();
+        this[emitLog]('info', this, `User ${this.uin} is now offline`);
     }
     //#endregion
 

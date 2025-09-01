@@ -3,7 +3,7 @@ import {
     deserializeDeviceInfo,
     deserializeKeystore,
     fetchAppInfoFromSignUrl,
-    KeystoreChangeEvent,
+    BotKeystoreChangeEvent,
     serializeKeystore,
     UrlSignProvider,
 } from '@saltify/tanebi';
@@ -23,7 +23,7 @@ const bot = await Bot.create(
     UrlSignProvider(signUrl)
 );
 
-bot.subscribe(KeystoreChangeEvent, (event) => {
+bot.subscribe(BotKeystoreChangeEvent, (event) => {
     fs.writeFileSync('temp/keystore.json', JSON.stringify(serializeKeystore(event.newKeystore), null, 4));
     console.log('Keystore saved to temp/keystore.json');
 });

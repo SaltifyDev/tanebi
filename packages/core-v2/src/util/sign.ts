@@ -10,9 +10,9 @@ const UrlSignResult = z.object({
 });
 
 /**
- * Create a sign provider that fetches sign information from the given URL.
- * @param signApiUrl The URL to fetch sign information from
- * @returns The sign provider
+ * 从指定的 URL 获取签名信息的签名接口。
+ * @param signApiUrl 签名 API 的 URL
+ * @returns 签名接口
  */
 export function UrlSignProvider(signApiUrl: string): SignProvider {
     return {

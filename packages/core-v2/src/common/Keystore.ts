@@ -1,6 +1,16 @@
-import type { DeviceInfo } from '@/common/DeviceInfo';
+import {
+    BufferSerialized,
+    DateSerialized,
+    serializeBuffer,
+    serializeDate,
+    deserializeBuffer,
+    deserializeDate,
+} from '@/util/serialize';
 import { randomBytes } from 'node:crypto';
 
+/**
+ * 登录 QQ 所需的密钥信息。
+ */
 export interface Keystore {
     uin: number;
 
@@ -36,9 +46,7 @@ export interface Keystore {
          */
         tgt: Buffer;
 
-
         sessionDate: Date;
-
 
         /**
          * 24 bytes
@@ -48,7 +56,6 @@ export interface Keystore {
         qrString?: string;
 
         qrUrl?: string;
-
 
         exchangeKey?: Buffer;
 
@@ -64,7 +71,6 @@ export interface Keystore {
 
         captcha?: [string, string, string];
 
-
         tempPassword?: Buffer;
 
         /**
@@ -77,23 +83,7 @@ export interface Keystore {
 }
 
 /**
- * Generate a new device information with random values
- * @returns A new device information
- */
-export function newDeviceInfo(): DeviceInfo {
-    return {
-        guid: randomBytes(16),
-        macAddress: randomBytes(6),
-        // Intentionally preserved 'Lagrange' as the prefix
-        deviceName: `Lagrange-${randomBytes(3).toString('hex').toUpperCase()}`,
-        systemKernel: 'Windows 10.0.19042',
-        kernelVersion: '10.0.19042.0',
-    };
-}
-
-/**
- * Generate a new keystore for QR code login
- * @returns A new keystore
+ * 生成新的密钥信息，用于二维码登录。
  */
 export function newKeystore(): Keystore {
     return {
@@ -113,23 +103,6 @@ export function newKeystore(): Keystore {
     };
 }
 
-export type BufferSerialized = string;
-export type DateSerialized = string;
-
-/**
- * Serialized device information
- */
-export interface DeviceInfoSerialized {
-    guid: BufferSerialized;
-    macAddress: BufferSerialized;
-    deviceName: string;
-    systemKernel: string;
-    kernelVersion: string;
-}
-
-/**
- * Serialized keystore
- */
 export interface KeystoreSerialized {
     uin: number;
     uid?: string;
@@ -159,55 +132,6 @@ export interface KeystoreSerialized {
     };
 }
 
-function serializeBuffer(data?: Buffer) {
-    return data ? data.toString('hex') : undefined;
-}
-
-function deserializeBuffer(data?: BufferSerialized) {
-    return data ? Buffer.from(data, 'hex') : undefined;
-}
-
-function serializeDate(data: Date): DateSerialized;
-function serializeDate(data: Date | undefined): DateSerialized | undefined;
-function serializeDate(data?: Date) {
-    return data ? data.toISOString() : undefined;
-}
-
-function deserializeDate(data: DateSerialized): Date;
-function deserializeDate(data: DateSerialized | undefined): Date | undefined;
-function deserializeDate(data?: DateSerialized) {
-    return data ? new Date(data) : undefined;
-}
-
-/**
- * Serialize device information for storage
- */
-export function serializeDeviceInfo(data: DeviceInfo): DeviceInfoSerialized {
-    return {
-        guid: serializeBuffer(data.guid)!,
-        macAddress: serializeBuffer(data.macAddress)!,
-        deviceName: data.deviceName,
-        systemKernel: data.systemKernel,
-        kernelVersion: data.kernelVersion,
-    };
-}
-
-/**
- * Deserialize device information from plain object
- */
-export function deserializeDeviceInfo(data: DeviceInfoSerialized): DeviceInfo {
-    return {
-        guid: deserializeBuffer(data.guid)!,
-        macAddress: deserializeBuffer(data.macAddress)!,
-        deviceName: data.deviceName,
-        systemKernel: data.systemKernel,
-        kernelVersion: data.kernelVersion,
-    };
-}
-
-/**
- * Serialize keystore for storage
- */
 export function serializeKeystore(data: Keystore): KeystoreSerialized {
     return {
         uin: data.uin,
@@ -239,9 +163,6 @@ export function serializeKeystore(data: Keystore): KeystoreSerialized {
     };
 }
 
-/**
- * Deserialize keystore from plain object
- */
 export function deserializeKeystore(data: KeystoreSerialized): Keystore {
     return {
         uin: data.uin,

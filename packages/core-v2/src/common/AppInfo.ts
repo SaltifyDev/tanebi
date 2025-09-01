@@ -1,5 +1,5 @@
 /**
- * Application info, fields from Lagrange.Core
+ * 登录 QQ 所需的 App 信息。
  */
 export interface AppInfo {
     // 'Windows' | 'Linux' | 'Mac'
@@ -51,8 +51,7 @@ export interface AppInfo {
 }
 
 /**
- * A preset of app information for Linux protocol.
- * Use this when unable to fetch app information from the sign URL.
+ * Linux 协议的 AppInfo 预设。
  */
 export const LinuxAppInfoPreset: AppInfo = {
     'Os': 'Linux',
@@ -74,9 +73,9 @@ export const LinuxAppInfoPreset: AppInfo = {
 };
 
 /**
- * Fetch AppInfo from the given sign URL. This is the recommended way to get AppInfo.
- * @param signUrl The sign URL to fetch AppInfo from
- * @returns The AppInfo object
+ * 从签名 URL 中获取 {@link AppInfo}。
+ * @param signUrl 签名 URL
+ * @returns AppInfo 对象
  */
 export async function fetchAppInfoFromSignUrl(signUrl: string): Promise<AppInfo> {
     return await (fetch(signUrl.endsWith('/') ? `${signUrl}appinfo` : `${signUrl}/appinfo`)

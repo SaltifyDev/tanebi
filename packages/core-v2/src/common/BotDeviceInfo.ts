@@ -4,7 +4,7 @@ import { randomBytes } from 'node:crypto';
 /**
  * 登录 QQ 所需的设备信息。
  */
-export interface DeviceInfo {
+export interface BotDeviceInfo {
     /**
      * 设备的 GUID。
      * @example Buffer.from('f47ac10b58cc4372a5670e02b2c3d479', 'hex')
@@ -37,7 +37,7 @@ export interface DeviceInfo {
 /**
  * 生成新的设备信息
  */
-export function newDeviceInfo(): DeviceInfo {
+export function newDeviceInfo(): BotDeviceInfo {
     return {
         guid: randomBytes(16),
         macAddress: randomBytes(6),
@@ -56,7 +56,7 @@ export interface DeviceInfoSerialized {
     kernelVersion: string;
 }
 
-export function serializeDeviceInfo(data: DeviceInfo): DeviceInfoSerialized {
+export function serializeDeviceInfo(data: BotDeviceInfo): DeviceInfoSerialized {
     return {
         guid: serializeBuffer(data.guid)!,
         macAddress: serializeBuffer(data.macAddress)!,
@@ -66,7 +66,7 @@ export function serializeDeviceInfo(data: DeviceInfo): DeviceInfoSerialized {
     };
 }
 
-export function deserializeDeviceInfo(data: DeviceInfoSerialized): DeviceInfo {
+export function deserializeDeviceInfo(data: DeviceInfoSerialized): BotDeviceInfo {
     return {
         guid: deserializeBuffer(data.guid)!,
         macAddress: deserializeBuffer(data.macAddress)!,

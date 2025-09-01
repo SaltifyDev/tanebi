@@ -1,4 +1,4 @@
-import { GroupMemberPermission } from '@/common';
+import { BotGroupMemberPermission } from '@/common';
 import { BotEntity } from '@/entity/BotEntity';
 import { BotGroup } from '@/entity/BotGroup';
 import { Bot } from '@/index';
@@ -13,7 +13,7 @@ export interface BotGroupMemberDataBinding {
     joinTime: number;
     lastMsgTime: number;
     shutUpEndTime?: number;
-    permission: GroupMemberPermission;
+    permission: BotGroupMemberPermission;
 }
 
 /**
@@ -89,7 +89,7 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> impleme
 
     /**
      * 群成员的权限等级。
-     * @see {@link GroupMemberPermission}
+     * @see {@link BotGroupMemberPermission}
      */
     get permission() {
         return this.data.permission;

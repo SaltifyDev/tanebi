@@ -1,4 +1,4 @@
-import { AppInfo, DeviceInfo, Keystore, SignProvider } from '@/common';
+import { BotAppInfo, BotDeviceInfo, BotKeystore, BotSignProvider } from '@/common';
 import type TypedEventEmitter from 'typed-emitter';
 import EventEmitter from 'node:events';
 import { SsoLogic } from '@/internal/logic/SsoLogic';
@@ -9,10 +9,10 @@ export class BotContext {
     readonly wtLoginLogic = new WtLoginLogic(this);
 
     constructor(
-        readonly appInfo: AppInfo,
-        readonly deviceInfo: DeviceInfo,
-        readonly keystore: Keystore,
-        readonly signProvider: SignProvider
+        readonly appInfo: BotAppInfo,
+        readonly deviceInfo: BotDeviceInfo,
+        readonly keystore: BotKeystore,
+        readonly signProvider: BotSignProvider
     ) {}
 
     readonly log = new EventEmitter() as TypedEventEmitter<{

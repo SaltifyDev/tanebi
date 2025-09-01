@@ -1,12 +1,5 @@
 import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
-export enum UserInfoGender {
-    Unset = 0,
-    Male = 1,
-    Female = 2,
-    Unknown = 255,
-}
-
 export const UserInfoAvatar = ProtoMessage.of({
     url: ProtoField(5, ScalarType.STRING),
 });

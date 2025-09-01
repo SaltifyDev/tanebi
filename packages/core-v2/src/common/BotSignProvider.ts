@@ -1,7 +1,7 @@
 /**
  * 签名接口。
  */
-export interface SignProvider {
+export interface BotSignProvider {
     /**
      * 签名方法，实现这一方法以提供签名。
      */

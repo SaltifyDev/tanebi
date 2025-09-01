@@ -1,10 +1,10 @@
-import { UserInfoGender } from '@/common';
+import { BotUserInfoGender } from '@/common';
 import { BotEntity } from '@/entity/BotEntity';
 
 export interface BotFriendDataBinding {
     uin: number;
     uid: string;
-    gender: UserInfoGender;
+    gender: BotUserInfoGender;
     nickname: string;
     remark: string;
     bio: string;
@@ -32,7 +32,7 @@ export class BotFriend extends BotEntity<BotFriendDataBinding> implements BotFri
 
     /**
      * 好友的性别。
-     * @see {@link UserInfoGender}
+     * @see {@link BotUserInfoGender}
      */
     get gender() {
         return this.data.gender;

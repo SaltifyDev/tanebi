@@ -1,4 +1,4 @@
-import { SignProvider } from '@/common';
+import { BotSignProvider } from '@/common';
 import { z } from 'zod';
 
 const UrlSignResult = z.object({
@@ -14,7 +14,7 @@ const UrlSignResult = z.object({
  * @param signApiUrl 签名 API 的 URL
  * @returns 签名接口
  */
-export function UrlSignProvider(signApiUrl: string): SignProvider {
+export function UrlSignProvider(signApiUrl: string): BotSignProvider {
     return {
         async sign(cmd, src, seq) {
             const res = await fetch(signApiUrl, {

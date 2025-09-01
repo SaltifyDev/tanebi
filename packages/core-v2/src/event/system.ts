@@ -1,4 +1,4 @@
-import { Keystore } from '@/common';
+import { BotKeystore } from '@/common';
 import { TanebiEvent } from '@/event/base';
 
 export class QrCodeGeneratedEvent extends TanebiEvent {
@@ -8,7 +8,7 @@ export class QrCodeGeneratedEvent extends TanebiEvent {
 }
 
 export class KeystoreChangeEvent extends TanebiEvent {
-    constructor(readonly newKeystore: Keystore) {
+    constructor(readonly newKeystore: BotKeystore) {
         super();
     }
 }

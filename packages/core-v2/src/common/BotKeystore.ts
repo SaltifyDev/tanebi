@@ -11,7 +11,7 @@ import { randomBytes } from 'node:crypto';
 /**
  * 登录 QQ 所需的密钥信息。
  */
-export interface Keystore {
+export interface BotKeystore {
     uin: number;
     uid?: string;
     passwordMd5: string;
@@ -43,7 +43,7 @@ export interface Keystore {
 /**
  * 生成新的密钥信息，用于二维码登录。
  */
-export function newKeystore(): Keystore {
+export function newKeystore(): BotKeystore {
     return {
         uin: 0,
         passwordMd5: '',
@@ -90,7 +90,7 @@ export interface KeystoreSerialized {
     };
 }
 
-export function serializeKeystore(data: Keystore): KeystoreSerialized {
+export function serializeKeystore(data: BotKeystore): KeystoreSerialized {
     return {
         uin: data.uin,
         uid: data.uid,
@@ -121,7 +121,7 @@ export function serializeKeystore(data: Keystore): KeystoreSerialized {
     };
 }
 
-export function deserializeKeystore(data: KeystoreSerialized): Keystore {
+export function deserializeKeystore(data: KeystoreSerialized): BotKeystore {
     return {
         uin: data.uin,
         uid: data.uid,

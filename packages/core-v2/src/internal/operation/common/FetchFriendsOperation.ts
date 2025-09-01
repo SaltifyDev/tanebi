@@ -1,5 +1,5 @@
+import { BotUserInfoGender } from '@/common';
 import { defineOperation } from '@/internal/operation';
-import { UserInfoGender } from '@/internal/packet/common/UserInfo';
 import { FetchFriends, FetchFriendsResponse } from '@/internal/packet/oidb/0xfd4_1';
 import { FetchUserInfoKey } from '@/internal/packet/oidb/0xfe1_2';
 
@@ -55,8 +55,8 @@ export const FetchFriendsOperation = defineOperation(
                         prop => prop.code === FetchUserInfoKey.Qid)?.value ?? '',
                     age: numData?.find(
                         prop => prop.code === FetchUserInfoKey.Age)?.value ?? 0,
-                    gender: <UserInfoGender>(numData?.find(
-                        prop => prop.code === FetchUserInfoKey.Gender)?.value ?? UserInfoGender.Unset),
+                    gender: <BotUserInfoGender>(numData?.find(
+                        prop => prop.code === FetchUserInfoKey.Gender)?.value ?? BotUserInfoGender.Unset),
                     categoryId: friendRaw.categoryId,
                 };
             }),

@@ -1,6 +1,6 @@
-export * from './AppInfo';
-export * from './DeviceInfo';
-export * from './GroupMemberPermission';
-export * from './Keystore';
-export * from './SignProvider';
-export * from './UserInfoGender';
+export * from './BotAppInfo';
+export * from './BotDeviceInfo';
+export * from './BotKeystore';
+export * from './BotSignProvider';
+
+export * from './enum';

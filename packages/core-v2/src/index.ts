@@ -1,6 +1,6 @@
 import type TypedEventEmitter from 'typed-emitter';
 import { EventEmitter } from 'node:events';
-import { AppInfo, DeviceInfo, Keystore, SignProvider } from '@/common';
+import { BotAppInfo, BotDeviceInfo, BotKeystore, BotSignProvider } from '@/common';
 import { BotContext } from '@/internal';
 import { TanebiEvent } from '@/event/base';
 import { KeystoreChangeEvent, QrCodeGeneratedEvent } from '@/event';
@@ -84,10 +84,10 @@ export class Bot {
     //#endregion
 
     constructor(
-        appInfo: AppInfo,
-        deviceInfo: DeviceInfo,
-        keystore: Keystore,
-        signProvider: SignProvider
+        appInfo: BotAppInfo,
+        deviceInfo: BotDeviceInfo,
+        keystore: BotKeystore,
+        signProvider: BotSignProvider
     ) {
         this[ctx] = new BotContext(appInfo, deviceInfo, keystore, signProvider);
     }
@@ -380,17 +380,17 @@ export class Bot {
     //#region Factory
     /**
      * 创建一个新的 Bot 实例，并且完成必要的初始化。
-     * @param appInfo Bot 登录时使用的{@link AppInfo|App 信息}
-     * @param deviceInfo Bot 登录时使用的{@link DeviceInfo|设备信息}
-     * @param keystore Bot 登录时使用的{@link Keystore|密钥存储}
-     * @param signProvider Bot 登录时使用的{@link SignProvider|签名接口}
+     * @param appInfo Bot 登录时使用的{@link BotAppInfo|App 信息}
+     * @param deviceInfo Bot 登录时使用的{@link BotDeviceInfo|设备信息}
+     * @param keystore Bot 登录时使用的{@link BotKeystore|密钥存储}
+     * @param signProvider Bot 登录时使用的{@link BotSignProvider|签名接口}
      * @returns 新创建的 Bot 实例
      */
     static async create(
-        appInfo: AppInfo,
-        deviceInfo: DeviceInfo,
-        keystore: Keystore,
-        signProvider: SignProvider
+        appInfo: BotAppInfo,
+        deviceInfo: BotDeviceInfo,
+        keystore: BotKeystore,
+        signProvider: BotSignProvider
     ) {
         const bot = new Bot(appInfo, deviceInfo, keystore, signProvider);
         await bot[ctx].ssoLogic.connectToMsfServer();

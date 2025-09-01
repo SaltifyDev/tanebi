@@ -1,7 +1,7 @@
 /**
  * 登录 QQ 所需的 App 信息。
  */
-export interface AppInfo {
+export interface BotAppInfo {
     // 'Windows' | 'Linux' | 'Mac'
     Os: string;
 
@@ -53,7 +53,7 @@ export interface AppInfo {
 /**
  * Linux 协议的 AppInfo 预设。
  */
-export const LinuxAppInfoPreset: AppInfo = {
+export const LinuxAppInfoPreset: BotAppInfo = {
     'Os': 'Linux',
     'VendorOs': 'linux',
     'Kernel': 'Linux',
@@ -73,11 +73,11 @@ export const LinuxAppInfoPreset: AppInfo = {
 };
 
 /**
- * 从签名 URL 中获取 {@link AppInfo}。
+ * 从签名 URL 中获取 {@link BotAppInfo}。
  * @param signUrl 签名 URL
  * @returns AppInfo 对象
  */
-export async function fetchAppInfoFromSignUrl(signUrl: string): Promise<AppInfo> {
+export async function fetchAppInfoFromSignUrl(signUrl: string): Promise<BotAppInfo> {
     return await (fetch(signUrl.endsWith('/') ? `${signUrl}appinfo` : `${signUrl}/appinfo`)
-        .then(res => res.json())) as AppInfo;
+        .then(res => res.json())) as BotAppInfo;
 }

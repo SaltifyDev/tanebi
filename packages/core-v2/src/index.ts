@@ -195,6 +195,27 @@ export class Bot {
      */
     offLog = this.log.off.bind(this.log);
     //#endregion
+
+    //#region Factory
+    /**
+     * 创建一个新的 Bot 实例，并且完成必要的初始化。
+     * @param appInfo Bot 登录时使用的{@link AppInfo|App 信息}
+     * @param deviceInfo Bot 登录时使用的{@link DeviceInfo|设备信息}
+     * @param keystore Bot 登录时使用的{@link Keystore|密钥存储}
+     * @param signProvider Bot 登录时使用的{@link SignProvider|签名接口}
+     * @returns 新创建的 Bot 实例
+     */
+    static async create(
+        appInfo: AppInfo,
+        deviceInfo: DeviceInfo,
+        keystore: Keystore,
+        signProvider: SignProvider
+    ) {
+        const bot = new Bot(appInfo, deviceInfo, keystore, signProvider);
+        await bot[ctx].ssoLogic.connectToMsfServer();
+        return bot;
+    }
+    //#endregion
 }
 
 export * from './common';

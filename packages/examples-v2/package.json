@@ -1,0 +1,18 @@
+{
+  "name": "@saltify/tanebi-examples",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Examples of tanebi",
+  "private": true,
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@saltify/tanebi": "workspace:*"
+  },
+  "author": "Young",
+  "license": "GPL-3.0-only",
+  "devDependencies": {
+    "tsx": "^4.20.5"
+  }
+}

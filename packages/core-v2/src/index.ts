@@ -15,6 +15,8 @@ import { BotOfflineOperation } from '@/internal/operation/system/BotOfflineOpera
 import { BotCacheService } from '@/util/cache';
 import { BotFriend, BotFriendDataBinding } from '@/entity';
 import { FetchFriendsOperation } from '@/internal/operation/common/FetchFriendsOperation';
+import { BotGroup, BotGroupDataBinding } from '@/entity/BotGroup';
+import { FetchGroupsOperation } from '@/internal/operation/common/FetchGroupsOperation';
 
 export const ctx = Symbol('Internal context');
 export const emitNewEvent = Symbol('Internal emit new event');
@@ -57,6 +59,28 @@ export class Bot {
         (bot, data) => new BotFriend(bot, data),
     );
     private friendCategories = new Map<number, string>();
+    private groupCache = new BotCacheService<number, BotGroup>(
+        this,
+        async (bot) => {
+            const groupList = (await bot[ctx].call(FetchGroupsOperation)).groups;
+            return new Map(
+                groupList.map<[number, BotGroupDataBinding]>((group) => [
+                    group.groupUin,
+                    {
+                        uin: group.groupUin,
+                        name: group.info!.groupName!,
+                        description: group.info?.description ?? '',
+                        question: group.info?.question ?? '',
+                        announcement: group.info?.announcement ?? '',
+                        createdTime: group.info?.createdTime ?? 0,
+                        maxMemberCount: group.info?.memberMax ?? 0,
+                        memberCount: group.info?.memberCount ?? 0,
+                    },
+                ])
+            );
+        },
+        (bot, data) => new BotGroup(bot, data),
+    );
     //#endregion
 
     constructor(
@@ -277,6 +301,15 @@ export class Bot {
      */
     getFriendCategoryName(categoryId: number): string | undefined {
         return this.friendCategories.get(categoryId);
+    }
+
+    /**
+     * 获取所有群聊。
+     * @param forceUpdate 是否强制更新缓存
+     * @returns 全部群聊的迭代器
+     */
+    async getGroups(forceUpdate: boolean = false): Promise<Iterator<BotGroup>> {
+        return this.groupCache.getAll(forceUpdate);
     }
     //#endregion
 

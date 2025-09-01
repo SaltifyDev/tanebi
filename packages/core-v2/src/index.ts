@@ -295,6 +295,16 @@ export class Bot {
     }
 
     /**
+     * 根据 uin 获取好友对象。
+     * @param uin 好友的 uin
+     * @param forceUpdate 是否强制更新缓存
+     * @returns 好友对象
+     */
+    async getFriend(uin: number, forceUpdate: boolean = false): Promise<BotFriend | undefined> {
+        return this.friendCache.get(uin, forceUpdate);
+    }
+
+    /**
      * 获取好友分组名称。
      * @param categoryId 分组 ID
      * @returns 分组名称
@@ -310,6 +320,16 @@ export class Bot {
      */
     async getGroups(forceUpdate: boolean = false): Promise<Iterator<BotGroup>> {
         return this.groupCache.getAll(forceUpdate);
+    }
+
+    /**
+     * 根据 uin 获取群聊对象。
+     * @param uin 群聊的 uin
+     * @param forceUpdate 是否强制更新缓存
+     * @returns 群聊对象
+     */
+    async getGroup(uin: number, forceUpdate: boolean = false): Promise<BotGroup | undefined> {
+        return this.groupCache.get(uin, forceUpdate);
     }
     //#endregion
 

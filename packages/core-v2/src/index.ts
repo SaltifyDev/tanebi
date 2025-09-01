@@ -188,7 +188,7 @@ export class Bot {
      */
     async setOnline() {
         const onlineResult = await this[ctx].call(BotOnlineOperation);
-        if (onlineResult === 'register success') {
+        if (onlineResult !== 'register success') {
             throw new Error(`Failed to go online (${onlineResult})`);
         }
         this.loggedIn = true;

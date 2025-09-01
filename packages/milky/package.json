@@ -25,16 +25,16 @@
     "prepack": "npm run build"
   },
   "devDependencies": {
-    "@hono/node-server": "^1.14.4",
+    "@hono/node-server": "^1.19.1",
     "@hono/node-ws": "^1.2.0",
     "@saltify/milky-types": "^1.0.0-draft.11",
-    "chalk": "^5.4.1",
-    "hono": "^4.8.3",
-    "music-metadata": "^11.6.0",
+    "chalk": "^5.6.0",
+    "hono": "^4.9.5",
+    "music-metadata": "^11.8.3",
     "source-map-support": "^0.5.21",
     "tanebi": "workspace:*",
     "ts-qrcode-terminal": "^1.0.1",
     "winston": "^3.17.0",
-    "zod": "^4.0.17"
+    "zod": "^4.1.5"
   }
 }

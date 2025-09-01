@@ -12,7 +12,7 @@ import { PackedTlv, Tlv, TlvScalarField, TlvVariableField } from '@/internal/uti
 export const TransEmp31 = Tlv.plain([
     TlvScalarField('appId', 'uint32'),
     TlvScalarField('uin', 'uint64'),
-    TlvVariableField('tgt', 'bytes', 'none', false),
+    TlvVariableField('a2', 'bytes', 'none', false),
     TlvScalarField('field4', 'uint8'), // 0
     TlvScalarField('field5', 'uint16'), // 0
     TlvVariableField('tlvPack', 'bytes', 'none', false),

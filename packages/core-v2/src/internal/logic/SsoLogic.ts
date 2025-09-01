@@ -177,7 +177,7 @@ export class SsoLogic extends LogicBase {
                 subAppId: this.ctx.appInfo.SubAppId,
                 locale: 2052,
                 bytes3: bytes3_Default,
-                tgt: this.ctx.keystore.session.tgt,
+                a2: this.ctx.keystore.session.a2,
                 command: cmd,
                 bytes6: BUF_0x00_0x00_0x00_0x04,
                 guid: this.ctx.deviceInfo.guid.toString('hex'),

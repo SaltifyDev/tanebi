@@ -11,7 +11,7 @@ export const QueryQrCodeResultSubCommand = 0x12;
 
 export type QueryQrCodeResultCallResult = {
     confirmed: true,
-    tempPassword: Buffer,
+    a1: Buffer,
     noPicSig: Buffer,
     tgtgtKey: Buffer,
 } | {
@@ -48,7 +48,7 @@ export const QueryQrCodeResultOperation = defineOperation(
             const resolvedTlvPack = TransEmp12Response_Confirmed_TlvPack.unpack(tlvPack);
             return {
                 confirmed: true,
-                tempPassword: resolvedTlvPack['0x18']!.tempPassword,
+                a1: resolvedTlvPack['0x18']!.a1,
                 noPicSig: resolvedTlvPack['0x19']!.noPicSig,
                 tgtgtKey: resolvedTlvPack['0x1e']!.tgtgtKey,
             };

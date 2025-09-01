@@ -15,7 +15,7 @@ export const OutgoingSsoPacket = Tlv.plain([
         TlvScalarField('subAppId', 'uint32'),
         TlvScalarField('locale', 'uint32'),
         TlvFixedBytesField('bytes3', 12), // 020000000000000000000000
-        TlvVariableField('tgt', 'bytes', 'uint32', true),
+        TlvVariableField('a2', 'bytes', 'uint32', true),
         TlvVariableField('command', 'string', 'uint32', true),
         TlvFixedBytesField('bytes6', 4), // 00000004
         TlvVariableField('guid', 'string', 'uint32', true),

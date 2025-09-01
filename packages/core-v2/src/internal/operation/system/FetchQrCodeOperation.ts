@@ -17,7 +17,7 @@ export const FetchQrCodeOperation = defineOperation(
         ctx.wtLoginLogic.buildTransEmpBody(FetchQrCodeSubCommand, TransEmp31.encode({
             appId: ctx.appInfo.AppId,
             uin: BigInt(ctx.keystore.uin),
-            tgt: ctx.keystore.session.tgt,
+            a2: ctx.keystore.session.a2,
             field4: 0,
             field5: 0,
             tlvPack: TransEmp31_TlvPack.pack({

@@ -13,10 +13,10 @@ export type WtLoginCallResult = {
     success: true,
     uid: string,
     session: {
-        d2Key: Buffer,
-        tgt: Buffer,
+        a2: Buffer,
         d2: Buffer,
-        tempPassword: Buffer,
+        d2Key: Buffer,
+        a1: Buffer,
         sessionDate: Date,
     },
 } | {
@@ -33,7 +33,7 @@ export const WtLoginOperation = defineOperation(
         .buildWtLoginPacket('wtlogin.login', new SmartBuffer()
             .writeUInt16BE(0x09) // command
             .writeBuffer(Login.pack({
-                '0x106': { tempPassword: ctx.keystore.session.tempPassword! },
+                '0x106': { a1: ctx.keystore.session.a1! },
                 '0x144': {
                     tgtgtEncrypted: encryptTea(TlvLogin0x114_TlvBody.pack({
                         '0x16e': { deviceName: ctx.deviceInfo.deviceName },
@@ -126,10 +126,10 @@ export const WtLoginOperation = defineOperation(
                 success: true,
                 uid: TlvLogin0x543Body.decode(unpacked0x119['0x543']!.protoBody).layer1.layer2.uid,
                 session: {
-                    d2Key: unpacked0x119['0x305']!.d2Key,
-                    tgt: unpacked0x119['0x10a']!.tgt,
+                    a2: unpacked0x119['0x10a']!.a2,
                     d2: unpacked0x119['0x143']!.d2,
-                    tempPassword: unpacked0x119['0x106']!.tempPassword,
+                    d2Key: unpacked0x119['0x305']!.d2Key,
+                    a1: unpacked0x119['0x106']!.a1,
                     sessionDate: new Date(),
                 },
             };

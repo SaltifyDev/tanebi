@@ -13,71 +13,29 @@ import { randomBytes } from 'node:crypto';
  */
 export interface Keystore {
     uin: number;
-
     uid?: string;
-
     passwordMd5: string;
-
     stub: {
-        /**
-         * 16 bytes, generated on instance creation
-         */
         randomKey: Buffer;
-
-        /**
-         * 16 bytes, initially 0
-         */
         tgtgtKey: Buffer;
     };
-
     session: {
-        /**
-         * 16 bytes, initially 0
-         */
-        d2Key: Buffer;
-
-        /**
-         * Initially empty
-         */
+        a2: Buffer;
         d2: Buffer;
-
-        /**
-         * Initially empty
-         */
-        tgt: Buffer;
-
+        d2Key: Buffer;
+        a1?: Buffer;
         sessionDate: Date;
-
-        /**
-         * 24 bytes
-         */
         qrSign?: Buffer;
-
         qrString?: string;
-
         qrUrl?: string;
-
         exchangeKey?: Buffer;
-
         keySign?: Buffer;
-
         unusualSign?: Buffer;
-
         unusualCookies?: string;
-
         captchaUrl?: string;
-
         newDeviceVerifyUrl?: string;
-
         captcha?: [string, string, string];
-
-        tempPassword?: Buffer;
-
-        /**
-         * 16 bytes, may be from Tlv19, for Tlv16A
-         */
         noPicSig?: Buffer;
-
         sequence: number;
     };
 }
@@ -94,9 +52,9 @@ export function newKeystore(): Keystore {
             tgtgtKey: Buffer.alloc(16),
         },
         session: {
-            d2Key: Buffer.alloc(16),
+            a2: Buffer.alloc(0),
             d2: Buffer.alloc(0),
-            tgt: Buffer.alloc(0),
+            d2Key: Buffer.alloc(16),
             sessionDate: new Date(),
             sequence: 0,
         },
@@ -112,9 +70,10 @@ export interface KeystoreSerialized {
         tgtgtKey: BufferSerialized;
     };
     session: {
-        d2Key: BufferSerialized;
+        a2: BufferSerialized;
         d2: BufferSerialized;
-        tgt: BufferSerialized;
+        d2Key: BufferSerialized;
+        a1?: BufferSerialized;
         sessionDate: DateSerialized;
         qrSign?: BufferSerialized;
         qrString?: string;
@@ -126,7 +85,6 @@ export interface KeystoreSerialized {
         captchaUrl?: string;
         newDeviceVerifyUrl?: string;
         captcha?: [string, string, string];
-        tempPassword?: BufferSerialized;
         noPicSig?: BufferSerialized;
         sequence: number;
     };
@@ -142,9 +100,10 @@ export function serializeKeystore(data: Keystore): KeystoreSerialized {
             tgtgtKey: serializeBuffer(data.stub.tgtgtKey)!,
         },
         session: {
-            d2Key: serializeBuffer(data.session.d2Key)!,
+            a2: serializeBuffer(data.session.a2)!,
             d2: serializeBuffer(data.session.d2)!,
-            tgt: serializeBuffer(data.session.tgt)!,
+            d2Key: serializeBuffer(data.session.d2Key)!,
+            a1: serializeBuffer(data.session.a1),
             sessionDate: serializeDate(data.session.sessionDate),
             qrSign: serializeBuffer(data.session.qrSign),
             qrString: data.session.qrString,
@@ -156,7 +115,6 @@ export function serializeKeystore(data: Keystore): KeystoreSerialized {
             captchaUrl: data.session.captchaUrl,
             newDeviceVerifyUrl: data.session.newDeviceVerifyUrl,
             captcha: data.session.captcha,
-            tempPassword: serializeBuffer(data.session.tempPassword),
             noPicSig: serializeBuffer(data.session.noPicSig),
             sequence: data.session.sequence,
         },
@@ -173,9 +131,10 @@ export function deserializeKeystore(data: KeystoreSerialized): Keystore {
             tgtgtKey: deserializeBuffer(data.stub.tgtgtKey)!,
         },
         session: {
-            d2Key: deserializeBuffer(data.session.d2Key)!,
+            a2: deserializeBuffer(data.session.a2)!,
             d2: deserializeBuffer(data.session.d2)!,
-            tgt: deserializeBuffer(data.session.tgt)!,
+            d2Key: deserializeBuffer(data.session.d2Key)!,
+            a1: deserializeBuffer(data.session.a1),
             sessionDate: deserializeDate(data.session.sessionDate),
             qrSign: deserializeBuffer(data.session.qrSign),
             qrString: data.session.qrString,
@@ -187,7 +146,6 @@ export function deserializeKeystore(data: KeystoreSerialized): Keystore {
             captchaUrl: data.session.captchaUrl,
             newDeviceVerifyUrl: data.session.newDeviceVerifyUrl,
             captcha: data.session.captcha,
-            tempPassword: deserializeBuffer(data.session.tempPassword),
             noPicSig: deserializeBuffer(data.session.noPicSig),
             sequence: data.session.sequence,
         },

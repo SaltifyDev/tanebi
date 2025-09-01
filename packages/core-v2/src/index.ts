@@ -161,7 +161,7 @@ export class Bot {
                     this[emitLog]('trace', this, `Query QR code result: ${res.confirmed ? 'confirmed' : res.state}`);
                     if (res.confirmed) {
                         clearInterval(this.qrCodeQueryIntervalRef);
-                        this[ctx].keystore.session.tempPassword = res.tempPassword;
+                        this[ctx].keystore.session.a1 = res.a1;
                         this[ctx].keystore.session.noPicSig = res.noPicSig;
                         this[ctx].keystore.stub.tgtgtKey = res.tgtgtKey;
                         resolve();
@@ -193,10 +193,10 @@ export class Bot {
 
         this[ctx].keystore.uid = loginResult.uid;
 
-        this[ctx].keystore.session.d2Key = loginResult.session.d2Key;
-        this[ctx].keystore.session.tgt = loginResult.session.tgt;
+        this[ctx].keystore.session.a2 = loginResult.session.a2;
         this[ctx].keystore.session.d2 = loginResult.session.d2;
-        this[ctx].keystore.session.tempPassword = loginResult.session.tempPassword;
+        this[ctx].keystore.session.d2Key = loginResult.session.d2Key;
+        this[ctx].keystore.session.a1 = loginResult.session.a1;
         this[ctx].keystore.session.sessionDate = loginResult.session.sessionDate;
 
         this[emitNewEvent](KeystoreChangeEvent, this[ctx].keystore);

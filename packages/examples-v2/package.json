@@ -11,8 +11,5 @@
     "@saltify/tanebi": "workspace:*"
   },
   "author": "Young",
-  "license": "GPL-3.0-only",
-  "devDependencies": {
-    "tsx": "^4.20.5"
-  }
+  "license": "GPL-3.0-only"
 }

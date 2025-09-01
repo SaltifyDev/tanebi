@@ -178,8 +178,7 @@ export class Bot {
         this[emitLog]('trace', this, `Keystore: ${JSON.stringify(this[ctx].keystore)}`);
         this[emitLog]('info', this, `Credentials for user ${this.uin} successfully retrieved`);
 
-        // todo: implement online
-        // await this.botOnline();
+        await this.setOnline();
     }
 
     /**

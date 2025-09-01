@@ -1,14 +1,35 @@
 import { BotKeystore } from '@/common';
-import { TanebiEvent } from '@/event/base';
+import { BotEvent } from '@/event/base';
 
-export class QrCodeGeneratedEvent extends TanebiEvent {
-    constructor(readonly qrCodeUrl: string, readonly qrCodePng: Buffer) {
+/**
+ * 二维码生成事件
+ */
+export class BotQrCodeGeneratedEvent extends BotEvent {
+    constructor(
+        /**
+         * 二维码包含的**内容**链接
+         */
+        readonly qrCodeUrl: string,
+
+        /**
+         * 二维码图片
+         */
+        readonly qrCodePng: Buffer
+    ) {
         super();
     }
 }
 
-export class KeystoreChangeEvent extends TanebiEvent {
-    constructor(readonly newKeystore: BotKeystore) {
+/**
+ * {@link BotKeystore} 变更事件
+ */
+export class BotKeystoreChangeEvent extends BotEvent {
+    constructor(
+        /**
+         * 新的 {@link BotKeystore}
+         */
+        readonly newKeystore: BotKeystore
+    ) {
         super();
     }
 }

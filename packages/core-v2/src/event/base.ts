@@ -1,1 +1,1 @@
-export abstract class TanebiEvent {}
+export abstract class BotEvent {}

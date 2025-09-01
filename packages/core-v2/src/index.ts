@@ -2,8 +2,7 @@ import type TypedEventEmitter from 'typed-emitter';
 import { EventEmitter } from 'node:events';
 import { BotAppInfo, BotDeviceInfo, BotKeystore, BotSignProvider } from '@/common';
 import { BotContext } from '@/internal';
-import { TanebiEvent } from '@/event/base';
-import { KeystoreChangeEvent, QrCodeGeneratedEvent } from '@/event';
+import { BotEvent, BotKeystoreChangeEvent, BotQrCodeGeneratedEvent } from '@/event';
 import { UrlSignProvider } from '@/util/sign';
 import { QueryQrCodeResultOperation } from '@/internal/operation/system/QueryQrCodeResultOperation';
 import { FetchQrCodeOperation } from '@/internal/operation/system/FetchQrCodeOperation';
@@ -119,7 +118,7 @@ export class Bot {
     //#endregion
 
     //#region Internal API
-    [emitNewEvent]<T extends TanebiEvent, Args extends unknown[]>(
+    [emitNewEvent]<T extends BotEvent, Args extends unknown[]>(
         eventClass: new (...args: Args) => T,
         ...args: Args
     ) {
@@ -127,7 +126,7 @@ export class Bot {
         this.events.emit(eventClass.name, event);
     }
 
-    [emitEvent](event: TanebiEvent) {
+    [emitEvent](event: BotEvent) {
         this.events.emit(event.constructor.name, event);
     }
 
@@ -176,7 +175,7 @@ export class Bot {
         this[ctx].keystore.session.qrSign = qrCodeInfo.signature;
         this[ctx].keystore.session.qrString = qrCodeInfo.qrSig;
         this[ctx].keystore.session.qrUrl = qrCodeInfo.url;
-        this[emitNewEvent](QrCodeGeneratedEvent, qrCodeInfo.url, qrCodeInfo.qrCode);
+        this[emitNewEvent](BotQrCodeGeneratedEvent, qrCodeInfo.url, qrCodeInfo.qrCode);
 
         await new Promise<void>((resolve, reject) => {
             this.qrCodeQueryIntervalRef = setInterval(async () => {
@@ -223,7 +222,7 @@ export class Bot {
         this[ctx].keystore.session.a1 = loginResult.session.a1;
         this[ctx].keystore.session.sessionDate = loginResult.session.sessionDate;
 
-        this[emitNewEvent](KeystoreChangeEvent, this[ctx].keystore);
+        this[emitNewEvent](BotKeystoreChangeEvent, this[ctx].keystore);
 
         this[emitLog]('trace', this, `Keystore: ${JSON.stringify(this[ctx].keystore)}`);
         this[emitLog]('info', this, `Credentials for user ${this.uin} successfully retrieved`);
@@ -339,7 +338,7 @@ export class Bot {
      * @param clazz 事件类，继承自 TanebiEvent
      * @param listener 事件监听器，接受事件对象作为参数
      */
-    subscribe<T extends TanebiEvent>(
+    subscribe<T extends BotEvent>(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         clazz: new (...args: any[]) => T,
         listener: (event: T) => void
@@ -352,7 +351,7 @@ export class Bot {
      * @param clazz 事件类，继承自 TanebiEvent
      * @param listener 取消订阅的事件监听器，需要和 {@link subscribe} 时的 listener 一致
      */
-    unsubscribe<T extends TanebiEvent>(
+    unsubscribe<T extends BotEvent>(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         clazz: new (...args: any[]) => T,
         listener: (event: T) => void

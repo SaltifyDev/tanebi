@@ -12,6 +12,9 @@ import { WtLoginOperation } from '@/internal/operation/system/WtLoginOperation';
 import { BotOnlineOperation } from '@/internal/operation/system/BotOnlineOperation';
 import { HeartbeatOperation } from '@/internal/operation/system/HeartbeatOperation';
 import { BotOfflineOperation } from '@/internal/operation/system/BotOfflineOperation';
+import { BotCacheService } from '@/util/cache';
+import { BotFriend, BotFriendDataBinding } from '@/entity';
+import { FetchFriendsOperation } from '@/internal/operation/common/FetchFriendsOperation';
 
 export const ctx = Symbol('Internal context');
 export const emitNewEvent = Symbol('Internal emit new event');
@@ -31,6 +34,29 @@ export class Bot {
     private qrCodeQueryIntervalRef: NodeJS.Timeout | undefined;
     private heartbeatIntervalRef: NodeJS.Timeout | undefined;
     private loggedIn = false;
+    private friendCache = new BotCacheService<number, BotFriend>(
+        this,
+        async (bot) => {
+            let nextUin: number | undefined;
+            const mappedData = new Map<number, BotFriendDataBinding>();
+            do {
+                const data = await bot[ctx].call(FetchFriendsOperation, nextUin);
+                data.friends.forEach((friend) => {
+                    // todo: set identity mapping
+                    // this[identityService].uin2uid.set(friend.uin, friend.uid);
+                    // this[identityService].uid2uin.set(friend.uid, friend.uin);
+                    mappedData.set(friend.uin, friend);
+                });
+                data.friendCategories.forEach((category) => {
+                    this.friendCategories.set(category.code, category.value ?? '');
+                });
+                nextUin = data.nextUin;
+            } while (nextUin);
+            return mappedData;
+        },
+        (bot, data) => new BotFriend(bot, data),
+    );
+    private friendCategories = new Map<number, string>();
     //#endregion
 
     constructor(
@@ -231,6 +257,26 @@ export class Bot {
         await this[ctx].call(BotOfflineOperation);
         this[ctx].ssoLogic.socket.destroy();
         this[emitLog]('info', this, `User ${this.uin} is now offline`);
+    }
+    //#endregion
+
+    //#region Common API
+    /**
+     * 获取所有好友。
+     * @param forceUpdate 是否强制更新缓存
+     * @returns 全部好友的迭代器
+     */
+    async getFriends(forceUpdate: boolean = false): Promise<Iterator<BotFriend>> {
+        return this.friendCache.getAll(forceUpdate);
+    }
+
+    /**
+     * 获取好友分组名称。
+     * @param categoryId 分组 ID
+     * @returns 分组名称
+     */
+    getFriendCategoryName(categoryId: number): string | undefined {
+        return this.friendCategories.get(categoryId);
     }
     //#endregion
 

@@ -28,7 +28,7 @@ export const FetchFriendsResponse = new OidbSvcContract(0xfd4, 1, {
     selfUin: ProtoField(7, ScalarType.UINT32, false, false),
     friends: ProtoField(101, () => ({
         uid: ProtoField(1, ScalarType.STRING, false, false),
-        category: ProtoField(2, ScalarType.UINT32, false, false),
+        categoryId: ProtoField(2, ScalarType.UINT32, false, false),
         uin: ProtoField(3, ScalarType.UINT32, false, false),
         additional: ProtoField(10001, () => ({
             type: ProtoField(1, ScalarType.UINT32, false, false),

@@ -12,8 +12,8 @@ import { BotFriend, BotFriendDataBinding, BotGroup, BotGroupDataBinding, BotGrou
 import { BotContext } from '@/internal';
 import { BotEvent, BotKeystoreChangeEvent, BotQrCodeGeneratedEvent, BotQrCodeStateQueryEvent } from '@/event';
 import { UrlSignProvider } from '@/util/sign';
-import { BotIdentityService } from '@/util/identity';
-import { BotCacheService } from '@/util/cache';
+import { BotIdentityService } from '@/service/BotIdentityService';
+import { BotCacheService } from '@/service/BotCacheService';
 import {
     EnumToStringKey,
     FetchUserInfoGeneralReturn,

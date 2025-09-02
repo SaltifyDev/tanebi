@@ -2,7 +2,7 @@ import { BotEntity } from '@/entity/BotEntity';
 import { BotGroupMember, BotGroupMemberDataBinding } from '@/entity/BotGroupMember';
 import { ctx, identityService } from '@/index';
 import { FetchGroupMembersOperation } from '@/internal/operation/common/FetchGroupMembersOperation';
-import { BotCacheService } from '@/util/cache';
+import { BotCacheService } from '@/service/BotCacheService';
 
 export interface BotGroupDataBinding {
     uin: number;

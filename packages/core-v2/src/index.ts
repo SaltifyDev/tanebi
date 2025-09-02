@@ -383,7 +383,7 @@ export class Bot {
 
     /**
      * 取消订阅事件。
-     * @param clazz 事件类，继承自 TanebiEvent
+     * @param clazz 事件类，继承自 {@link BotEvent}
      * @param listener 取消订阅的事件监听器，需要和 {@link subscribe} 时的 listener 一致
      */
     unsubscribe<T extends BotEvent>(

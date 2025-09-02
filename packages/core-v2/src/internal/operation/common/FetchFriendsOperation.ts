@@ -1,7 +1,6 @@
-import { BotUserInfoGender } from '@/common';
+import { BotFetchUserInfoKey, BotUserInfoGender } from '@/common';
 import { defineOperation } from '@/internal/operation';
 import { FetchFriends, FetchFriendsResponse } from '@/internal/packet/oidb/0xfd4_1';
-import { FetchUserInfoKey } from '@/internal/packet/oidb/0xfe1_2';
 
 /**
  * This is a paginated operation to fetch friends.
@@ -17,12 +16,12 @@ export const FetchFriendsOperation = defineOperation(
                     type: 1,
                     fields: {
                         numbers: [
-                            FetchUserInfoKey.Signature,
-                            FetchUserInfoKey.Remark,
-                            FetchUserInfoKey.Nickname,
-                            FetchUserInfoKey.Qid,
-                            FetchUserInfoKey.Age,
-                            FetchUserInfoKey.Gender,
+                            BotFetchUserInfoKey.Bio,
+                            BotFetchUserInfoKey.Remark,
+                            BotFetchUserInfoKey.Nickname,
+                            BotFetchUserInfoKey.Qid,
+                            BotFetchUserInfoKey.Age,
+                            BotFetchUserInfoKey.Gender,
                         ],
                     },
                 },
@@ -46,17 +45,17 @@ export const FetchFriendsOperation = defineOperation(
                     uin: friendRaw.uin,
                     uid: friendRaw.uid,
                     nickname: strData?.find(
-                        prop => prop.code === FetchUserInfoKey.Nickname)?.value ?? '',
+                        prop => prop.code === BotFetchUserInfoKey.Nickname)?.value ?? '',
                     remark: strData?.find(
-                        prop => prop.code === FetchUserInfoKey.Remark)?.value ?? '',
+                        prop => prop.code === BotFetchUserInfoKey.Remark)?.value ?? '',
                     bio: strData?.find(
-                        prop => prop.code === FetchUserInfoKey.Signature)?.value ?? '',
+                        prop => prop.code === BotFetchUserInfoKey.Bio)?.value ?? '',
                     qid: strData?.find(
-                        prop => prop.code === FetchUserInfoKey.Qid)?.value ?? '',
+                        prop => prop.code === BotFetchUserInfoKey.Qid)?.value ?? '',
                     age: numData?.find(
-                        prop => prop.code === FetchUserInfoKey.Age)?.value ?? 0,
+                        prop => prop.code === BotFetchUserInfoKey.Age)?.value ?? 0,
                     gender: <BotUserInfoGender>(numData?.find(
-                        prop => prop.code === FetchUserInfoKey.Gender)?.value ?? BotUserInfoGender.Unset),
+                        prop => prop.code === BotFetchUserInfoKey.Gender)?.value ?? BotUserInfoGender.Unset),
                     categoryId: friendRaw.categoryId,
                 };
             }),

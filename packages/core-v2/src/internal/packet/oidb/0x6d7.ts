@@ -43,7 +43,7 @@ export const OidbSvcTrpcTcp0x6D7Response = ProtoMessage.of({
     }), true, false),
 });
 
-export const GroupFSCreateFolderRequest = new OidbSvcContract(
+export const GroupFSCreateFolder = new OidbSvcContract(
     0x6d7, 0,
     OidbSvcTrpcTcp0x6D7.fields,
 );
@@ -53,7 +53,7 @@ export const GroupFSCreateFolderResponse = new OidbSvcContract(
     OidbSvcTrpcTcp0x6D7Response.fields,
 );
 
-export const GroupFSDeleteFolderRequest = new OidbSvcContract(
+export const GroupFSDeleteFolder = new OidbSvcContract(
     0x6d7, 1,
     OidbSvcTrpcTcp0x6D7.fields,
 );
@@ -63,7 +63,7 @@ export const GroupFSDeleteFolderResponse = new OidbSvcContract(
     OidbSvcTrpcTcp0x6D7Response.fields,
 );
 
-export const GroupFSRenameFolderRequest = new OidbSvcContract(
+export const GroupFSRenameFolder = new OidbSvcContract(
     0x6d7, 2,
     OidbSvcTrpcTcp0x6D7.fields,
 );

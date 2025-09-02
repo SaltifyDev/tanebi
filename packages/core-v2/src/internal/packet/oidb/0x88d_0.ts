@@ -1,7 +1,7 @@
 import { OidbSvcContract } from '@/internal/util/oidb';
 import { ProtoField, ScalarType } from '@/internal/util/pb';
 
-export const FetchGroupExtraInfoRequest = new OidbSvcContract(0x88d, 0, {
+export const FetchGroupExtraInfo = new OidbSvcContract(0x88d, 0, {
     random: ProtoField(1, ScalarType.UINT32),
     config: ProtoField(2, () => ({
         groupUin: ProtoField(1, ScalarType.UINT32),

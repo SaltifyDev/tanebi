@@ -1,6 +1,6 @@
 import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
-export const Attribute = ProtoMessage.of({
+export const Attr = ProtoMessage.of({
     codePage: ProtoField(1, ScalarType.INT32, false, false),
     time: ProtoField(2, ScalarType.INT32, false, false),
     random: ProtoField(3, ScalarType.INT32, false, false),

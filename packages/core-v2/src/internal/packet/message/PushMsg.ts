@@ -1,7 +1,5 @@
 import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 import { NTSysEvent } from '@/internal/packet/common/NTSysEvent';
-import { MessageContentHead } from '@/internal/packet/message/MessageContentHead';
-import { MessageBody } from '@/internal/packet/message/MessageBody';
 
 export const PushMsg = ProtoMessage.of({
     message: ProtoField(1, ScalarType.BYTES),
@@ -55,25 +53,3 @@ export enum Event0x210SubType {
     FriendGrayTip = 290,
     GroupKick = 212,
 }
-
-export const PushMsgBody = ProtoMessage.of({
-    responseHead: ProtoField(1, () => ({
-        fromUin: ProtoField(1, ScalarType.UINT32),
-        fromUid: ProtoField(2, ScalarType.STRING, true),
-        type: ProtoField(3, ScalarType.UINT32),
-        sigMap: ProtoField(4, ScalarType.UINT32),
-        toUin: ProtoField(5, ScalarType.UINT32),
-        toUid: ProtoField(6, ScalarType.STRING, true),
-        friendExt: ProtoField(7, () => ({
-            friendName: ProtoField(6, ScalarType.STRING, true)
-        }), true),
-        groupExt: ProtoField(8, () => ({
-            groupUin: ProtoField(1, ScalarType.UINT32),
-            memberName: ProtoField(4, ScalarType.STRING),
-            unknown5: ProtoField(5, ScalarType.UINT32),
-            groupName: ProtoField(7, ScalarType.STRING),
-        }), true),
-    })),
-    contentHead: ProtoField(2, () => MessageContentHead.fields),
-    body: ProtoField(3, () => MessageBody.fields, true),
-});

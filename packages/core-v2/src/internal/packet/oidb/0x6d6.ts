@@ -73,7 +73,7 @@ export const OidbSvcTrpcTcp0x6D6Response = ProtoMessage.of({
     }), true, false),
 });
 
-export const GroupFSUploadRequest = new OidbSvcContract(
+export const GroupFSUpload = new OidbSvcContract(
     0x6d6, 0,
     OidbSvcTrpcTcp0x6D6.fields,
 );
@@ -83,7 +83,7 @@ export const GroupFSUploadResponse = new OidbSvcContract(
     OidbSvcTrpcTcp0x6D6Response.fields,
 );
 
-export const GroupFSDownloadUrlRequest = new OidbSvcContract(
+export const GroupFSDownloadUrl = new OidbSvcContract(
     0x6d6, 2,
     OidbSvcTrpcTcp0x6D6.fields,
 );
@@ -93,19 +93,32 @@ export const GroupFSDownloadUrlResponse = new OidbSvcContract(
     OidbSvcTrpcTcp0x6D6Response.fields,
 );
 
-export const GroupFSDeleteRequest = new OidbSvcContract(
+export const GroupFSDelete = new OidbSvcContract(
     0x6d6, 3,
     OidbSvcTrpcTcp0x6D6.fields,
 );
 
-export const GroupFSRenameRequest = new OidbSvcContract(
+export const GroupFSDeleteResponse = new OidbSvcContract(
+    0x6d6, 3,
+    OidbSvcTrpcTcp0x6D6Response.fields,
+);
+
+export const GroupFSRename = new OidbSvcContract(
     0x6d6, 4,
     OidbSvcTrpcTcp0x6D6.fields,
 );
 
-export const GroupFSMoveRequest = new OidbSvcContract(
+export const GroupFSRenameResponse = new OidbSvcContract(
+    0x6d6, 4,
+    OidbSvcTrpcTcp0x6D6Response.fields,
+);
+
+export const GroupFSMove = new OidbSvcContract(
     0x6d6, 5,
     OidbSvcTrpcTcp0x6D6.fields,
 );
 
-
+export const GroupFSMoveResponse = new OidbSvcContract(
+    0x6d6, 5,
+    OidbSvcTrpcTcp0x6D6Response.fields,
+);

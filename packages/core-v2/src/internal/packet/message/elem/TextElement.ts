@@ -1,7 +1,7 @@
 import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const TextElement = ProtoMessage.of({
-    str: ProtoField(1, ScalarType.STRING, true, false),
+    textMsg: ProtoField(1, ScalarType.STRING, true, false),
     link: ProtoField(2, ScalarType.STRING, true, false),
     attr6Buf: ProtoField(3, ScalarType.BYTES, true, false),
     attr7Buf: ProtoField(4, ScalarType.BYTES, true, false),

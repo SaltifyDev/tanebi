@@ -73,7 +73,7 @@ export const OidbSvcTrpcTcp0x6D8Response = ProtoMessage.of({
     }), true, false),
 });
 
-export const GroupFSListRequest = new OidbSvcContract(
+export const GroupFSList = new OidbSvcContract(
     0x6d8, 1,
     OidbSvcTrpcTcp0x6D8.fields,
 );

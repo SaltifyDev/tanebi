@@ -1,5 +1,5 @@
 import { MessageBody } from '@/internal/packet/message/MessageBody';
-import { MessageContentHead } from '@/internal/packet/message/MessageContentHead';
+import { ContentHead } from '@/internal/packet/message/ContentHead';
 import { ProtoField, ProtoMessage, ScalarType } from '@/internal/util/pb';
 
 export const PbSendMsg = ProtoMessage.of({
@@ -29,7 +29,7 @@ export const PbSendMsg = ProtoMessage.of({
             uid: ProtoField(8, ScalarType.STRING, true, false),
         }), true, false),
     }), true, false),
-    contentHead: ProtoField(2, () => MessageContentHead.fields, true, false),
+    contentHead: ProtoField(2, () => ContentHead.fields, true, false),
     body: ProtoField(3, () => MessageBody.fields, true, false),
     clientSequence: ProtoField(4, ScalarType.UINT32, true, false),
     random: ProtoField(5, ScalarType.UINT32, true, false),

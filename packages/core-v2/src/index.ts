@@ -8,7 +8,7 @@ import {
     BotSignProvider,
     BotQrCodeState,
 } from '@/common';
-import { BotFriend, BotFriendDataBinding, BotGroup, BotGroupDataBinding } from '@/entity';
+import { BotFriend, BotFriendDataBinding, BotGroup, BotGroupDataBinding, BotGroupMember } from '@/entity';
 import { BotContext } from '@/internal';
 import { BotEvent, BotKeystoreChangeEvent, BotQrCodeGeneratedEvent, BotQrCodeStateQueryEvent } from '@/event';
 import { UrlSignProvider } from '@/util/sign';
@@ -67,7 +67,7 @@ export class Bot {
             } while (nextUin);
             return mappedData;
         },
-        (bot, data) => new BotFriend(bot, data),
+        (bot, data) => new BotFriend(bot, data)
     );
     private friendCategories = new Map<number, string>();
     private groupCache = new BotCacheService<number, BotGroup>(
@@ -90,20 +90,17 @@ export class Bot {
                 ])
             );
         },
-        (bot, data) => new BotGroup(bot, data),
+        (bot, data) => new BotGroup(bot, data)
     );
     //#endregion
 
-    constructor(
-        appInfo: BotAppInfo,
-        deviceInfo: BotDeviceInfo,
-        keystore: BotKeystore,
-        signProvider: BotSignProvider
-    ) {
+    constructor(appInfo: BotAppInfo, deviceInfo: BotDeviceInfo, keystore: BotKeystore, signProvider: BotSignProvider) {
         this[ctx] = new BotContext(appInfo, deviceInfo, keystore, signProvider);
         this[ctx].log.on('trace', (moduleName, message) => this[emitLog]('trace', moduleName, message));
         this[ctx].log.on('info', (moduleName, message) => this[emitLog]('info', moduleName, message));
-        this[ctx].log.on('warning', (moduleName, message, error) => this[emitLog]('warning', moduleName, message, error));
+        this[ctx].log.on('warning', (moduleName, message, error) =>
+            this[emitLog]('warning', moduleName, message, error)
+        );
         this[ctx].log.on('fatal', (moduleName, message, error) => this[emitLog]('fatal', moduleName, message, error));
     }
 
@@ -134,10 +131,7 @@ export class Bot {
     //#endregion
 
     //#region Internal API
-    [emitNewEvent]<T extends BotEvent, Args extends unknown[]>(
-        eventClass: new (...args: Args) => T,
-        ...args: Args
-    ) {
+    [emitNewEvent]<T extends BotEvent, Args extends unknown[]>(eventClass: new (...args: Args) => T, ...args: Args) {
         const event = new eventClass(...args);
         this.events.emit(eventClass.name, event);
     }
@@ -207,10 +201,7 @@ export class Bot {
                         resolve();
                     } else {
                         this[emitNewEvent](BotQrCodeStateQueryEvent, qrCodeInfo.url, res.state);
-                        if (
-                            res.state === BotQrCodeState.CodeExpired ||
-                            res.state === BotQrCodeState.Canceled
-                        ) {
+                        if (res.state === BotQrCodeState.CodeExpired || res.state === BotQrCodeState.Canceled) {
                             clearInterval(this.qrCodeQueryIntervalRef);
                             reject(new Error('Session expired or cancelled'));
                         }
@@ -347,6 +338,38 @@ export class Bot {
      */
     async getGroup(uin: number, forceUpdate: boolean = false): Promise<BotGroup | undefined> {
         return this.groupCache.get(uin, forceUpdate);
+    }
+
+    /**
+     * 根据群聊的 uin 获取所有群成员。
+     * @param groupUin 群聊的 uin
+     * @param forceUpdateMembers 是否强制更新当前群的成员列表缓存
+     * @returns 全部群成员的迭代器
+     */
+    async getGroupMembers(
+        groupUin: number,
+        forceUpdateMembers: boolean = false
+    ): Promise<Iterator<BotGroupMember> | undefined> {
+        const group = await this.getGroup(groupUin);
+        if (!group) return undefined;
+        return group.getMembers(forceUpdateMembers);
+    }
+
+    /**
+     * 根据群聊的 uin 和成员的 uin 获取群成员对象。
+     * @param groupUin 群聊的 uin
+     * @param memberUin 成员的 uin
+     * @param forceUpdateMembers 是否强制更新当前群的成员列表缓存
+     * @returns 群成员对象
+     */
+    async getGroupMember(
+        groupUin: number,
+        memberUin: number,
+        forceUpdateMembers: boolean = false
+    ): Promise<BotGroupMember | undefined> {
+        const group = await this.getGroup(groupUin);
+        if (!group) return undefined;
+        return group.getMember(memberUin, forceUpdateMembers);
     }
 
     /**

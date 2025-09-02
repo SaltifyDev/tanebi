@@ -459,4 +459,5 @@ export class Bot {
 export * from './common';
 export * from './entity';
 export * from './event';
+export * from './message';
 export { UrlSignProvider };

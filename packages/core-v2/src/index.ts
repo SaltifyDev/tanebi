@@ -356,14 +356,9 @@ export class Bot {
      * @returns 用户信息
      */
     async getUserInfo<const K extends BotFetchUserInfoKey[] = []>(uinOrUid: number | string, keys?: K) {
-        const uid = typeof uinOrUid === 'number' ?
-            await this[identityService].resolveUid(uinOrUid) : uinOrUid;
-        if (!uid) {
-            throw new Error(`Failed to resolve UID for ${uinOrUid}`);
-        }
         const userInfo = await this[ctx].call(
             FetchUserInfoOperation,
-            uid,
+            uinOrUid,
             keys ?? [
                 BotFetchUserInfoKey.Nickname, // at least one key is required
             ]

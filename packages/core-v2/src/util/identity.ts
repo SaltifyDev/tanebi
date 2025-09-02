@@ -47,8 +47,6 @@ export class BotIdentityService {
         const fromUpdatedCache = this.uid2uin.get(uid);
         if (fromUpdatedCache) return fromUpdatedCache;
 
-        /*
-        // todo: resolve from getUserInfo
         const fromRemote = (await this.bot.getUserInfo(uid)).uin;
         if (fromRemote) {
             this.uin2uid.set(fromRemote, uid);
@@ -56,7 +54,6 @@ export class BotIdentityService {
             this.bot[emitLog]('trace', this, `Resolved uid ${uid} to uin from remote`);
             return fromRemote;
         }
-        */
 
         this.bot[emitLog](
             'warning',

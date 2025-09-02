@@ -1,11 +1,17 @@
 import type TypedEventEmitter from 'typed-emitter';
 import { EventEmitter } from 'node:events';
-import { BotAppInfo, BotDeviceInfo, BotKeystore, BotSignProvider } from '@/common';
+import { BotAppInfo, BotDeviceInfo, BotFetchUserInfoKey, BotKeystore, BotSignProvider } from '@/common';
+import { BotFriend, BotFriendDataBinding, BotGroup, BotGroupDataBinding } from '@/entity';
 import { BotContext } from '@/internal';
 import { BotEvent, BotKeystoreChangeEvent, BotQrCodeGeneratedEvent } from '@/event';
 import { UrlSignProvider } from '@/util/sign';
 import { BotIdentityService } from '@/util/identity';
 import { BotCacheService } from '@/util/cache';
+import {
+    EnumToStringKey,
+    FetchUserInfoGeneralReturn,
+    FetchUserInfoOperation,
+} from '@/internal/operation/common/FetchUserInfoOperation';
 import { QueryQrCodeResultOperation } from '@/internal/operation/system/QueryQrCodeResultOperation';
 import { FetchQrCodeOperation } from '@/internal/operation/system/FetchQrCodeOperation';
 import { TransEmp12_QrCodeState } from '@/internal/packet/login/wtlogin/TransEmp12';
@@ -13,9 +19,7 @@ import { WtLoginOperation } from '@/internal/operation/system/WtLoginOperation';
 import { BotOnlineOperation } from '@/internal/operation/system/BotOnlineOperation';
 import { HeartbeatOperation } from '@/internal/operation/system/HeartbeatOperation';
 import { BotOfflineOperation } from '@/internal/operation/system/BotOfflineOperation';
-import { BotFriend, BotFriendDataBinding } from '@/entity';
 import { FetchFriendsOperation } from '@/internal/operation/common/FetchFriendsOperation';
-import { BotGroup, BotGroupDataBinding } from '@/entity/BotGroup';
 import { FetchGroupsOperation } from '@/internal/operation/common/FetchGroupsOperation';
 
 export const ctx = Symbol('Internal context');
@@ -331,6 +335,28 @@ export class Bot {
      */
     async getGroup(uin: number, forceUpdate: boolean = false): Promise<BotGroup | undefined> {
         return this.groupCache.get(uin, forceUpdate);
+    }
+
+    /**
+     * 获取用户信息。
+     * @param uinOrUid 用户的 uin 或 uid
+     * @param keys 需要获取的字段
+     * @returns 用户信息
+     */
+    async getUserInfo<const K extends BotFetchUserInfoKey[] = []>(uinOrUid: number | string, keys?: K) {
+        const uid = typeof uinOrUid === 'number' ?
+            await this[identityService].resolveUid(uinOrUid) : uinOrUid;
+        if (!uid) {
+            throw new Error(`Failed to resolve UID for ${uinOrUid}`);
+        }
+        const userInfo = await this[ctx].call(
+            FetchUserInfoOperation,
+            uid,
+            keys ?? [
+                BotFetchUserInfoKey.Nickname, // at least one key is required
+            ]
+        );
+        return userInfo as Pick<FetchUserInfoGeneralReturn, 'uin' | EnumToStringKey[K[number]]>;
     }
     //#endregion
 

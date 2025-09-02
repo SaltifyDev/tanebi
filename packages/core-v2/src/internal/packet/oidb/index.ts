@@ -10,4 +10,5 @@ export const OidbBase = ProtoMessage.of({
         key: ProtoField(1, ScalarType.STRING, false, false),
         value: ProtoField(2, ScalarType.BYTES, false, false),
     }), false, true),
+    reserved: ProtoField(12, ScalarType.INT32, false, false),
 });

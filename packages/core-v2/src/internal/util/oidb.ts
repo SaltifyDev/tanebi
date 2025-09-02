@@ -8,6 +8,7 @@ export class OidbSvcContract<const T extends ProtoModel> {
         public readonly command: number,
         public readonly subCommand: number,
         bodyFields: T,
+        public readonly useReserved: boolean = false,
     ) {
         this.bodyProto = ProtoMessage.of(bodyFields);
     }
@@ -18,6 +19,7 @@ export class OidbSvcContract<const T extends ProtoModel> {
             subCommand: this.subCommand,
             body: this.bodyProto.encode(data),
             properties: [],
+            reserved: this.useReserved ? 1 : 0,
         });
     }
 

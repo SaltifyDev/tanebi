@@ -101,6 +101,10 @@ export class Bot {
         signProvider: BotSignProvider
     ) {
         this[ctx] = new BotContext(appInfo, deviceInfo, keystore, signProvider);
+        this[ctx].log.on('trace', (moduleName, message) => this[emitLog]('trace', moduleName, message));
+        this[ctx].log.on('info', (moduleName, message) => this[emitLog]('info', moduleName, message));
+        this[ctx].log.on('warning', (moduleName, message, error) => this[emitLog]('warning', moduleName, message, error));
+        this[ctx].log.on('fatal', (moduleName, message, error) => this[emitLog]('fatal', moduleName, message, error));
     }
 
     //#region Metainfo

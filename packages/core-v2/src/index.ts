@@ -10,7 +10,7 @@ import {
 } from '@/common';
 import { BotFriend, BotFriendDataBinding, BotGroup, BotGroupDataBinding } from '@/entity';
 import { BotContext } from '@/internal';
-import { BotEvent, BotKeystoreChangeEvent, BotQrCodeGeneratedEvent } from '@/event';
+import { BotEvent, BotKeystoreChangeEvent, BotQrCodeGeneratedEvent, BotQrCodeStateQueryEvent } from '@/event';
 import { UrlSignProvider } from '@/util/sign';
 import { BotIdentityService } from '@/util/identity';
 import { BotCacheService } from '@/util/cache';
@@ -196,11 +196,13 @@ export class Bot {
                     this[emitLog]('trace', this, `Query QR code result: ${res.confirmed ? 'confirmed' : res.state}`);
                     if (res.confirmed) {
                         clearInterval(this.qrCodeQueryIntervalRef);
+                        this[emitNewEvent](BotQrCodeStateQueryEvent, qrCodeInfo.url, BotQrCodeState.Confirmed);
                         this[ctx].keystore.session.a1 = res.a1;
                         this[ctx].keystore.session.noPicSig = res.noPicSig;
                         this[ctx].keystore.stub.tgtgtKey = res.tgtgtKey;
                         resolve();
                     } else {
+                        this[emitNewEvent](BotQrCodeStateQueryEvent, qrCodeInfo.url, res.state);
                         if (
                             res.state === BotQrCodeState.CodeExpired ||
                             res.state === BotQrCodeState.Canceled
@@ -369,7 +371,7 @@ export class Bot {
     //#region Event API
     /**
      * 订阅事件。
-     * @param clazz 事件类，继承自 TanebiEvent
+     * @param clazz 事件类，继承自 {@link BotEvent}
      * @param listener 事件监听器，接受事件对象作为参数
      */
     subscribe<T extends BotEvent>(

@@ -4,6 +4,8 @@ import { BotAppInfo, BotDeviceInfo, BotKeystore, BotSignProvider } from '@/commo
 import { BotContext } from '@/internal';
 import { BotEvent, BotKeystoreChangeEvent, BotQrCodeGeneratedEvent } from '@/event';
 import { UrlSignProvider } from '@/util/sign';
+import { BotIdentityService } from '@/util/identity';
+import { BotCacheService } from '@/util/cache';
 import { QueryQrCodeResultOperation } from '@/internal/operation/system/QueryQrCodeResultOperation';
 import { FetchQrCodeOperation } from '@/internal/operation/system/FetchQrCodeOperation';
 import { TransEmp12_QrCodeState } from '@/internal/packet/login/wtlogin/TransEmp12';
@@ -11,13 +13,13 @@ import { WtLoginOperation } from '@/internal/operation/system/WtLoginOperation';
 import { BotOnlineOperation } from '@/internal/operation/system/BotOnlineOperation';
 import { HeartbeatOperation } from '@/internal/operation/system/HeartbeatOperation';
 import { BotOfflineOperation } from '@/internal/operation/system/BotOfflineOperation';
-import { BotCacheService } from '@/util/cache';
 import { BotFriend, BotFriendDataBinding } from '@/entity';
 import { FetchFriendsOperation } from '@/internal/operation/common/FetchFriendsOperation';
 import { BotGroup, BotGroupDataBinding } from '@/entity/BotGroup';
 import { FetchGroupsOperation } from '@/internal/operation/common/FetchGroupsOperation';
 
 export const ctx = Symbol('Internal context');
+export const identityService = Symbol('Internal identity service');
 export const emitNewEvent = Symbol('Internal emit new event');
 export const emitEvent = Symbol('Internal emit event');
 export const emitLog = Symbol('Internal emit log');
@@ -25,6 +27,7 @@ export const emitLog = Symbol('Internal emit log');
 export class Bot {
     //#region Internal Field
     private readonly [ctx]: BotContext;
+    private readonly [identityService] = new BotIdentityService(this);
     private readonly events = new EventEmitter();
     private readonly log = new EventEmitter() as TypedEventEmitter<{
         trace: (moduleName: string, message: string) => void;
@@ -43,9 +46,8 @@ export class Bot {
             do {
                 const data = await bot[ctx].call(FetchFriendsOperation, nextUin);
                 data.friends.forEach((friend) => {
-                    // todo: set identity mapping
-                    // this[identityService].uin2uid.set(friend.uin, friend.uid);
-                    // this[identityService].uid2uin.set(friend.uid, friend.uin);
+                    this[identityService].uin2uid.set(friend.uin, friend.uid);
+                    this[identityService].uid2uin.set(friend.uid, friend.uin);
                     mappedData.set(friend.uin, friend);
                 });
                 data.friendCategories.forEach((category) => {

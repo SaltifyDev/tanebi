@@ -1,6 +1,6 @@
 import { BotEntity } from '@/entity/BotEntity';
 import { BotGroupMember, BotGroupMemberDataBinding } from '@/entity/BotGroupMember';
-import { ctx } from '@/index';
+import { ctx, identityService } from '@/index';
 import { FetchGroupMembersOperation } from '@/internal/operation/common/FetchGroupMembersOperation';
 import { BotCacheService } from '@/util/cache';
 
@@ -27,9 +27,8 @@ export class BotGroup extends BotEntity<BotGroupDataBinding> implements BotGroup
             do {
                 const data = await bot[ctx].call(FetchGroupMembersOperation, this.data.uin, token);
                 data.members.forEach((member) => {
-                    // todo: set identity mapping
-                    // bot[identityService].uin2uid.set(member.identity.uin, member.identity.uid!);
-                    // bot[identityService].uid2uin.set(member.identity.uid!, member.identity.uin);
+                    bot[identityService].uin2uid.set(member.identity.uin, member.identity.uid!);
+                    bot[identityService].uid2uin.set(member.identity.uid!, member.identity.uin);
                     mappedData.set(member.identity.uin, {
                         uin: member.identity.uin,
                         uid: member.identity.uid!,

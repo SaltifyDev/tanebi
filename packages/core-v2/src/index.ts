@@ -1,6 +1,13 @@
 import type TypedEventEmitter from 'typed-emitter';
 import { EventEmitter } from 'node:events';
-import { BotAppInfo, BotDeviceInfo, BotFetchUserInfoKey, BotKeystore, BotSignProvider } from '@/common';
+import {
+    BotAppInfo,
+    BotDeviceInfo,
+    BotFetchUserInfoKey,
+    BotKeystore,
+    BotSignProvider,
+    BotQrCodeState,
+} from '@/common';
 import { BotFriend, BotFriendDataBinding, BotGroup, BotGroupDataBinding } from '@/entity';
 import { BotContext } from '@/internal';
 import { BotEvent, BotKeystoreChangeEvent, BotQrCodeGeneratedEvent } from '@/event';
@@ -14,7 +21,6 @@ import {
 } from '@/internal/operation/common/FetchUserInfoOperation';
 import { QueryQrCodeResultOperation } from '@/internal/operation/system/QueryQrCodeResultOperation';
 import { FetchQrCodeOperation } from '@/internal/operation/system/FetchQrCodeOperation';
-import { TransEmp12_QrCodeState } from '@/internal/packet/login/wtlogin/TransEmp12';
 import { WtLoginOperation } from '@/internal/operation/system/WtLoginOperation';
 import { BotOnlineOperation } from '@/internal/operation/system/BotOnlineOperation';
 import { HeartbeatOperation } from '@/internal/operation/system/HeartbeatOperation';
@@ -196,8 +202,8 @@ export class Bot {
                         resolve();
                     } else {
                         if (
-                            res.state === TransEmp12_QrCodeState.CodeExpired ||
-                            res.state === TransEmp12_QrCodeState.Canceled
+                            res.state === BotQrCodeState.CodeExpired ||
+                            res.state === BotQrCodeState.Canceled
                         ) {
                             clearInterval(this.qrCodeQueryIntervalRef);
                             reject(new Error('Session expired or cancelled'));

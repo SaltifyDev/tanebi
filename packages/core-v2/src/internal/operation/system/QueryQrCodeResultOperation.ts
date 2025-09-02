@@ -1,6 +1,6 @@
+import { BotQrCodeState } from '@/common';
 import { defineOperation } from '@/internal/operation';
 import {
-    TransEmp12_QrCodeState,
     TransEmp12Response,
     TransEmp12Response_Confirmed,
     TransEmp12Response_Confirmed_TlvPack,
@@ -16,7 +16,7 @@ export type QueryQrCodeResultCallResult = {
     tgtgtKey: Buffer,
 } | {
     confirmed: false,
-    state: TransEmp12_QrCodeState,
+    state: BotQrCodeState,
 }
 
 export const QueryQrCodeResultOperation = defineOperation(
@@ -43,7 +43,7 @@ export const QueryQrCodeResultOperation = defineOperation(
             throw new Error(`Unexpected sub command: ${resolvedTransEmp.subCommand}`);
         }
         const transEmp12 = TransEmp12Response.decode(resolvedTransEmp.data);
-        if (transEmp12.qrCodeState === TransEmp12_QrCodeState.Confirmed) {
+        if (transEmp12.qrCodeState === BotQrCodeState.Confirmed) {
             const { tlvPack } = TransEmp12Response_Confirmed.decode(transEmp12.remaining);
             const resolvedTlvPack = TransEmp12Response_Confirmed_TlvPack.unpack(tlvPack);
             return {

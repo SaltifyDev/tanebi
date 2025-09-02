@@ -9,7 +9,7 @@ import {
 
 export type EnumToStringKey = {
     [BotFetchUserInfoKey.Avatar]: 'avatar';
-    [BotFetchUserInfoKey.Bio]: 'signature';
+    [BotFetchUserInfoKey.Bio]: 'bio';
     [BotFetchUserInfoKey.Remark]: 'remark';
     [BotFetchUserInfoKey.Level]: 'level';
     [BotFetchUserInfoKey.BusinessList]: 'businessList';
@@ -26,7 +26,7 @@ export type EnumToStringKey = {
 export interface FetchUserInfoGeneralReturn {
     uin: number;
     avatar?: string;
-    signature?: string;
+    bio?: string;
     remark?: string;
     level?: number;
     businessList?: Array<{
@@ -85,7 +85,7 @@ export const FetchUserInfoOperation = defineOperation(
             gender: numberProps.get(BotFetchUserInfoKey.Gender),
             qid: bytesProps.get(BotFetchUserInfoKey.Qid)?.toString(),
             level: numberProps.get(BotFetchUserInfoKey.Level),
-            signature: bytesProps.get(BotFetchUserInfoKey.Bio)?.toString(),
+            bio: bytesProps.get(BotFetchUserInfoKey.Bio)?.toString(),
             businessList: bytesProps.has(BotFetchUserInfoKey.BusinessList) ?
                 UserInfoBusiness.decode(bytesProps.get(BotFetchUserInfoKey.BusinessList)!)
                     .body.bizList.map(b => ({

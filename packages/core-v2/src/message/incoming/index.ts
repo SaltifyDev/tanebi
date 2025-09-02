@@ -1,6 +1,7 @@
-import { BotMessageScene } from '@/common';
+import { type BotMessageScene } from '@/common';
 import { type CommonMessage } from '@/internal/packet/message/CommonMessage';
-import { InferProtoModel } from '@/internal/util/pb';
+import { type InferProtoModel } from '@/internal/util/pb';
+import { type IncomingSegment } from '@/message/incoming/context';
 
 export const rawMsg = Symbol('Internal raw message');
 
@@ -56,7 +57,9 @@ export interface BotIncomingMessage {
     /**
      * 消息内容，为消息段的数组。
      */
-    segments: never[]; // todo: implement segments
+    segments: IncomingSegment[];
 
     [rawMsg]: InferProtoModel<typeof CommonMessage.fields>;
 }
+
+export * from './segment';

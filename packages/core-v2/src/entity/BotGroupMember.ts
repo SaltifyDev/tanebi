@@ -67,21 +67,21 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> impleme
     }
 
     /**
-     * 群成员的入群时间。
+     * 群成员入群的 Unix 时间戳（秒）。
      */
     get joinTime() {
         return this.data.joinTime;
     }
 
     /**
-     * 群成员的最后发言时间。
+     * 群成员最后发言的 Unix 时间戳（秒）。
      */
     get lastMsgTime() {
         return this.data.lastMsgTime;
     }
 
     /**
-     * 群成员的禁言结束时间。
+     * 群成员禁言结束的 Unix 时间戳（秒）。
      */
     get shutUpEndTime() {
         return this.data.shutUpEndTime;

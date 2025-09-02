@@ -85,7 +85,7 @@ export class BotGroup extends BotEntity<BotGroupDataBinding> implements BotGroup
     }
 
     /**
-     * 群聊的创建时间（Unix 时间戳）。
+     * 群聊创建的 Unix 时间戳（秒）。
      */
     get createdTime() {
         return this.data.createdTime;

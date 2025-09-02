@@ -43,7 +43,7 @@ export enum BotFetchUserInfoKey {
      */
     School = 20021,
     /**
-     * 注册时间（Unix 时间戳）
+     * 注册的 Unix 时间戳（秒）
      */
     RegisterTime = 20026,
     /**

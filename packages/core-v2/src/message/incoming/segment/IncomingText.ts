@@ -5,6 +5,9 @@ import { MessageParsingContext } from '@/message/incoming/context';
  */
 export class IncomingText {
     constructor(
+        /**
+         * 文本内容
+         */
         readonly text: string
     ) {}
 

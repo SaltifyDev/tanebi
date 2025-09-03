@@ -62,4 +62,5 @@ export interface BotIncomingMessage {
     [rawMsg]: InferProtoModel<typeof CommonMessage.fields>;
 }
 
+export { type IncomingSegment };
 export * from './segment';

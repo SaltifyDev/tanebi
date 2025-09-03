@@ -41,6 +41,9 @@ export class IncomingFace {
 
         if (elem.common?.serviceType === 37) {
             context.consume();
+            if (context.hasNext() && context.peek().text) {
+                context.skip(); // the next text elem is the preview text of this face
+            }
             const largeFaceInfo = LargeFaceInfo.decode(elem.common.pbElement);
             return new IncomingFace(
                 largeFaceInfo.faceId,

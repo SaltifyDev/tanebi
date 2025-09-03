@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { type Bot } from '@/index';
 import { MessageParsingContext } from '@/message/incoming/context';
 import { XMLParser } from 'fast-xml-parser';
 import { inflateSync } from 'node:zlib';
@@ -30,6 +32,7 @@ export class IncomingForward {
     constructor(
         /**
          * 合并转发的 ID，可用于获取转发内容
+         * @see {@link Bot.getForwardedMessages}
          */
         readonly resId: string,
 

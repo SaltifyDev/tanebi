@@ -15,6 +15,7 @@ import { BotEvent, BotKeystoreChangeEvent, BotQrCodeGeneratedEvent, BotQrCodeSta
 import { UrlSignProvider } from '@/util/sign';
 import { BotIdentityService } from '@/service/BotIdentityService';
 import { BotCacheService } from '@/service/BotCacheService';
+import { BotIncomingForwardedMessage } from '@/message';
 import { FileId } from '@/internal/packet/highway/FileId';
 import {
     EnumToStringKey,
@@ -36,6 +37,8 @@ import { DownloadPrivateImageOperation } from '@/internal/operation/resource/Dow
 import { DownloadPrivateRecordOperation } from '@/internal/operation/resource/DownloadPrivateRecordOperation';
 import { DownloadPrivateVideoOperation } from '@/internal/operation/resource/DownloadPrivateVideoOperation';
 import { FetchFaceDetailsOperation } from '@/internal/operation/common/FetchFaceDetailsOperation';
+import { DownloadLongMessageOperation } from '@/internal/operation/message/DownloadLongMessageOperation';
+import { parseForwardedMessage } from '@/message/incoming/context';
 
 export const ctx = Symbol('Internal context');
 export const identityService = Symbol('Internal identity service');
@@ -457,6 +460,16 @@ export class Bot {
             return this[ctx].call(DownloadGroupVideoOperation, indexNode);
         }
         throw new Error(`Unsupported resource type: ${fileId.appId}`);
+    }
+
+    /**
+     * 获取合并转发消息的内容。
+     * @param forwardResId 合并转发的 ID
+     */
+    async getForwardedMessages(forwardResId: string): Promise<BotIncomingForwardedMessage[]> {
+        const downloadResult = await this[ctx].call(DownloadLongMessageOperation, forwardResId);
+        return downloadResult.map(item => parseForwardedMessage(this, item))
+            .filter(msg => msg !== undefined);
     }
     //#endregion
 

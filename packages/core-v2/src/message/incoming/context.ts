@@ -1,6 +1,6 @@
 import { Bot } from '@/index';
 import { BotMessageScene } from '@/common';
-import { type BotIncomingMessage, groupMemberDataUpdate, rawMsg } from '.';
+import { type BotIncomingForwardedMessage, type BotIncomingMessage, groupMemberDataUpdate, rawMsg } from '.';
 import { type CommonMessage } from '@/internal/packet/message/CommonMessage';
 import { InferProtoModel } from '@/internal/util/pb';
 import { Elem } from '@/internal/packet/message/Elem';
@@ -189,6 +189,45 @@ export function parseMessage(bot: Bot, rawMessage: CommonMessage): BotIncomingMe
         message.segments[1].text.trim() === ''
     ) {
         message.segments.splice(0, 2);
+    }
+
+    if (message.segments.length > 0) {
+        return message;
+    }
+}
+
+export function parseForwardedMessage(bot: Bot, rawMessage: CommonMessage): BotIncomingForwardedMessage | undefined {
+    const context = new MessageParsingContext(bot, rawMessage);
+    const { routingHead, contentHead } = rawMessage;
+    const message: BotIncomingForwardedMessage = {
+        sequence: contentHead.sequence ?? 0,
+        senderName: routingHead.c2cExt?.friendName ?? routingHead.groupExt?.memberName ?? 'QQ用户',
+        senderAvatarUrl:
+            contentHead.forward?.avatar ??
+            `https://q.qlogo.cn/headimg_dl?dst_uin=${routingHead.fromUin}&spec=640&img_type=jpg`,
+        time: contentHead.timestamp,
+        segments: [],
+    };
+
+    while (context.hasNext()) {
+        const elem = context.peek();
+
+        // Hook for resolving repliedSequence
+        if (elem.srcMsg && !message.repliedSequence) {
+            message.repliedSequence = elem.srcMsg.origSeqs?.[0];
+        }
+
+        const indexBefore = context.currentIndex;
+        for (const clazz of SegmentClasses) {
+            const segment = clazz.tryParse(context);
+            if (segment) {
+                message.segments.push(segment);
+            }
+        }
+        const indexAfter = context.currentIndex;
+        if (indexAfter === indexBefore) {
+            context.skip();
+        }
     }
 
     if (message.segments.length > 0) {

@@ -73,5 +73,37 @@ export interface BotIncomingMessage {
     };
 }
 
+export interface BotIncomingForwardedMessage {
+    /**
+     * 消息在原始会话中的序列号。
+     */
+    sequence: number;
+
+    /**
+     * 发送者名称。
+     */
+    senderName: string;
+
+    /**
+     * 发送者头像 URL。
+     */
+    senderAvatarUrl: string;
+
+    /**
+     * 消息发送的 Unix 时间戳（秒）。
+     */
+    time: number;
+
+    /**
+     * 消息内容，为消息段的数组。
+     */
+    segments: IncomingSegment[];
+
+    /**
+     * 被回复消息在原始会话中的 sequence，如果这条消息回复（引用）了另一条消息。
+     */
+    repliedSequence?: number;
+}
+
 export { type IncomingSegment };
 export * from './segment';

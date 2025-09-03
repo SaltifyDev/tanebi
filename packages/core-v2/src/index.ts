@@ -14,6 +14,7 @@ import { BotEvent, BotKeystoreChangeEvent, BotQrCodeGeneratedEvent, BotQrCodeSta
 import { UrlSignProvider } from '@/util/sign';
 import { BotIdentityService } from '@/service/BotIdentityService';
 import { BotCacheService } from '@/service/BotCacheService';
+import { FileId } from '@/internal/packet/highway/FileId';
 import {
     EnumToStringKey,
     FetchUserInfoGeneralReturn,
@@ -27,6 +28,12 @@ import { HeartbeatOperation } from '@/internal/operation/system/HeartbeatOperati
 import { BotOfflineOperation } from '@/internal/operation/system/BotOfflineOperation';
 import { FetchFriendsOperation } from '@/internal/operation/common/FetchFriendsOperation';
 import { FetchGroupsOperation } from '@/internal/operation/common/FetchGroupsOperation';
+import { DownloadGroupImageOperation } from '@/internal/operation/resource/DownloadGroupImageOperation';
+import { DownloadGroupRecordOperation } from '@/internal/operation/resource/DownloadGroupRecordOperation';
+import { DownloadGroupVideoOperation } from '@/internal/operation/resource/DownloadGroupVideoOperation';
+import { DownloadPrivateImageOperation } from '@/internal/operation/resource/DownloadPrivateImageOperation';
+import { DownloadPrivateRecordOperation } from '@/internal/operation/resource/DownloadPrivateRecordOperation';
+import { DownloadPrivateVideoOperation } from '@/internal/operation/resource/DownloadPrivateVideoOperation';
 
 export const ctx = Symbol('Internal context');
 export const identityService = Symbol('Internal identity service');
@@ -390,6 +397,44 @@ export class Bot {
             ]
         );
         return userInfo as Pick<FetchUserInfoGeneralReturn, 'uin' | EnumToStringKey[K[number]]>;
+    }
+    //#endregion
+
+    //#region Message API
+    /**
+     * 获取图片、语音、视频等资源的临时 URL。
+     * @param resourceFileId 资源的文件 ID
+     */
+    async getResourceTempUrl(resourceFileId: string) {
+        const normalized = resourceFileId.replace(/-/g, '+').replace(/_/g, '/');
+        const pad = (4 - (normalized.length % 4)) % 4;
+        const base64 = normalized.padEnd(normalized.length + pad, '=');
+        const bytes = Buffer.from(base64, 'base64');
+        const fileId = FileId.decode(bytes);
+        const indexNode = {
+            fileUuid: resourceFileId,
+            storeId: 1,
+            ttl: fileId.ttl,
+        };
+        if (fileId.appId === 1406) {
+            return this[ctx].call(DownloadPrivateImageOperation, indexNode);
+        }
+        if (fileId.appId === 1407) {
+            return this[ctx].call(DownloadGroupImageOperation, indexNode);
+        }
+        if (fileId.appId === 1402) {
+            return this[ctx].call(DownloadPrivateRecordOperation, indexNode);
+        }
+        if (fileId.appId === 1403) {
+            return this[ctx].call(DownloadGroupRecordOperation, indexNode);
+        }
+        if (fileId.appId === 1413) {
+            return this[ctx].call(DownloadPrivateVideoOperation, indexNode);
+        }
+        if (fileId.appId === 1415) {
+            return this[ctx].call(DownloadGroupVideoOperation, indexNode);
+        }
+        throw new Error(`Unsupported resource type: ${fileId.appId}`);
     }
     //#endregion
 

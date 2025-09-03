@@ -54,10 +54,7 @@ export class Bot {
         warning: (moduleName: string, message: string, error?: unknown) => void;
         fatal: (moduleName: string, message: string, error?: unknown) => void;
     }>;
-    private qrCodeQueryIntervalRef: NodeJS.Timeout | undefined;
-    private heartbeatIntervalRef: NodeJS.Timeout | undefined;
-    private loggedIn = false;
-    private friendCache = new BotCacheService<number, BotFriend>(
+    private readonly friendCache = new BotCacheService<number, BotFriend>(
         this,
         async (bot) => {
             let nextUin: number | undefined;
@@ -78,8 +75,8 @@ export class Bot {
         },
         (bot, data) => new BotFriend(bot, data)
     );
-    private friendCategories = new Map<number, string>();
-    private groupCache = new BotCacheService<number, BotGroup>(
+    private readonly friendCategories = new Map<number, string>();
+    private readonly groupCache = new BotCacheService<number, BotGroup>(
         this,
         async (bot) => {
             const groupList = (await bot[ctx].call(FetchGroupsOperation)).groups;
@@ -101,7 +98,11 @@ export class Bot {
         },
         (bot, data) => new BotGroup(bot, data)
     );
-    private faceDetailCache = new Map<string, BotFaceDetail>();
+    private readonly faceDetailCache = new Map<string, BotFaceDetail>();
+
+    private qrCodeQueryIntervalRef: NodeJS.Timeout | undefined;
+    private heartbeatIntervalRef: NodeJS.Timeout | undefined;
+    private loggedIn = false;
     //#endregion
 
     constructor(appInfo: BotAppInfo, deviceInfo: BotDeviceInfo, keystore: BotKeystore, signProvider: BotSignProvider) {

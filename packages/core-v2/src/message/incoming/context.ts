@@ -5,7 +5,7 @@ import { type CommonMessage } from '@/internal/packet/message/CommonMessage';
 import { InferProtoModel } from '@/internal/util/pb';
 import { Elem } from '@/internal/packet/message/Elem';
 import { Class } from '@/util/types';
-import { IncomingText } from '@/message/incoming/segment/IncomingText';
+import { IncomingText, IncomingMention } from '@/message/incoming/segment';
 
 type PromiseOrNull<T> = Promise<T | null> | (T | null);
 
@@ -17,9 +17,15 @@ type IncomingSegmentClass<T> = Class<
 >;
 
 const SegmentClasses = [
-    IncomingText
+    IncomingText,
+    IncomingMention,
 ] satisfies readonly IncomingSegmentClass<unknown>[];
 
+/**
+ * 接收的消息段，包括：
+ * - {@link IncomingText} 文本消息段
+ * - {@link IncomingMention} 提及（@）消息段
+ */
 export type IncomingSegment = InstanceType<(typeof SegmentClasses)[number]>;
 
 export class MessageParsingContext {

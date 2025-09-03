@@ -41,12 +41,16 @@ export class IncomingImage {
          * @see {@link BotImageSubType}
          */
         readonly subType: BotImageSubType,
-        
+
         /**
          * 图片的预览提示文本
          */
         readonly summary: string
     ) {}
+
+    toPreviewString(): string {
+        return this.summary;
+    }
 
     private static verifyCommonElem(common: CommonElem): boolean {
         return common.serviceType === 48 && (common.businessType === 20 || common.businessType === 10);

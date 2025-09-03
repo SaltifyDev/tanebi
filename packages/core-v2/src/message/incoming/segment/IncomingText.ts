@@ -11,6 +11,10 @@ export class IncomingText {
         readonly text: string
     ) {}
 
+    toPreviewString(): string {
+        return this.text;
+    }
+
     static tryParse(context: MessageParsingContext): IncomingText | null {
         const textElement = context.peek().text;
         if (!textElement || textElement.attr6Buf?.length) return null;

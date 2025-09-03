@@ -16,6 +16,10 @@ export class IncomingMention {
         readonly uin: number
     ) {}
 
+    toPreviewString(): string {
+        return this.name;
+    }
+
     static tryParse(context: MessageParsingContext): IncomingMention | null {
         const textElement = context.peek().text;
         if (!textElement?.attr6Buf || textElement.attr6Buf.length < 11) return null;

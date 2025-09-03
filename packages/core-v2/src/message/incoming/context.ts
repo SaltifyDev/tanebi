@@ -18,7 +18,7 @@ const SegmentClasses = [
     IncomingText,
     IncomingMention,
     IncomingImage,
-] satisfies readonly IncomingSegmentClass<unknown>[];
+] satisfies readonly IncomingSegmentClass<{ toPreviewString(): string }>[];
 
 /**
  * 接收的消息段，包括：

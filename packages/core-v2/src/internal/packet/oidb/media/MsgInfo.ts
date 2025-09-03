@@ -8,7 +8,7 @@ export const MsgInfo = ProtoMessage.of({
 });
 
 export const MsgInfoBody = ProtoMessage.of({
-    index: ProtoField(1, () => IndexNode.fields, true, false),
+    index: ProtoField(1, () => IndexNode.fields, false, false),
     picture: ProtoField(2, () => PictureInfo.fields, true, false),
     video: ProtoField(3, () => VideoInfo.fields, true, false),
     audio: ProtoField(4, () => AudioInfo.fields, true, false),

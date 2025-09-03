@@ -16,7 +16,7 @@ import {
     IncomingLightApp,
 } from '@/message/incoming/segment';
 
-type CommonMessage = InferProtoModel<typeof CommonMessage.fields>;
+type TCommonMessage = InferProtoModel<typeof CommonMessage.fields>;
 
 type IncomingSegmentClass<T> = Class<
     T,
@@ -65,7 +65,7 @@ export class MessageParsingContext {
         return this.elems.length;
     }
 
-    constructor(readonly bot: Bot, readonly rawMessage: InferProtoModel<typeof CommonMessage.fields>) {
+    constructor(readonly bot: Bot, readonly rawMessage: TCommonMessage) {
         this.elems = rawMessage.body!.richText!.elems.map((elem) => Elem.decode(elem));
     }
 
@@ -111,7 +111,7 @@ export class MessageParsingContext {
     }
 }
 
-export function parseMessage(bot: Bot, rawMessage: CommonMessage): BotIncomingMessage | undefined {
+export function parseMessage(bot: Bot, rawMessage: TCommonMessage): BotIncomingMessage | undefined {
     const context = new MessageParsingContext(bot, rawMessage);
     let message: BotIncomingMessage | undefined;
     const { routingHead, contentHead } = rawMessage;
@@ -196,7 +196,7 @@ export function parseMessage(bot: Bot, rawMessage: CommonMessage): BotIncomingMe
     }
 }
 
-export function parseForwardedMessage(bot: Bot, rawMessage: CommonMessage): BotIncomingForwardedMessage | undefined {
+export function parseForwardedMessage(bot: Bot, rawMessage: TCommonMessage): BotIncomingForwardedMessage | undefined {
     const context = new MessageParsingContext(bot, rawMessage);
     const { routingHead, contentHead } = rawMessage;
     const message: BotIncomingForwardedMessage = {

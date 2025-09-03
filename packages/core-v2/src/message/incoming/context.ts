@@ -134,7 +134,7 @@ export function parseMessage(bot: Bot, rawMessage: CommonMessage): BotIncomingMe
             scene: BotMessageScene.Group,
             peerUin: routingHead.groupExt.groupUin,
             peerUid: String(routingHead.groupExt.groupUin),
-            sequence: contentHead.ntMsgSeq ?? 0,
+            sequence: contentHead.sequence ?? 0,
             time: contentHead.timestamp,
             senderUin: routingHead.fromUin,
             senderUid: routingHead.fromUid!,

@@ -12,6 +12,7 @@ import {
     IncomingImage,
     IncomingRecord,
     IncomingVideo,
+    IncomingForward,
 } from '@/message/incoming/segment';
 
 type IncomingSegmentClass<T> = Class<
@@ -28,6 +29,7 @@ const SegmentClasses = [
     IncomingImage,
     IncomingRecord,
     IncomingVideo,
+    IncomingForward,
 ] satisfies readonly IncomingSegmentClass<{ toPreviewString(): string }>[];
 
 /**
@@ -38,6 +40,7 @@ const SegmentClasses = [
  * - {@link IncomingImage} 图片消息段
  * - {@link IncomingRecord} 语音消息段
  * - {@link IncomingVideo} 视频消息段
+ * - {@link IncomingForward} 合并转发消息段
  */
 export type IncomingSegment = InstanceType<(typeof SegmentClasses)[number]>;
 

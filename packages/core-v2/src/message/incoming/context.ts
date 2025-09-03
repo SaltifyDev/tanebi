@@ -7,12 +7,10 @@ import { Elem } from '@/internal/packet/message/Elem';
 import { Class } from '@/util/types';
 import { IncomingText, IncomingMention } from '@/message/incoming/segment';
 
-type PromiseOrNull<T> = Promise<T | null> | (T | null);
-
 type IncomingSegmentClass<T> = Class<
     T,
     {
-        tryParse(context: MessageParsingContext): PromiseOrNull<T>;
+        tryParse(context: MessageParsingContext): T | null;
     }
 >;
 
@@ -118,16 +116,16 @@ export class MessageParsingContext {
     }
 }
 
-export async function parseMessage(
+export function parseMessage(
     bot: Bot,
     rawMessage: InferProtoModel<typeof CommonMessage.fields>
-): Promise<BotIncomingMessage | undefined> {
+): BotIncomingMessage | undefined {
     const context = new MessageParsingContext(bot, rawMessage);
     while (context.hasNext()) {
         // todo: pre hooks
         const indexBefore = context.currentIndex;
         for (const clazz of SegmentClasses) {
-            const segment = await clazz.tryParse(context);
+            const segment = clazz.tryParse(context);
             if (segment) {
                 context.message.segments.push(segment);
             }

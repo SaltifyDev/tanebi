@@ -5,3 +5,4 @@ export * from './IncomingImage';
 export * from './IncomingRecord';
 export * from './IncomingVideo';
 export * from './IncomingForward';
+export * from './IncomingLightApp';

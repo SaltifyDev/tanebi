@@ -8,6 +8,7 @@ import { Class } from '@/util/types';
 import {
     IncomingText,
     IncomingMention,
+    IncomingFace,
     IncomingImage,
     IncomingRecord,
     IncomingVideo,
@@ -23,6 +24,7 @@ type IncomingSegmentClass<T> = Class<
 const SegmentClasses = [
     IncomingText,
     IncomingMention,
+    IncomingFace,
     IncomingImage,
     IncomingRecord,
     IncomingVideo,
@@ -32,6 +34,7 @@ const SegmentClasses = [
  * 接收的消息段，包括：
  * - {@link IncomingText} 文本消息段
  * - {@link IncomingMention} 提及（@）消息段
+ * - {@link IncomingFace} 表情消息段
  * - {@link IncomingImage} 图片消息段
  * - {@link IncomingRecord} 语音消息段
  * - {@link IncomingVideo} 视频消息段

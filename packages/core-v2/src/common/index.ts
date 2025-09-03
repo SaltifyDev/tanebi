@@ -4,3 +4,4 @@ export * from './BotKeystore';
 export * from './BotSignProvider';
 
 export * from './enum';
+export * from './general';

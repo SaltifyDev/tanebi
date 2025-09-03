@@ -34,7 +34,7 @@ export class IncomingFace {
             context.consume();
             return new IncomingFace(
                 elem.face.index ?? 0,
-                '[表情]', // todo: resolve from cache
+                context.bot.getFaceDetail(String(elem.face.index))?.qDes ?? '[表情]',
                 false
             );
         }

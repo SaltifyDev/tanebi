@@ -7,6 +7,7 @@ import {
     BotKeystore,
     BotSignProvider,
     BotQrCodeState,
+    BotFaceDetail,
 } from '@/common';
 import { BotFriend, BotFriendDataBinding, BotGroup, BotGroupDataBinding, BotGroupMember } from '@/entity';
 import { BotContext } from '@/internal';
@@ -34,6 +35,7 @@ import { DownloadGroupVideoOperation } from '@/internal/operation/resource/Downl
 import { DownloadPrivateImageOperation } from '@/internal/operation/resource/DownloadPrivateImageOperation';
 import { DownloadPrivateRecordOperation } from '@/internal/operation/resource/DownloadPrivateRecordOperation';
 import { DownloadPrivateVideoOperation } from '@/internal/operation/resource/DownloadPrivateVideoOperation';
+import { FetchFaceDetailsOperation } from '@/internal/operation/common/FetchFaceDetailsOperation';
 
 export const ctx = Symbol('Internal context');
 export const identityService = Symbol('Internal identity service');
@@ -99,6 +101,7 @@ export class Bot {
         },
         (bot, data) => new BotGroup(bot, data)
     );
+    private faceDetailCache = new Map<string, BotFaceDetail>();
     //#endregion
 
     constructor(appInfo: BotAppInfo, deviceInfo: BotDeviceInfo, keystore: BotKeystore, signProvider: BotSignProvider) {
@@ -175,9 +178,17 @@ export class Bot {
                 this[emitLog]('fatal', this, '重新登录失败', e);
             }
         });
-        // todo: post online logic
-        // - fetch face details
-        // - fetch highway url
+        
+        try {
+            const faceDetails = await this[ctx].call(FetchFaceDetailsOperation);
+            faceDetails.forEach((face) => {
+                this.faceDetailCache.set(face.qSid, face);
+            });
+        } catch (e) {
+            this[emitLog]('warning', this, '获取表情信息失败', e);
+        }
+
+        // todo: fetch highway url
     }
     //#endregion
 
@@ -397,6 +408,16 @@ export class Bot {
             ]
         );
         return userInfo as Pick<FetchUserInfoGeneralReturn, 'uin' | EnumToStringKey[K[number]]>;
+    }
+
+    /**
+     * 获取表情信息。
+     * @param qSid 表情的 qSid（`String(faceId)`）
+     * @returns 表情信息
+     * @see {@link BotFaceDetail}
+     */
+    getFaceDetail(qSid: string): BotFaceDetail | undefined {
+        return this.faceDetailCache.get(qSid);
     }
     //#endregion
 

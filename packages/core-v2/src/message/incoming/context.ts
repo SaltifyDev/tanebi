@@ -90,6 +90,7 @@ export class MessageParsingContext {
     pushBack(): void {
         if (this.elementPointer > 0) {
             this.elementPointer--;
+            return;
         }
         throw new Error('访问越界');
     }
@@ -102,6 +103,7 @@ export class MessageParsingContext {
     skip(count: number = 1): void {
         if (this.elementPointer + count <= this.elems.length) {
             this.elementPointer += count;
+            return;
         }
         throw new Error('访问越界');
     }
@@ -155,6 +157,8 @@ export function parseMessage(bot: Bot, rawMessage: TCommonMessage): BotIncomingM
             message.repliedSequence =
                 elem.srcMsg.pbReserve?.friendSequence ?? // for private message
                 elem.srcMsg.origSeqs?.[0]; // for group message
+            context.consume();
+            continue;
         }
 
         // Hook for group member data update
@@ -164,6 +168,8 @@ export function parseMessage(bot: Bot, rawMessage: TCommonMessage): BotIncomingM
                 card: elem.extraInfo.groupCard,
                 specialTitle: elem.extraInfo.senderTitle,
             };
+            context.consume();
+            continue;
         }
 
         const indexBefore = context.currentIndex;
@@ -171,6 +177,7 @@ export function parseMessage(bot: Bot, rawMessage: TCommonMessage): BotIncomingM
             const segment = clazz.tryParse(context);
             if (segment) {
                 message.segments.push(segment);
+                break;
             }
         }
         const indexAfter = context.currentIndex;
@@ -215,6 +222,8 @@ export function parseForwardedMessage(bot: Bot, rawMessage: TCommonMessage): Bot
         // Hook for resolving repliedSequence
         if (elem.srcMsg && !message.repliedSequence) {
             message.repliedSequence = elem.srcMsg.origSeqs?.[0];
+            context.consume();
+            continue;
         }
 
         const indexBefore = context.currentIndex;
@@ -222,6 +231,7 @@ export function parseForwardedMessage(bot: Bot, rawMessage: TCommonMessage): Bot
             const segment = clazz.tryParse(context);
             if (segment) {
                 message.segments.push(segment);
+                break;
             }
         }
         const indexAfter = context.currentIndex;

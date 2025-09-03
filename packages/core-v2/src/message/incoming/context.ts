@@ -114,6 +114,10 @@ export class MessageParsingContext {
         }
         throw new Error('访问越界');
     }
+
+    consume(count: number = 1): void {
+        this.skip(count);
+    }
 }
 
 export function parseMessage(

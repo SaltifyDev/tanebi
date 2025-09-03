@@ -12,10 +12,9 @@ export class IncomingText {
     ) {}
 
     static tryParse(context: MessageParsingContext): IncomingText | null {
-        const textElement = context.next().text;
-        if (
-            !textElement || textElement.attr6Buf?.length
-        ) return context.pushBackAndReturn(null);
+        const textElement = context.peek().text;
+        if (!textElement || textElement.attr6Buf?.length) return null;
+        context.consume();
         return new IncomingText(textElement.textMsg ?? '');
     }
 }

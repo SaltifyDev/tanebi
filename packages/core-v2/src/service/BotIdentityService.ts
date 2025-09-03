@@ -13,8 +13,8 @@ export class BotIdentityService {
 
         const uid = this.uin2uid.get(uin);
         if (uid) return uid;
-        
-        this.bot[emitLog]('trace', this, `Cache miss, resolving uin ${uin} to uid`);
+
+        this.bot[emitLog]('trace', this, `缓存不存在，将 uin ${uin} 转换为 uid`);
         if (groupUin) {
             await (await this.bot.getGroup(groupUin))?.getMembers(true);
         } else {
@@ -22,8 +22,8 @@ export class BotIdentityService {
         }
         const result = this.uin2uid.get(uin);
         if (!result) {
-            this.bot[emitLog]('warning', this, `Failed to resolve uin ${uin} to uid` +
-                (groupUin ? ` in group ${groupUin}` : '')
+            this.bot[emitLog]('warning', this, `未能将 uin ${uin} 转换为 uid` +
+                (groupUin ? `（来自群 ${groupUin}）` : '')
             );
         }
         return result;
@@ -37,7 +37,7 @@ export class BotIdentityService {
         const fromCache = this.uid2uin.get(uid);
         if (fromCache) return fromCache;
 
-        this.bot[emitLog]('trace', this, `Cache miss, resolving uid ${uid} to uin`);
+        this.bot[emitLog]('trace', this, `缓存不存在，将 uid ${uid} 转换为 uin`);
         if (groupUin) {
             await (await this.bot.getGroup(groupUin))?.getMembers(true);
         } else {
@@ -51,14 +51,14 @@ export class BotIdentityService {
         if (fromRemote) {
             this.uin2uid.set(fromRemote, uid);
             this.uid2uin.set(uid, fromRemote);
-            this.bot[emitLog]('trace', this, `Resolved uid ${uid} to uin from remote`);
+            this.bot[emitLog]('trace', this, `已从远程解析 uid ${uid} 为 uin ${fromRemote}`);
             return fromRemote;
         }
 
         this.bot[emitLog](
             'warning',
             this,
-            `Failed to resolve uid ${uid} to uin` + (groupUin ? ` in group ${groupUin}` : '')
+            `未能将 uid ${uid} 转换为 uin` + (groupUin ? `（来自群 ${groupUin}）` : '')
         );
     }
 }

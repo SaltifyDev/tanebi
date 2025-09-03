@@ -36,11 +36,11 @@ export const QueryQrCodeResultOperation = defineOperation(
     (ctx, payload): QueryQrCodeResultCallResult => {
         const resolvedWtLogin = ctx.wtLoginLogic.decodeWtLoginPacket(payload);
         if (resolvedWtLogin.commandId !== 2066) {
-            throw new Error(`Unexpected command id: ${resolvedWtLogin.commandId}`);
+            throw new Error(`意外的 command id: ${resolvedWtLogin.commandId}`);
         }
         const resolvedTransEmp = ctx.wtLoginLogic.unwrapTransEmpPacket(resolvedWtLogin.decrypted);
         if (resolvedTransEmp.subCommand !== QueryQrCodeResultSubCommand) {
-            throw new Error(`Unexpected sub command: ${resolvedTransEmp.subCommand}`);
+            throw new Error(`意外的 sub command: ${resolvedTransEmp.subCommand}`);
         }
         const transEmp12 = TransEmp12Response.decode(resolvedTransEmp.data);
         if (transEmp12.qrCodeState === BotQrCodeState.Confirmed) {

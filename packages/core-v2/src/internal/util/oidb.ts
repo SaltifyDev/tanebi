@@ -34,7 +34,9 @@ export class OidbSvcContract<const T extends ProtoModel> {
     decodeBodyOrThrow(data: Buffer) {
         const decoded = this.tryDecode(data);
         if (decoded.errorCode !== 0 || !decoded.body) {
-            throw new Error(`Failed to decode OidbSvcTrpcTcp0x${this.command.toString(16)}_${this.subCommand} response (${decoded.errorCode}): ${decoded.errorMsg}`);
+            throw new Error(
+                `发生 oidb 错误 (0x${this.command.toString(16)}_${this.subCommand}, errorCode=${decoded.errorCode}): ${decoded.errorMsg}`
+            );
         }
         return decoded.body;
     }

@@ -88,7 +88,7 @@ export class WtLoginLogic extends LogicBase {
 
     decodeWtLoginPacket(data: Buffer) {
         if (data[0] !== 0x02 || data[data.length - 1] !== 0x03) {
-            throw new Error('Invalid packet');
+            throw new Error('不合法的 wtlogin 包');
         }
         const {
             internalLength,
@@ -104,7 +104,7 @@ export class WtLoginLogic extends LogicBase {
         );
         const encrypted = encryptedData_0x03;
         if (encrypted[encrypted.length - 1] !== 0x03) {
-            throw new Error('Invalid terminating byte');
+            throw new Error('不合法的终止字节');
         }
         const decryptedData = decryptTea(
             encrypted.subarray(0, -1), // Skip terminating byte
@@ -153,7 +153,7 @@ export class WtLoginLogic extends LogicBase {
             ).then(res => res.json()));
             return queryResult.uin;
         } catch {
-            throw new Error('Failed to get correct uin');
+            throw new Error('获取账户 uin 失败');
         }
     }
 }

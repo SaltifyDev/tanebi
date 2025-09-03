@@ -118,7 +118,7 @@ export function ProtoField<T extends ProtoFieldType>(
     packed?: boolean,
 ): ProtoSpec<T, boolean, boolean> {
     if (repeated && optional) {
-        throw new Error('Repeated fields cannot be optional');
+        throw new Error('字段不能同时为 repeated 和 optional');
     }
 
     if (repeated && packed === undefined) {

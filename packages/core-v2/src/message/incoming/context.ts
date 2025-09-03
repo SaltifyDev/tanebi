@@ -73,7 +73,7 @@ export class MessageParsingContext {
                 [rawMsg]: rawMessage,
             };
         } else {
-            throw new Error('Unexpected message type');
+            throw new Error('意外的消息类型');
         }
         this.elems = body!.richText!.elems.map((elem) => Elem.decode(elem));
     }
@@ -86,21 +86,21 @@ export class MessageParsingContext {
         if (this.hasNext()) {
             return this.elems[this.elementPointer++];
         }
-        throw new Error('No more elements');
+        throw new Error('访问越界');
     }
 
     peek(): InferProtoModel<typeof Elem.fields> {
         if (this.hasNext()) {
             return this.elems[this.elementPointer];
         }
-        throw new Error('No more elements');
+        throw new Error('访问越界');
     }
 
     pushBack(): void {
         if (this.elementPointer > 0) {
             this.elementPointer--;
         }
-        throw new Error('No less elements');
+        throw new Error('访问越界');
     }
 
     pushBackAndReturn<T>(value: T): T {
@@ -112,7 +112,7 @@ export class MessageParsingContext {
         if (this.elementPointer + count <= this.elems.length) {
             this.elementPointer += count;
         }
-        throw new Error('No more elements');
+        throw new Error('访问越界');
     }
 }
 

@@ -63,11 +63,11 @@ export const FetchQrCodeOperation = defineOperation(
     (ctx, payload) => {
         const resolvedWtLogin = ctx.wtLoginLogic.decodeWtLoginPacket(payload);
         if (resolvedWtLogin.commandId !== 2066) {
-            throw new Error(`Unexpected command id: ${resolvedWtLogin.commandId}`);
+            throw new Error(`意外的 command id: ${resolvedWtLogin.commandId}`);
         }
         const resolvedTransEmp = ctx.wtLoginLogic.unwrapTransEmpPacket(resolvedWtLogin.decrypted);
         if (resolvedTransEmp.subCommand !== FetchQrCodeSubCommand) {
-            throw new Error(`Unexpected sub command: ${resolvedTransEmp.subCommand}`);
+            throw new Error(`意外的 sub command: ${resolvedTransEmp.subCommand}`);
         }
         const transEmp31 = TransEmp31Response.decode(resolvedTransEmp.data);
         const tlvPack = TransEmp31Response_TlvPack.unpack(transEmp31.tlvPack);

@@ -18,7 +18,7 @@ export class BotCacheService<K, V extends BotEntity<unknown>>{
 
     async get(key: K, forceUpdate = false) {
         if (!this.map.has(key) || forceUpdate) {
-            this.bot[emitLog]('trace', this, 'Cache miss, update requested');
+            this.bot[emitLog]('trace', this, '请求刷新缓存');
             await this.update();
         }
         return this.map.get(key);
@@ -33,7 +33,7 @@ export class BotCacheService<K, V extends BotEntity<unknown>>{
 
     async update() {
         if (this.updating) {
-            this.bot[emitLog]('trace', this, 'Repeated update request, ignored');
+            this.bot[emitLog]('trace', this, '重复的缓存刷新请求，已忽略');
             await this.mutex.waitForUnlock();
         } else {
             this.updating = true;
@@ -42,7 +42,7 @@ export class BotCacheService<K, V extends BotEntity<unknown>>{
                     const data = await this.updateCache(this.bot);
                     this.acceptData(data);
                 } catch {
-                    this.bot[emitLog]('warning', this, 'Failed to update cache for');
+                    this.bot[emitLog]('warning', this, '缓存刷新失败');
                 } finally {
                     this.updating = false;
                 }

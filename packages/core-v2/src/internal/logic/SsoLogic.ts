@@ -93,7 +93,7 @@ export class SsoLogic extends LogicBase {
                 this.handlePacketMutex.runExclusive(() => {
                     this.pending.delete(seq);
                 });
-                reject(new Error(`Send packet timeout (cmd=${cmd} seq=${seq})`));
+                reject(new Error(`发送数据包超时 (cmd=${cmd} seq=${seq})`));
             }, timeout);
 
             this.handlePacketMutex.runExclusive(() => {
@@ -166,7 +166,7 @@ export class SsoLogic extends LogicBase {
     ]);
 
     async buildSsoPacket(cmd: string, src: Buffer, seq: number = 0) {
-        this.ctx.log.emit('trace', 'SsoLogic', `Sending packet (cmd=${cmd}, seq=${seq})`);
+        this.ctx.emitLog('trace', this, `发送数据包 (cmd=${cmd}, seq=${seq})`);
         let sign: SignResult | undefined;
         if (this.commandSignAllowlist.has(cmd)) {
             sign = await this.ctx.signProvider.sign(cmd, src, seq);
@@ -223,7 +223,7 @@ export class SsoLogic extends LogicBase {
                 return op.parse(this.ctx, retPacket.body) as any;
             } else {
                 throw new Error(
-                    `Action call failed (cmd=${op.command} seq=${seq} retcode=${retPacket.retcode}): ${retPacket.extra}`
+                    `操作调用失败 (cmd=${op.command} seq=${seq} retcode=${retPacket.retcode}): ${retPacket.extra}`
                 );
             }
         }
@@ -232,7 +232,7 @@ export class SsoLogic extends LogicBase {
     resolveIncomingSsoPacket(packet: Buffer): IncomingSsoPacket {
         const wrapped = IncomingSsoPacketWrapper.decode(packet);
         if (wrapped.protocol !== 12) {
-            throw new Error(`Unsupported protocol: ${wrapped.protocol}`);
+            throw new Error(`不支持的 SSO protocol: ${wrapped.protocol}`);
         }
 
         let decrypted: Buffer;
@@ -243,11 +243,11 @@ export class SsoLogic extends LogicBase {
         } else if (wrapped.encryptionType === EncryptionType.TeaByEmptyKey) {
             decrypted = decryptTea(wrapped.packet, BUF16);
         } else {
-            throw new Error(`Unsupported encryption type: ${wrapped.encryptionType}`);
+            throw new Error(`不支持的 SSO 加密类型: ${wrapped.encryptionType}`);
         }
 
         const { header, raw } = IncomingSsoPacket.decode(decrypted);
-        this.ctx.log.emit('trace', 'SsoLogic', `Receiving packet (cmd=${header.command}, seq=${header.sequence})`);
+        this.ctx.emitLog('trace', this, `接收数据包 (cmd=${header.command}, seq=${header.sequence})`);
         if (header.retcode !== 0) {
             return {
                 command: header.command,
@@ -263,7 +263,7 @@ export class SsoLogic extends LogicBase {
             } else if (header.compressionType === CompressionType.Zlib) {
                 body = unzipSync(raw);
             } else {
-                throw new Error(`Unsupported compression type: ${header.compressionType}`);
+                throw new Error(`不支持的 SSO 压缩类型: ${header.compressionType}`);
             }
 
             return {
@@ -298,7 +298,7 @@ export class SsoLogic extends LogicBase {
             this.ctx.log.emit(
                 'warning',
                 'SsoLogic',
-                `Unexpected error while handling packet (cmd=${resolved.command}, seq=${seq})`,
+                `处理数据包 (cmd=${resolved.command}, seq=${seq}) 时出现错误`,
                 e
             );
         }
@@ -318,7 +318,7 @@ export class SsoLogic extends LogicBase {
                         this.ctx.log.emit(
                             'warning',
                             'SsoLogic',
-                            'Unexpected error while handling packet',
+                            '处理数据包时出现错误',
                             e
                         );
                     }

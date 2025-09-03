@@ -431,7 +431,7 @@ export function decodeTlv<const T extends TlvPacketSchema>(schema: T, buffer: Bu
         const field = schema[i];
         if (field.type === 'bytes' || field.type === 'string') {
             if (field.lengthPrefix === 'none') {
-                throw new Error(`Field ${field.name} has length prefix 'none' but is not the last field`);
+                throw new Error(`字段 ${field.name} 的长度前缀为 'none'，但不是最后一个字段`);
             }
         }
     }

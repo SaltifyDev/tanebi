@@ -87,5 +87,5 @@ export function decryptTea(encrypted: Buffer, key: Buffer) {
     return encrypted.slice((encrypted[0] & 0x07) + 3, encrypted.length - 7);
 }
 
-const ERROR_ENCRYPTED_LENGTH = new Error('length of encrypted data must be a multiple of 8');
-const ERROR_ENCRYPTED_ILLEGAL = new Error('encrypted data is illegal');
+const ERROR_ENCRYPTED_LENGTH = new Error('加密数据长度不合法，必须是 8 的倍数');
+const ERROR_ENCRYPTED_ILLEGAL = new Error('加密数据不合法');

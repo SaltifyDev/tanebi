@@ -115,7 +115,7 @@ export const WtLoginOperation = defineOperation(
     function (ctx, data): WtLoginCallResult {
         const { commandId, decrypted } = ctx.wtLoginLogic.decodeWtLoginPacket(data);
         if (commandId !== 2064) {
-            throw new Error(`Unexpected command id: ${commandId}`);
+            throw new Error(`意外的 command id: ${commandId}`);
         }
         const { state, tlvPack: tlvPackEncoded } = LoginResponse.decode(decrypted);
         const unpacked = LoginResponse_TlvPack.unpack(tlvPackEncoded);

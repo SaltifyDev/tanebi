@@ -109,6 +109,9 @@ export class Bot {
      * Bot 账号的 uin（QQ 号）。
      */
     get uin() {
+        if (this[ctx].keystore.uin === 0) {
+            throw new Error('登录前无法获取 uin');
+        }
         return this[ctx].keystore.uin;
     }
 
@@ -117,7 +120,7 @@ export class Bot {
      */
     get uid() {
         if (this[ctx].keystore.uid === undefined) {
-            throw new Error('UID is not available before login');
+            throw new Error('登录前无法获取 uid');
         }
         return this[ctx].keystore.uid;
     }
@@ -153,7 +156,7 @@ export class Bot {
 
     private async postOnline() {
         this[ctx].ssoLogic.socket.once('error', async (e) => {
-            this[emitLog]('warning', this, 'An error occurred in connection', e);
+            this[emitLog]('warning', this, '连接发生错误', e);
             clearInterval(this.heartbeatIntervalRef);
             this.heartbeatIntervalRef = undefined;
             await this[ctx].ssoLogic.connectToMsfServer();
@@ -162,7 +165,7 @@ export class Bot {
             try {
                 await this.tryFastLogin();
             } catch (e) {
-                this[emitLog]('warning', this, 'Failed to re-login', e);
+                this[emitLog]('fatal', this, '重新登录失败', e);
             }
         });
         // todo: post online logic
@@ -180,7 +183,7 @@ export class Bot {
         queryQrCodeResultInterval = Math.max(queryQrCodeResultInterval, 2000);
 
         const qrCodeInfo = await this[ctx].call(FetchQrCodeOperation);
-        this[emitLog]('trace', this, `QR code info: ${JSON.stringify(qrCodeInfo)}`);
+        this[emitLog]('trace', this, `二维码信息：${JSON.stringify(qrCodeInfo)}`);
 
         this[ctx].keystore.session.qrSign = qrCodeInfo.signature;
         this[ctx].keystore.session.qrString = qrCodeInfo.qrSig;
@@ -191,7 +194,7 @@ export class Bot {
             this.qrCodeQueryIntervalRef = setInterval(async () => {
                 try {
                     const res = await this[ctx].call(QueryQrCodeResultOperation);
-                    this[emitLog]('trace', this, `Query QR code result: ${res.confirmed ? 'confirmed' : res.state}`);
+                    this[emitLog]('trace', this, `查询二维码结果：${res.confirmed ? '已确认' : res.state}`);
                     if (res.confirmed) {
                         clearInterval(this.qrCodeQueryIntervalRef);
                         this[emitNewEvent](BotQrCodeStateQueryEvent, qrCodeInfo.url, BotQrCodeState.Confirmed);
@@ -203,7 +206,7 @@ export class Bot {
                         this[emitNewEvent](BotQrCodeStateQueryEvent, qrCodeInfo.url, res.state);
                         if (res.state === BotQrCodeState.CodeExpired || res.state === BotQrCodeState.Canceled) {
                             clearInterval(this.qrCodeQueryIntervalRef);
-                            reject(new Error('Session expired or cancelled'));
+                            reject(new Error('二维码已过期，或用户扫码后取消登录'));
                         }
                     }
                 } catch (e) {
@@ -214,12 +217,12 @@ export class Bot {
         });
 
         this[ctx].keystore.uin = await this[ctx].wtLoginLogic.getCorrectUin();
-        this[emitLog]('info', this, `User ${this.uin} scanned QR code`);
+        this[emitLog]('info', this, `用户 ${this.uin} 扫描了二维码`);
 
         const loginResult = await this[ctx].call(WtLoginOperation);
         if (!loginResult.success) {
             throw new Error(
-                `Login failed (state=${loginResult.state} tag=${loginResult.tag} message=${loginResult.message})`
+                `登录失败 (state=${loginResult.state}, tag=${loginResult.tag}, message=${loginResult.message})`
             );
         }
 
@@ -234,7 +237,7 @@ export class Bot {
         this[emitNewEvent](BotKeystoreChangeEvent, this[ctx].keystore);
 
         this[emitLog]('trace', this, `Keystore: ${JSON.stringify(this[ctx].keystore)}`);
-        this[emitLog]('info', this, `Credentials for user ${this.uin} successfully retrieved`);
+        this[emitLog]('info', this, `用户 ${this.uin} 的登录凭据已成功获取`);
 
         await this.setOnline();
     }
@@ -246,17 +249,17 @@ export class Bot {
     async setOnline() {
         const onlineResult = await this[ctx].call(BotOnlineOperation);
         if (onlineResult !== 'register success') {
-            throw new Error(`Failed to go online (${onlineResult})`);
+            throw new Error(`上线失败 (${onlineResult})`);
         }
         this.loggedIn = true;
-        this[emitLog]('info', this, `Bot ${this.uin} is now online`);
+        this[emitLog]('info', this, `账户 ${this.uin} 已登录`);
 
         this.heartbeatIntervalRef = setInterval(async () => {
             try {
                 await this[ctx].call(HeartbeatOperation);
-                this[emitLog]('trace', this, 'Heartbeat sent');
+                this[emitLog]('trace', this, '发送心跳');
             } catch (e) {
-                this[emitLog]('fatal', this, 'Failed to send heartbeat', e);
+                this[emitLog]('warning', this, '发送心跳失败', e);
             }
         }, 4.5 * 60 * 1000 /* 4.5 minute */);
 
@@ -271,7 +274,7 @@ export class Bot {
         try {
             await this.setOnline();
         } catch (e) {
-            this[emitLog]('warning', this, 'Bot online failed, try QR code login', e);
+            this[emitLog]('warning', this, '上线失败，尝试二维码登录', e);
             await this.qrCodeLogin();
         }
     }
@@ -288,7 +291,7 @@ export class Bot {
         }
         await this[ctx].call(BotOfflineOperation);
         this[ctx].ssoLogic.socket.destroy();
-        this[emitLog]('info', this, `User ${this.uin} is now offline`);
+        this[emitLog]('info', this, `用户 ${this.uin} 已下线`);
     }
     //#endregion
 

@@ -177,6 +177,19 @@ export function parseMessage(
             context.skip();
         }
     }
+
+    // Filter out redundant leading [Mention,Text] pattern
+    if (
+        context.message.repliedSequence &&
+        context.message.scene === BotMessageScene.Group &&
+        context.message.segments.length >= 2 &&
+        context.message.segments[0] instanceof IncomingMention &&
+        context.message.segments[1] instanceof IncomingText &&
+        context.message.segments[1].text.trim() === ''
+    ) {
+        context.message.segments.splice(0, 2);
+    }
+
     if (context.message.segments.length > 0) {
         return context.message;
     }

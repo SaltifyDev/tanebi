@@ -16,6 +16,8 @@ import {
     IncomingLightApp,
 } from '@/message/incoming/segment';
 
+type CommonMessage = InferProtoModel<typeof CommonMessage.fields>;
+
 type IncomingSegmentClass<T> = Class<
     T,
     {
@@ -48,7 +50,6 @@ const SegmentClasses = [
 export type IncomingSegment = InstanceType<(typeof SegmentClasses)[number]>;
 
 export class MessageParsingContext {
-    readonly message: BotIncomingMessage;
     readonly elems: InferProtoModel<typeof Elem.fields>[];
     private elementPointer: number = 0;
 
@@ -65,38 +66,7 @@ export class MessageParsingContext {
     }
 
     constructor(readonly bot: Bot, readonly rawMessage: InferProtoModel<typeof CommonMessage.fields>) {
-        const { routingHead, contentHead, body } = rawMessage;
-        if (routingHead.c2cExt) {
-            const isSelfSend = routingHead.fromUin === bot.uin;
-            this.message = {
-                scene: BotMessageScene.Friend,
-                peerUin: isSelfSend ? routingHead.toUin : routingHead.fromUin,
-                peerUid: isSelfSend ? routingHead.toUid! : routingHead.fromUid!,
-                sequence: contentHead.ntMsgSeq ?? 0,
-                time: contentHead.timestamp,
-                senderUin: routingHead.fromUin,
-                senderUid: routingHead.fromUid!,
-                senderName: routingHead.c2cExt.friendName ?? '',
-                segments: [],
-                [rawMsg]: rawMessage,
-            };
-        } else if (routingHead.groupExt) {
-            this.message = {
-                scene: BotMessageScene.Group,
-                peerUin: routingHead.groupExt.groupUin,
-                peerUid: String(routingHead.groupExt.groupUin),
-                sequence: contentHead.ntMsgSeq ?? 0,
-                time: contentHead.timestamp,
-                senderUin: routingHead.fromUin,
-                senderUid: routingHead.fromUid!,
-                senderName: routingHead.groupExt.memberName,
-                segments: [],
-                [rawMsg]: rawMessage,
-            };
-        } else {
-            throw new Error('意外的消息类型');
-        }
-        this.elems = body!.richText!.elems.map((elem) => Elem.decode(elem));
+        this.elems = rawMessage.body!.richText!.elems.map((elem) => Elem.decode(elem));
     }
 
     hasNext(): boolean {
@@ -141,24 +111,55 @@ export class MessageParsingContext {
     }
 }
 
-export function parseMessage(
-    bot: Bot,
-    rawMessage: InferProtoModel<typeof CommonMessage.fields>
-): BotIncomingMessage | undefined {
+export function parseMessage(bot: Bot, rawMessage: CommonMessage): BotIncomingMessage | undefined {
     const context = new MessageParsingContext(bot, rawMessage);
+    let message: BotIncomingMessage | undefined;
+    const { routingHead, contentHead } = rawMessage;
+    if (routingHead.c2cExt) {
+        const isSelfSend = routingHead.fromUin === bot.uin;
+        message = {
+            scene: BotMessageScene.Friend,
+            peerUin: isSelfSend ? routingHead.toUin : routingHead.fromUin,
+            peerUid: isSelfSend ? routingHead.toUid! : routingHead.fromUid!,
+            sequence: contentHead.ntMsgSeq ?? 0,
+            time: contentHead.timestamp,
+            senderUin: routingHead.fromUin,
+            senderUid: routingHead.fromUid!,
+            senderName: routingHead.c2cExt.friendName ?? '',
+            segments: [],
+            [rawMsg]: rawMessage,
+        };
+    } else if (routingHead.groupExt) {
+        message = {
+            scene: BotMessageScene.Group,
+            peerUin: routingHead.groupExt.groupUin,
+            peerUid: String(routingHead.groupExt.groupUin),
+            sequence: contentHead.ntMsgSeq ?? 0,
+            time: contentHead.timestamp,
+            senderUin: routingHead.fromUin,
+            senderUid: routingHead.fromUid!,
+            senderName: routingHead.groupExt.memberName,
+            segments: [],
+            [rawMsg]: rawMessage,
+        };
+    }
+    if (!message) {
+        throw new Error('意外的消息类型');
+    }
+
     while (context.hasNext()) {
         const elem = context.peek();
 
         // Hook for resolving repliedSequence
-        if (elem.srcMsg && !context.message.repliedSequence) {
-            context.message.repliedSequence =
+        if (elem.srcMsg && !message.repliedSequence) {
+            message.repliedSequence =
                 elem.srcMsg.pbReserve?.friendSequence ?? // for private message
                 elem.srcMsg.origSeqs?.[0]; // for group message
         }
 
         // Hook for group member data update
-        if (elem.extraInfo && context.message.scene === BotMessageScene.Group) {
-            context.message[groupMemberDataUpdate] = {
+        if (elem.extraInfo && message.scene === BotMessageScene.Group) {
+            message[groupMemberDataUpdate] = {
                 nickname: elem.extraInfo.nick,
                 card: elem.extraInfo.groupCard,
                 specialTitle: elem.extraInfo.senderTitle,
@@ -169,7 +170,7 @@ export function parseMessage(
         for (const clazz of SegmentClasses) {
             const segment = clazz.tryParse(context);
             if (segment) {
-                context.message.segments.push(segment);
+                message.segments.push(segment);
             }
         }
         const indexAfter = context.currentIndex;
@@ -180,17 +181,17 @@ export function parseMessage(
 
     // Filter out redundant leading [Mention,Text] pattern
     if (
-        context.message.repliedSequence &&
-        context.message.scene === BotMessageScene.Group &&
-        context.message.segments.length >= 2 &&
-        context.message.segments[0] instanceof IncomingMention &&
-        context.message.segments[1] instanceof IncomingText &&
-        context.message.segments[1].text.trim() === ''
+        message.repliedSequence &&
+        message.scene === BotMessageScene.Group &&
+        message.segments.length >= 2 &&
+        message.segments[0] instanceof IncomingMention &&
+        message.segments[1] instanceof IncomingText &&
+        message.segments[1].text.trim() === ''
     ) {
-        context.message.segments.splice(0, 2);
+        message.segments.splice(0, 2);
     }
 
-    if (context.message.segments.length > 0) {
-        return context.message;
+    if (message.segments.length > 0) {
+        return message;
     }
 }

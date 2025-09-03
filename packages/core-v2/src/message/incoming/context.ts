@@ -147,7 +147,15 @@ export function parseMessage(
 ): BotIncomingMessage | undefined {
     const context = new MessageParsingContext(bot, rawMessage);
     while (context.hasNext()) {
-        // todo: pre hooks
+        const elem = context.peek();
+
+        // Hook for resolving repliedSequence
+        if (elem.srcMsg && !context.message.repliedSequence) {
+            context.message.repliedSequence =
+                elem.srcMsg.pbReserve?.friendSequence ?? // for private message
+                elem.srcMsg.origSeqs?.[0]; // for group message
+        }
+
         const indexBefore = context.currentIndex;
         for (const clazz of SegmentClasses) {
             const segment = clazz.tryParse(context);

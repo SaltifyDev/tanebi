@@ -59,6 +59,11 @@ export interface BotIncomingMessage {
      */
     segments: IncomingSegment[];
 
+    /**
+     * 被回复消息的 sequence，如果这条消息回复（引用）了另一条消息。
+     */
+    repliedSequence?: number;
+
     [rawMsg]: InferProtoModel<typeof CommonMessage.fields>;
 }
 

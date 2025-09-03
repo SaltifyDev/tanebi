@@ -1,0 +1,68 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { type Bot } from '@/index';
+import { type CommonElement } from '@/internal/packet/message/elem/CommonElement';
+import { MsgInfo } from '@/internal/packet/oidb/media/MsgInfo';
+import { type InferProtoModel } from '@/internal/util/pb';
+import { MessageParsingContext } from '@/message/incoming/context';
+
+type CommonElem = InferProtoModel<typeof CommonElement.fields>;
+
+/**
+ * 接收的视频消息段
+ */
+export class IncomingVideo {
+    constructor(
+        /**
+         * 视频的文件 ID，可用于下载视频
+         * @see {@link Bot.getResourceTempUrl}
+         */
+        readonly fileId: string,
+
+        /**
+         * 视频的宽度
+         */
+        readonly width: number,
+
+        /**
+         * 视频的高度
+         */
+        readonly height: number,
+
+        /**
+         * 视频的时长（秒）
+         */
+        readonly duration: number,
+
+        /**
+         * 视频的文件大小（字节）
+         */
+        readonly fileSize: number
+    ) {}
+
+    toPreviewString(): string {
+        return '[视频]';
+    }
+
+    private static verifyCommonElem(common: CommonElem): boolean {
+        return common.serviceType === 48 && (common.businessType === 21 || common.businessType === 11);
+    }
+
+    static tryParse(context: MessageParsingContext): IncomingVideo | null {
+        const elem = context.peek();
+        if (elem.common && this.verifyCommonElem(elem.common)) {
+            const msgInfo = MsgInfo.decode(elem.common.pbElement);
+            if (msgInfo.msgInfoBody.length > 0) {
+                context.consume();
+                const msgInfoBody = msgInfo.msgInfoBody[0];
+                return new IncomingVideo(
+                    msgInfoBody.index?.fileUuid ?? '',
+                    msgInfoBody.index?.info?.width ?? 0,
+                    msgInfoBody.index?.info?.height ?? 0,
+                    msgInfoBody.index?.info?.time ?? 0,
+                    msgInfoBody.index?.info?.fileSize ?? 0
+                );
+            }
+        }
+        return null;
+    }
+}

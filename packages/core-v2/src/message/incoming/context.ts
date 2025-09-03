@@ -5,7 +5,13 @@ import { type CommonMessage } from '@/internal/packet/message/CommonMessage';
 import { InferProtoModel } from '@/internal/util/pb';
 import { Elem } from '@/internal/packet/message/Elem';
 import { Class } from '@/util/types';
-import { IncomingText, IncomingMention, IncomingImage } from '@/message/incoming/segment';
+import {
+    IncomingText,
+    IncomingMention,
+    IncomingImage,
+    IncomingRecord,
+    IncomingVideo,
+} from '@/message/incoming/segment';
 
 type IncomingSegmentClass<T> = Class<
     T,
@@ -18,6 +24,8 @@ const SegmentClasses = [
     IncomingText,
     IncomingMention,
     IncomingImage,
+    IncomingRecord,
+    IncomingVideo,
 ] satisfies readonly IncomingSegmentClass<{ toPreviewString(): string }>[];
 
 /**
@@ -25,6 +33,8 @@ const SegmentClasses = [
  * - {@link IncomingText} 文本消息段
  * - {@link IncomingMention} 提及（@）消息段
  * - {@link IncomingImage} 图片消息段
+ * - {@link IncomingRecord} 语音消息段
+ * - {@link IncomingVideo} 视频消息段
  */
 export type IncomingSegment = InstanceType<(typeof SegmentClasses)[number]>;
 

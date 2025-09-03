@@ -1,6 +1,6 @@
 import { Bot } from '@/index';
 import { BotMessageScene } from '@/common';
-import { type BotIncomingMessage, rawMsg } from '.';
+import { type BotIncomingMessage, groupMemberDataUpdate, rawMsg } from '.';
 import { type CommonMessage } from '@/internal/packet/message/CommonMessage';
 import { InferProtoModel } from '@/internal/util/pb';
 import { Elem } from '@/internal/packet/message/Elem';
@@ -154,6 +154,15 @@ export function parseMessage(
             context.message.repliedSequence =
                 elem.srcMsg.pbReserve?.friendSequence ?? // for private message
                 elem.srcMsg.origSeqs?.[0]; // for group message
+        }
+
+        // Hook for group member data update
+        if (elem.extraInfo && context.message.scene === BotMessageScene.Group) {
+            context.message[groupMemberDataUpdate] = {
+                nickname: elem.extraInfo.nick,
+                card: elem.extraInfo.groupCard,
+                specialTitle: elem.extraInfo.senderTitle,
+            };
         }
 
         const indexBefore = context.currentIndex;

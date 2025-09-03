@@ -4,6 +4,7 @@ import { type InferProtoModel } from '@/internal/util/pb';
 import { type IncomingSegment } from '@/message/incoming/context';
 
 export const rawMsg = Symbol('Internal raw message');
+export const groupMemberDataUpdate = Symbol('Internal symbol for data update');
 
 /**
  * 消息对象
@@ -65,6 +66,11 @@ export interface BotIncomingMessage {
     repliedSequence?: number;
 
     [rawMsg]: InferProtoModel<typeof CommonMessage.fields>;
+    [groupMemberDataUpdate]?: {
+        nickname?: string;
+        card?: string;
+        specialTitle?: string;
+    };
 }
 
 export { type IncomingSegment };

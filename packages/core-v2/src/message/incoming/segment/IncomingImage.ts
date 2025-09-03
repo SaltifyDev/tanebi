@@ -1,9 +1,11 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { type Bot } from '@/index';
 import { BotImageSubType } from '@/common';
 import { type NotOnlineImageElement } from '@/internal/packet/message/elem/NotOnlineImageElement';
 import { type CustomFaceElement } from '@/internal/packet/message/elem/CustomFaceElement';
 import { type CommonElement } from '@/internal/packet/message/elem/CommonElement';
 import { MsgInfo } from '@/internal/packet/oidb/media/MsgInfo';
-import { InferProtoModel } from '@/internal/util/pb';
+import { type InferProtoModel } from '@/internal/util/pb';
 import { MessageParsingContext } from '@/message/incoming/context';
 
 type NotOnlineImageElem = InferProtoModel<typeof NotOnlineImageElement.fields>;
@@ -18,18 +20,36 @@ const LegacyBaseUrl = 'http://gchat.qpic.cn';
  */
 export class IncomingImage {
     constructor(
+        /**
+         * 图片的文件 ID，可用于下载图片
+         * @see {@link Bot.getResourceTempUrl}
+         */
         readonly fileId: string,
+
+        /**
+         * 图片的宽度
+         */
         readonly width: number,
+
+        /**
+         * 图片的高度
+         */
         readonly height: number,
+
+        /**
+         * 图片的子类型
+         * @see {@link BotImageSubType}
+         */
         readonly subType: BotImageSubType,
+        
+        /**
+         * 图片的预览提示文本
+         */
         readonly summary: string
     ) {}
 
     private static verifyCommonElem(common: CommonElem): boolean {
-        return (
-            common.serviceType === 48 &&
-            (common.businessType === 20 || common.businessType === 10)
-        );
+        return common.serviceType === 48 && (common.businessType === 20 || common.businessType === 10);
     }
 
     private static fromCommonElem(common: CommonElem): IncomingImage | null {
@@ -53,7 +73,7 @@ export class IncomingImage {
             notOnline.picWidth,
             notOnline.picHeight,
             notOnline.pbRes?.subType ?? BotImageSubType.Normal,
-            notOnline.pbRes?.summary ?? '[图片]',
+            notOnline.pbRes?.summary ?? '[图片]'
         );
     }
 
@@ -70,7 +90,7 @@ export class IncomingImage {
             customFace.width,
             customFace.height,
             customFace.pbReserve?.subType ?? this.parseSubTypeFromOldData(customFace.oldData),
-            customFace.pbReserve?.summary ?? '[图片]',
+            customFace.pbReserve?.summary ?? '[图片]'
         );
     }
 
@@ -105,7 +125,7 @@ export class IncomingImage {
                 }
             }
         }
-        
+
         return null;
     }
 }

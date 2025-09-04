@@ -10,16 +10,13 @@ export const PushMsg = ProtoMessage.of({
 });
 
 export enum PushMsgType {
-    PrivateMessage = 166,
+    FriendMessage = 166,
     GroupMessage = 82,
     TempMessage = 141,
-
-    Event0x210 = 528,                   // friend related event
-    Event0x2DC = 732,                   // group related event
-
-    PrivateRecordMessage = 208,
-    PrivateFileMessage = 529,
-
+    Event0x210 = 0x210,                 // friend related event
+    Event0x2DC = 0x2DC,                 // group related event
+    FriendRecordMessage = 208,
+    FriendFileMessage = 529,
     GroupInvitedJoinRequest = 525,      // from group member invitation
     GroupJoinRequest = 84,              // directly entered
     GroupInvitation = 87,               // the bot self is being invited

@@ -39,6 +39,7 @@ import { DownloadPrivateVideoOperation } from '@/internal/operation/resource/Dow
 import { FetchFaceDetailsOperation } from '@/internal/operation/common/FetchFaceDetailsOperation';
 import { DownloadLongMessageOperation } from '@/internal/operation/message/DownloadLongMessageOperation';
 import { parseForwardedMessage } from '@/message/incoming/context';
+import { pipeMsgPushEvents } from '@/event/context';
 
 export const ctx = Symbol('Internal context');
 export const identityService = Symbol('Internal identity service');
@@ -116,6 +117,8 @@ export class Bot {
             this[emitLog]('warning', moduleName, message, error)
         );
         this[ctx].log.on('fatal', (moduleName, message, error) => this[emitLog]('fatal', moduleName, message, error));
+
+        pipeMsgPushEvents(this);
     }
 
     //#region Metainfo

@@ -11,6 +11,9 @@ function isFriendMessage(msg: BotIncomingMessage): msg is BotFriendIncomingMessa
     return msg.scene === BotMessageScene.Friend;
 }
 
+/**
+ * 接收好友消息事件
+ */
 export class BotFriendMessageEvent extends BotEvent {
     constructor(
         /**

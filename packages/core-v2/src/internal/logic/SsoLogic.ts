@@ -290,8 +290,7 @@ export class SsoLogic extends LogicBase {
                 });
             } else {
                 if ('body' in resolved) {
-                    // todo: parse event pushes
-                    // this.ctx.events.parse(resolved.command, resolved.body);
+                    this.ctx.push.emit(resolved.command, resolved.body, seq);
                 }
             }
         } catch (e) {

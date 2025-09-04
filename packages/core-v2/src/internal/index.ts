@@ -7,6 +7,15 @@ import { WtLoginLogic } from '@/internal/logic/WtLoginLogic';
 export class BotContext {
     readonly ssoLogic = new SsoLogic(this);
     readonly wtLoginLogic = new WtLoginLogic(this);
+    readonly log = new EventEmitter() as TypedEventEmitter<{
+        trace: (moduleName: string, message: string) => void;
+        info: (moduleName: string, message: string) => void;
+        warning: (moduleName: string, message: string, error?: unknown) => void;
+        fatal: (moduleName: string, message: string, error?: unknown) => void;
+    }>;
+    readonly push = new EventEmitter() as TypedEventEmitter<{
+        [cmd: string]: (buffer: Buffer, seq: number) => void;
+    }>;
 
     constructor(
         readonly appInfo: BotAppInfo,
@@ -14,13 +23,6 @@ export class BotContext {
         readonly keystore: BotKeystore,
         readonly signProvider: BotSignProvider
     ) {}
-
-    readonly log = new EventEmitter() as TypedEventEmitter<{
-        trace: (moduleName: string, message: string) => void;
-        info: (moduleName: string, message: string) => void;
-        warning: (moduleName: string, message: string, error?: unknown) => void;
-        fatal: (moduleName: string, message: string, error?: unknown) => void;
-    }>;
 
     call = this.ssoLogic.callOperation.bind(this.ssoLogic);
 

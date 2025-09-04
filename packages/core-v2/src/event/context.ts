@@ -1,5 +1,5 @@
-import { BotFriendMessageEvent } from '@/event/message/BotFriendMessageEvent';
 import { Bot, BotEvent, ctx, emitEvent, emitLog } from '@/index';
+import { BotFriendMessageEvent, BotGroupMessageEvent } from '@/event/message';
 import { CommonMessage } from '@/internal/packet/message/CommonMessage';
 import { PushMsg, PushMsgType } from '@/internal/packet/message/PushMsg';
 import { InferProtoModel } from '@/internal/util/pb';
@@ -27,6 +27,7 @@ export function pipeMsgPushEvents(bot: Bot) {
         const eventClass = match(type)
             .returnType<MsgPushEventClass | null>()
             .with(PushMsgType.FriendMessage, PushMsgType.FriendRecordMessage, () => BotFriendMessageEvent)
+            .with(PushMsgType.GroupMessage, () => BotGroupMessageEvent)
             .otherwise(() => null);
         if (eventClass) {
             const event = await eventClass.tryParse(context);

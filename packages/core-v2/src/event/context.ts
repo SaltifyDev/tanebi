@@ -26,7 +26,7 @@ export function pipeMsgPushEvents(bot: Bot) {
         const context: MsgPushParsingContext = { bot, msg };
         const eventClass = match(type)
             .returnType<MsgPushEventClass | null>()
-            .with(PushMsgType.FriendMessage, () => BotFriendMessageEvent)
+            .with(PushMsgType.FriendMessage, PushMsgType.FriendRecordMessage, () => BotFriendMessageEvent)
             .otherwise(() => null);
         if (eventClass) {
             const event = await eventClass.tryParse(context);

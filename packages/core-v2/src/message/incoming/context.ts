@@ -15,6 +15,7 @@ import {
     IncomingForward,
     IncomingLightApp,
 } from '@/message/incoming/segment';
+import { PushMsgType } from '@/internal/packet/message/PushMsg';
 
 type TCommonMessage = InferProtoModel<typeof CommonMessage.fields>;
 
@@ -117,7 +118,7 @@ export function parseMessage(bot: Bot, rawMessage: TCommonMessage): BotIncomingM
     const context = new MessageParsingContext(bot, rawMessage);
     let message: BotIncomingMessage | undefined;
     const { routingHead, contentHead } = rawMessage;
-    if (routingHead.c2cExt) {
+    if (contentHead.type === PushMsgType.FriendMessage || contentHead.type === PushMsgType.FriendRecordMessage) {
         const isSelfSend = routingHead.fromUin === bot.uin;
         message = {
             scene: BotMessageScene.Friend,
@@ -127,11 +128,11 @@ export function parseMessage(bot: Bot, rawMessage: TCommonMessage): BotIncomingM
             time: contentHead.timestamp,
             senderUin: routingHead.fromUin,
             senderUid: routingHead.fromUid!,
-            senderName: routingHead.c2cExt.friendName ?? '',
+            senderName: routingHead.c2cExt?.friendName ?? '',
             segments: [],
             [rawMsg]: rawMessage,
         };
-    } else if (routingHead.groupExt) {
+    } else if (contentHead.type === PushMsgType.GroupMessage && routingHead.groupExt) {
         message = {
             scene: BotMessageScene.Group,
             peerUin: routingHead.groupExt.groupUin,

@@ -18,7 +18,7 @@ export const DownloadLongMessageOperation = defineOperation(
         const downloadResult = LongMessagePayload.decode(
             gunzipSync((SsoRecvLongMsgResponse.decode(payload)).result.payload)
         ).actions.find(action => action.command === 'MultiMsg');
-        if (!downloadResult) throw new Error('Failed to download long message');
+        if (!downloadResult) throw new Error('下载合并转发消息失败');
         return downloadResult.data.msgs.map(buf => CommonMessage.decode(buf));
     },
 );

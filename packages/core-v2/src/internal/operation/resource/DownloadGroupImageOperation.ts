@@ -24,7 +24,7 @@ export const DownloadGroupImageOperation = defineOperation(
     (ctx, payload) => {
         const response = DownloadGroupImageResponse.decodeBodyOrThrow(payload).download;
         if (!response) {
-            throw new Error('Invalid response');
+            throw new Error('获取下载 URL 失败，返回数据不合法');
         }
         return `https://${response.info?.domain}${response.info?.urlPath}${response.rKeyParam}`;
     }

@@ -94,4 +94,8 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> impleme
     get permission() {
         return this.data.permission;
     }
+
+    toString() {
+        return `${this.card || this.nickname} (${this.uin})`;
+    }
 }

@@ -46,7 +46,7 @@ export class BotGroup extends BotEntity<BotGroupDataBinding> implements BotGroup
             } while (token);
             return mappedData;
         },
-        (bot, data) => new BotGroupMember(bot, this, data),
+        (bot, data) => new BotGroupMember(bot, this, data)
     );
 
     /**
@@ -122,5 +122,9 @@ export class BotGroup extends BotEntity<BotGroupDataBinding> implements BotGroup
      */
     async getMember(uin: number, forceUpdate: boolean = false): Promise<BotGroupMember | undefined> {
         return this.memberCache.get(uin, forceUpdate);
+    }
+
+    toString() {
+        return `${this.name} (${this.uin})`;
     }
 }

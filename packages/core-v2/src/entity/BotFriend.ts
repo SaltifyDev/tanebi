@@ -72,4 +72,8 @@ export class BotFriend extends BotEntity<BotFriendDataBinding> implements BotFri
     get categoryId() {
         return this.data.categoryId;
     }
+
+    toString() {
+        return `${this.remark || this.nickname} (${this.uin})`;
+    }
 }

@@ -13,6 +13,7 @@ function isFriendMessage(msg: BotIncomingMessage): msg is BotFriendIncomingMessa
 
 /**
  * 接收好友消息事件
+ * @category 事件 (Event)
  */
 export class BotFriendMessageEvent extends BotEvent {
     constructor(

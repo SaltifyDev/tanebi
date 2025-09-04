@@ -17,6 +17,7 @@ export interface BotGroupDataBinding {
 
 /**
  * 群聊对象
+ * @category 实体 (Entity)
  */
 export class BotGroup extends BotEntity<BotGroupDataBinding> implements BotGroupDataBinding {
     private memberCache = new BotCacheService<number, BotGroupMember>(

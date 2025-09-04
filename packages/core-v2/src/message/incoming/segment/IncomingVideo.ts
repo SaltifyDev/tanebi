@@ -9,6 +9,7 @@ type CommonElem = InferProtoModel<typeof CommonElement.fields>;
 
 /**
  * 接收的视频消息段
+ * @category 接收消息段 (IncomingSegment)
  */
 export class IncomingVideo {
     constructor(

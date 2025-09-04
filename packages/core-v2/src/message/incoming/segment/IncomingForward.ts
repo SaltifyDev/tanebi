@@ -27,6 +27,7 @@ const ForwardXmlSchema = z.object({
 
 /**
  * 接收的合并转发消息段
+ * @category 接收消息段 (IncomingSegment)
  */
 export class IncomingForward {
     constructor(

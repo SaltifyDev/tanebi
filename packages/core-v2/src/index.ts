@@ -42,12 +42,21 @@ import { parseForwardedMessage } from '@/message/incoming/context';
 import { pipeMsgPushEvents } from '@/event/context';
 import { match } from 'ts-pattern';
 
+/** @hidden */
 export const ctx = Symbol('Internal context');
+/** @hidden */
 export const identityService = Symbol('Internal identity service');
+/** @hidden */
 export const emitNewEvent = Symbol('Internal emit new event');
+/** @hidden */
 export const emitEvent = Symbol('Internal emit event');
+/** @hidden */
 export const emitLog = Symbol('Internal emit log');
 
+/**
+ * Bot 对象
+ * @category 实体 (Entity)
+ */
 export class Bot {
     //#region Internal Field
     private readonly [ctx]: BotContext;
@@ -152,15 +161,18 @@ export class Bot {
     //#endregion
 
     //#region Internal API
+    /** @hidden */
     [emitNewEvent]<T extends BotEvent, Args extends unknown[]>(eventClass: new (...args: Args) => T, ...args: Args) {
         const event = new eventClass(...args);
         this.events.emit(eventClass.name, event);
     }
 
+    /** @hidden */
     [emitEvent](event: BotEvent) {
         this.events.emit(event.constructor.name, event);
     }
 
+    /** @hidden */
     [emitLog](
         level: 'trace' | 'info' | 'warning' | 'fatal',
         thisRefOrModuleName: string | object,

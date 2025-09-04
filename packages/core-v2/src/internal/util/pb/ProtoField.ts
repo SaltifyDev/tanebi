@@ -7,7 +7,9 @@ import { WireType } from './WireType';
 export type Supplier<T> = () => T;
 export type ProtoFieldType = ScalarType | Supplier<ProtoModel>;
 
+/** @hidden */
 export const kTag = Symbol('Cached Tag');
+/** @hidden */
 export const kTagLength = Symbol('Cached Tag Length');
 
 export interface ProtoSpec<

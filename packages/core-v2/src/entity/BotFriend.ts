@@ -14,6 +14,7 @@ export interface BotFriendDataBinding {
 
 /**
  * 好友对象
+ * @category 实体 (Entity)
  */
 export class BotFriend extends BotEntity<BotFriendDataBinding> implements BotFriendDataBinding {
     /**

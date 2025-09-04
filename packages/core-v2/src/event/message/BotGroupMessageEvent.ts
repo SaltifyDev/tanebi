@@ -13,6 +13,7 @@ function isGroupMessage(msg: BotIncomingMessage): msg is BotGroupIncomingMessage
 
 /**
  * 接收群消息事件
+ * @category 事件 (Event)
  */
 export class BotGroupMessageEvent extends BotEvent {
     constructor(

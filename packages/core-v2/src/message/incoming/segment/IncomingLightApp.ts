@@ -10,6 +10,7 @@ export type LightAppPayload = z.infer<typeof LightApp>;
 
 /**
  * 接收的卡片消息段
+ * @category 接收消息段 (IncomingSegment)
  */
 export class IncomingLightApp {
     constructor(

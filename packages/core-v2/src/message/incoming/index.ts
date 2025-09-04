@@ -3,11 +3,14 @@ import { type CommonMessage } from '@/internal/packet/message/CommonMessage';
 import { type InferProtoModel } from '@/internal/util/pb';
 import { type IncomingSegment } from '@/message/incoming/context';
 
+/** @hidden */
 export const rawMsg = Symbol('Internal raw message');
+/** @hidden */
 export const groupMemberDataUpdate = Symbol('Internal symbol for data update');
 
 /**
  * 消息对象
+ * @category 实体 (Entity)
  */
 export interface BotIncomingMessage {
     /**
@@ -65,7 +68,9 @@ export interface BotIncomingMessage {
      */
     repliedSequence?: number;
 
+    /** @hidden */
     [rawMsg]: InferProtoModel<typeof CommonMessage.fields>;
+    /** @hidden */
     [groupMemberDataUpdate]?: {
         nickname?: string;
         card?: string;
@@ -73,6 +78,10 @@ export interface BotIncomingMessage {
     };
 }
 
+/**
+ * 接收的合并转发消息
+ * @category 实体 (Entity)
+ */
 export interface BotIncomingForwardedMessage {
     /**
      * 消息在原始会话中的序列号

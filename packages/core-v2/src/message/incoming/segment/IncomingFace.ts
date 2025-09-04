@@ -4,6 +4,7 @@ import { MessageParsingContext } from '@/message/incoming/context';
 
 /**
  * 接收的表情消息段
+ * @category 接收消息段 (IncomingSegment)
  */
 export class IncomingFace {
     constructor(

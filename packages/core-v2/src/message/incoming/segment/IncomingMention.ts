@@ -2,6 +2,7 @@ import { MessageParsingContext } from '@/message/incoming/context';
 
 /**
  * 接收的提及（@）消息段
+ * @category 接收消息段 (IncomingSegment)
  */
 export class IncomingMention {
     constructor(

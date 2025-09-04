@@ -1,0 +1,18 @@
+{
+    "lang": "zh",
+    "out": "./out/docs", // todo: later port to someStaticSite/public/tsdoc
+    "entryPoints": [
+        "./src/index.ts"
+    ],
+    "defaultCategory": "其他",
+    "categoryOrder": [
+        "实体 (Entity)",
+        "事件 (Event)",
+        "接收消息段 (IncomingSegment)",
+        "*",
+        "其他"
+    ],
+    "navigation": {
+        "includeCategories": true
+    }
+}

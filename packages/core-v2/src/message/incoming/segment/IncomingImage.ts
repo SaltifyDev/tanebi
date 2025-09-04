@@ -17,6 +17,7 @@ const LegacyBaseUrl = 'http://gchat.qpic.cn';
 
 /**
  * 接收的图片消息段
+ * @category 接收消息段 (IncomingSegment)
  */
 export class IncomingImage {
     constructor(

@@ -18,6 +18,7 @@ export interface BotGroupMemberDataBinding {
 
 /**
  * 群成员对象
+ * @category 实体 (Entity)
  */
 export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> implements BotGroupMemberDataBinding {
     constructor(bot: Bot, readonly group: BotGroup, data: BotGroupMemberDataBinding) {

@@ -120,7 +120,7 @@ export class Bot {
 
     //#region Metainfo
     /**
-     * Bot 账号的 uin（QQ 号）。
+     * Bot 账号的 uin（QQ 号）
      */
     get uin() {
         if (this[ctx].keystore.uin === 0) {
@@ -130,7 +130,7 @@ export class Bot {
     }
 
     /**
-     * Bot 账号的 uid。
+     * Bot 账号的 uid
      */
     get uid() {
         if (this[ctx].keystore.uid === undefined) {
@@ -140,7 +140,7 @@ export class Bot {
     }
 
     /**
-     * Bot 账号是否已登录。
+     * Bot 账号是否已登录
      */
     get isLoggedIn() {
         return this.loggedIn;

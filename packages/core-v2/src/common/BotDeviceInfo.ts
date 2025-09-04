@@ -2,23 +2,23 @@ import { BufferSerialized, serializeBuffer, deserializeBuffer } from '@/util/ser
 import { randomBytes } from 'node:crypto';
 
 /**
- * 登录 QQ 所需的设备信息。
+ * 登录 QQ 所需的设备信息
  */
 export interface BotDeviceInfo {
     /**
-     * 设备的 GUID。
+     * 设备的 GUID
      * @example Buffer.from('f47ac10b58cc4372a5670e02b2c3d479', 'hex')
      */
     guid: Buffer;
 
     /**
-     * 6 字节的 MAC 地址。
+     * 6 字节的 MAC 地址
      * @example Buffer.from([0x00, 0x1a, 0x2b, 0x3c, 0x4d, 0x5e])
      */
     macAddress: Buffer;
 
     /**
-     * 设备名称。
+     * 设备名称
      * @example 'Lagrange-0ABCDE'
      */
     deviceName: string;

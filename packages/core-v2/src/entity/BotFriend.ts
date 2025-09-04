@@ -13,25 +13,25 @@ export interface BotFriendDataBinding {
 }
 
 /**
- * 好友对象。
+ * 好友对象
  */
 export class BotFriend extends BotEntity<BotFriendDataBinding> implements BotFriendDataBinding {
     /**
-     * 好友的 uin（QQ 号）。
+     * 好友的 uin（QQ 号）
      */
     get uin() {
         return this.data.uin;
     }
 
     /**
-     * 好友的 uid。
+     * 好友的 uid
      */
     get uid() {
         return this.data.uid;
     }
 
     /**
-     * 好友的性别。
+     * 好友的性别
      * @see {@link BotUserInfoGender}
      */
     get gender() {
@@ -39,35 +39,35 @@ export class BotFriend extends BotEntity<BotFriendDataBinding> implements BotFri
     }
 
     /**
-     * 好友的昵称。
+     * 好友的昵称
      */
     get nickname() {
         return this.data.nickname;
     }
 
     /**
-     * 好友的备注。
+     * 好友的备注
      */
     get remark() {
         return this.data.remark;
     }
 
     /**
-     * 好友的个性签名。
+     * 好友的个性签名
      */
     get bio() {
         return this.data.bio;
     }
 
     /**
-     * 好友的 QID。
+     * 好友的 QID
      */
     get qid() {
         return this.data.qid;
     }
 
     /**
-     * 好友所在的分组 ID。
+     * 好友所在的分组 ID
      */
     get categoryId() {
         return this.data.categoryId;

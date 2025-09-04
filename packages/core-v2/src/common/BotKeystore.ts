@@ -9,7 +9,7 @@ import {
 import { randomBytes } from 'node:crypto';
 
 /**
- * 登录 QQ 所需的密钥信息。
+ * 登录 QQ 所需的密钥信息
  */
 export interface BotKeystore {
     uin: number;

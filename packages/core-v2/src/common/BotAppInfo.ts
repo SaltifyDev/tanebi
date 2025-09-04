@@ -1,5 +1,5 @@
 /**
- * 登录 QQ 所需的 App 信息。
+ * 登录 QQ 所需的 App 信息
  */
 export interface BotAppInfo {
     // 'Windows' | 'Linux' | 'Mac'
@@ -51,7 +51,7 @@ export interface BotAppInfo {
 }
 
 /**
- * Linux 协议的 AppInfo 预设。
+ * Linux 协议的 AppInfo 预设
  */
 export const LinuxAppInfoPreset: BotAppInfo = {
     'Os': 'Linux',

@@ -17,7 +17,7 @@ export interface BotGroupMemberDataBinding {
 }
 
 /**
- * 群成员对象。
+ * 群成员对象
  */
 export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> implements BotGroupMemberDataBinding {
     constructor(bot: Bot, readonly group: BotGroup, data: BotGroupMemberDataBinding) {
@@ -25,70 +25,70 @@ export class BotGroupMember extends BotEntity<BotGroupMemberDataBinding> impleme
     }
 
     /**
-     * 群成员的 uin（QQ 号）。
+     * 群成员的 uin（QQ 号）
      */
     get uin() {
         return this.data.uin;
     }
 
     /**
-     * 群成员的 uid。
+     * 群成员的 uid
      */
     get uid() {
         return this.data.uid;
     }
 
     /**
-     * 群成员的昵称。
+     * 群成员的昵称
      */
     get nickname() {
         return this.data.nickname;
     }
 
     /**
-     * 群成员的群名片。
+     * 群成员的群名片
      */
     get card() {
         return this.data.card;
     }
 
     /**
-     * 群成员的等级。
+     * 群成员的等级
      */
     get level() {
         return this.data.level;
     }
 
     /**
-     * 群成员的头衔。
+     * 群成员的头衔
      */
     get specialTitle() {
         return this.data.specialTitle;
     }
 
     /**
-     * 群成员入群的 Unix 时间戳（秒）。
+     * 群成员入群的 Unix 时间戳（秒）
      */
     get joinTime() {
         return this.data.joinTime;
     }
 
     /**
-     * 群成员最后发言的 Unix 时间戳（秒）。
+     * 群成员最后发言的 Unix 时间戳（秒）
      */
     get lastMsgTime() {
         return this.data.lastMsgTime;
     }
 
     /**
-     * 群成员禁言结束的 Unix 时间戳（秒）。
+     * 群成员禁言结束的 Unix 时间戳（秒）
      */
     get shutUpEndTime() {
         return this.data.shutUpEndTime;
     }
 
     /**
-     * 群成员的权限等级。
+     * 群成员的权限等级
      * @see {@link BotGroupMemberPermission}
      */
     get permission() {

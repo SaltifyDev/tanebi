@@ -4,7 +4,6 @@ import { BotEvent } from '@/event/base';
 /**
  * {@link BotKeystore} 变更事件
  */
-
 export class BotKeystoreChangeEvent extends BotEvent {
     constructor(
         /**

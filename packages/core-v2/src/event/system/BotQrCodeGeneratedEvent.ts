@@ -3,7 +3,6 @@ import { BotEvent } from '@/event/base';
 /**
  * 二维码生成事件
  */
-
 export class BotQrCodeGeneratedEvent extends BotEvent {
     constructor(
         /**

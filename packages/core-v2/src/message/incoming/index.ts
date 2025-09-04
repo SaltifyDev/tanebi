@@ -11,7 +11,7 @@ export const groupMemberDataUpdate = Symbol('Internal symbol for data update');
  */
 export interface BotIncomingMessage {
     /**
-     * 消息场景。
+     * 消息场景
      * @see {@link BotMessageScene}
      */
     scene: BotMessageScene;
@@ -31,37 +31,37 @@ export interface BotIncomingMessage {
     peerUid: string;
 
     /**
-     * 消息序列号，用于标识消息在同一个 peer 中的顺序。
+     * 消息序列号，用于标识消息在同一个 peer 中的顺序
      */
     sequence: number;
 
     /**
-     * 消息发送的 Unix 时间戳（秒）。
+     * 消息发送的 Unix 时间戳（秒）
      */
     time: number;
 
     /**
-     * 消息发送者的 uin。
+     * 消息发送者的 uin
      */
     senderUin: number;
 
     /**
-     * 消息发送者的 uid。
+     * 消息发送者的 uid
      */
     senderUid: string;
 
     /**
-     * 消息发送者的名称，视情况有可能是昵称 / 备注 / 群名片等。
+     * 消息发送者的名称，视情况有可能是昵称 / 备注 / 群名片等
      */
     senderName: string;
 
     /**
-     * 消息内容，为消息段的数组。
+     * 消息内容，为消息段的数组
      */
     segments: IncomingSegment[];
 
     /**
-     * 被回复消息的 sequence，如果这条消息回复（引用）了另一条消息。
+     * 被回复消息的 sequence，如果这条消息回复（引用）了另一条消息
      */
     repliedSequence?: number;
 
@@ -75,32 +75,32 @@ export interface BotIncomingMessage {
 
 export interface BotIncomingForwardedMessage {
     /**
-     * 消息在原始会话中的序列号。
+     * 消息在原始会话中的序列号
      */
     sequence: number;
 
     /**
-     * 发送者名称。
+     * 发送者名称
      */
     senderName: string;
 
     /**
-     * 发送者头像 URL。
+     * 发送者头像 URL
      */
     senderAvatarUrl: string;
 
     /**
-     * 消息发送的 Unix 时间戳（秒）。
+     * 消息发送的 Unix 时间戳（秒）
      */
     time: number;
 
     /**
-     * 消息内容，为消息段的数组。
+     * 消息内容，为消息段的数组
      */
     segments: IncomingSegment[];
 
     /**
-     * 被回复消息在原始会话中的 sequence，如果这条消息回复（引用）了另一条消息。
+     * 被回复消息在原始会话中的 sequence，如果这条消息回复（引用）了另一条消息
      */
     repliedSequence?: number;
 }

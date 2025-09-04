@@ -40,6 +40,7 @@ import { FetchFaceDetailsOperation } from '@/internal/operation/common/FetchFace
 import { DownloadLongMessageOperation } from '@/internal/operation/message/DownloadLongMessageOperation';
 import { parseForwardedMessage } from '@/message/incoming/context';
 import { pipeMsgPushEvents } from '@/event/context';
+import { match } from 'ts-pattern';
 
 export const ctx = Symbol('Internal context');
 export const identityService = Symbol('Internal identity service');
@@ -444,25 +445,17 @@ export class Bot {
             storeId: 1,
             ttl: fileId.ttl,
         };
-        if (fileId.appId === 1406) {
-            return this[ctx].call(DownloadPrivateImageOperation, indexNode);
-        }
-        if (fileId.appId === 1407) {
-            return this[ctx].call(DownloadGroupImageOperation, indexNode);
-        }
-        if (fileId.appId === 1402) {
-            return this[ctx].call(DownloadPrivateRecordOperation, indexNode);
-        }
-        if (fileId.appId === 1403) {
-            return this[ctx].call(DownloadGroupRecordOperation, indexNode);
-        }
-        if (fileId.appId === 1413) {
-            return this[ctx].call(DownloadPrivateVideoOperation, indexNode);
-        }
-        if (fileId.appId === 1415) {
-            return this[ctx].call(DownloadGroupVideoOperation, indexNode);
-        }
-        throw new Error(`Unsupported resource type: ${fileId.appId}`);
+        return match(fileId.appId)
+            .returnType<Promise<string>>()
+            .with(1406, () => this[ctx].call(DownloadPrivateImageOperation, indexNode))
+            .with(1407, () => this[ctx].call(DownloadGroupImageOperation, indexNode))
+            .with(1402, () => this[ctx].call(DownloadPrivateRecordOperation, indexNode))
+            .with(1403, () => this[ctx].call(DownloadGroupRecordOperation, indexNode))
+            .with(1413, () => this[ctx].call(DownloadPrivateVideoOperation, indexNode))
+            .with(1415, () => this[ctx].call(DownloadGroupVideoOperation, indexNode))
+            .otherwise(() => {
+                throw new Error(`不支持的资源类型: ${fileId.appId}`);
+            });
     }
 
     /**

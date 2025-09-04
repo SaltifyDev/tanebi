@@ -1,3 +1,4 @@
+import { match } from 'ts-pattern';
 import { WireType } from './WireType';
 
 export class CodedReader {
@@ -82,15 +83,22 @@ export class CodedReader {
     }
 
     skip(wireType: WireType): void {
-        if (wireType === WireType.Varint) {
-            this.readVarint();
-        } else if (wireType === WireType.Fixed64) {
-            this.offset += 8;
-        } else if (wireType === WireType.Fixed32) {
-            this.offset += 4;
-        } else if (wireType === WireType.LengthDelimited) {
-            const length = this.readVarint();
-            this.offset += length;
-        }
+        match(wireType)
+            .with(WireType.Varint, () => {
+                this.readVarint();
+            })
+            .with(WireType.Fixed64, () => {
+                this.offset += 8;
+            })
+            .with(WireType.Fixed32, () => {
+                this.offset += 4;
+            })
+            .with(WireType.LengthDelimited, () => {
+                const length = this.readVarint();
+                this.offset += length;
+            })
+            .otherwise(() => {
+                throw new Error(`不支持的 WireType: ${wireType}`);
+            });
     }
 }

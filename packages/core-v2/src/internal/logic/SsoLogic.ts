@@ -16,6 +16,7 @@ import { decryptTea, encryptTea } from '@/internal/util/crypto/tea';
 import { generateTrace } from '@/internal/util/format';
 import { unzipSync } from 'node:zlib';
 import { Operation } from '@/internal/operation';
+import { match } from 'ts-pattern';
 
 export type IncomingSsoPacket = {
     command: string;
@@ -235,16 +236,14 @@ export class SsoLogic extends LogicBase {
             throw new Error(`不支持的 SSO protocol: ${wrapped.protocol}`);
         }
 
-        let decrypted: Buffer;
-        if (wrapped.encryptionType === EncryptionType.None) {
-            decrypted = wrapped.packet;
-        } else if (wrapped.encryptionType === EncryptionType.TeaByD2Key) {
-            decrypted = decryptTea(wrapped.packet, this.ctx.keystore.session.d2Key);
-        } else if (wrapped.encryptionType === EncryptionType.TeaByEmptyKey) {
-            decrypted = decryptTea(wrapped.packet, BUF16);
-        } else {
-            throw new Error(`不支持的 SSO 加密类型: ${wrapped.encryptionType}`);
-        }
+        const decrypted = match(wrapped.encryptionType)
+            .returnType<Buffer>()
+            .with(EncryptionType.None, () => wrapped.packet)
+            .with(EncryptionType.TeaByD2Key, () => decryptTea(wrapped.packet, this.ctx.keystore.session.d2Key))
+            .with(EncryptionType.TeaByEmptyKey, () => decryptTea(wrapped.packet, BUF16))
+            .otherwise(() => {
+                throw new Error(`不支持的 SSO 加密类型: ${wrapped.encryptionType}`);
+            });
 
         const { header, raw } = IncomingSsoPacket.decode(decrypted);
         this.ctx.emitLog('trace', this, `接收数据包 (cmd=${header.command}, seq=${header.sequence})`);
@@ -256,16 +255,13 @@ export class SsoLogic extends LogicBase {
                 extra: header.extra,
             };
         } else {
-            let body;
-
-            if (header.compressionType === CompressionType.None || header.compressionType === CompressionType.None_2) {
-                body = raw;
-            } else if (header.compressionType === CompressionType.Zlib) {
-                body = unzipSync(raw);
-            } else {
-                throw new Error(`不支持的 SSO 压缩类型: ${header.compressionType}`);
-            }
-
+            const body = match(header.compressionType)
+                .returnType<Buffer>()
+                .with(CompressionType.None, CompressionType.None_2, () => raw)
+                .with(CompressionType.Zlib, () => unzipSync(raw))
+                .otherwise(() => {
+                    throw new Error(`不支持的 SSO 压缩类型: ${header.compressionType}`);
+                });
             return {
                 command: header.command,
                 sequence: header.sequence,

@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
+import { match } from 'ts-pattern';
+
 export type TlvScalarFieldType =
     | 'uint8'
     | 'uint16'
@@ -174,28 +176,22 @@ const serializedLengthCalculators: {
 
     bytes(value, spec) {
         const length = value.length;
-        if (spec.lengthPrefix === 'uint8') {
-            return length + 1;
-        } else if (spec.lengthPrefix === 'uint16') {
-            return length + 2;
-        } else if (spec.lengthPrefix === 'uint32') {
-            return length + 4;
-        } else {
-            return length;
-        }
+        return match(spec.lengthPrefix)
+            .with('none', () => length)
+            .with('uint8', () => length + 1)
+            .with('uint16', () => length + 2)
+            .with('uint32', () => length + 4)
+            .exhaustive();
     },
 
     string(value, spec) {
         const byteLength = Buffer.byteLength(value, 'utf8');
-        if (spec.lengthPrefix === 'uint8') {
-            return byteLength + 1;
-        } else if (spec.lengthPrefix === 'uint16') {
-            return byteLength + 2;
-        } else if (spec.lengthPrefix === 'uint32') {
-            return byteLength + 4;
-        } else {
-            return byteLength;
-        }
+        return match(spec.lengthPrefix)
+            .with('none', () => byteLength)
+            .with('uint8', () => byteLength + 1)
+            .with('uint16', () => byteLength + 2)
+            .with('uint32', () => byteLength + 4)
+            .exhaustive();
     },
 
     'fixed-bytes'(_, spec) {
@@ -250,25 +246,23 @@ const serializers: {
 
     bytes(value, spec, buffer, offset) {
         const length = value.length;
-        if (spec.lengthPrefix === 'uint8') {
-            offset = buffer.writeUInt8(length + (spec.lengthIncludesPrefix ? 1 : 0), offset);
-        } else if (spec.lengthPrefix === 'uint16') {
-            offset = buffer.writeUInt16BE(length + (spec.lengthIncludesPrefix ? 2 : 0), offset);
-        } else if (spec.lengthPrefix === 'uint32') {
-            offset = buffer.writeUInt32BE(length + (spec.lengthIncludesPrefix ? 4 : 0), offset);
-        }
+        offset = match(spec.lengthPrefix)
+            .with('none', () => offset)
+            .with('uint8', () => buffer.writeUInt8(length + (spec.lengthIncludesPrefix ? 1 : 0), offset))
+            .with('uint16', () => buffer.writeUInt16BE(length + (spec.lengthIncludesPrefix ? 2 : 0), offset))
+            .with('uint32', () => buffer.writeUInt32BE(length + (spec.lengthIncludesPrefix ? 4 : 0), offset))
+            .exhaustive();
         return offset + value.copy(buffer, offset);
     },
 
     string(value, spec, buffer, offset) {
         const byteLength = Buffer.byteLength(value, 'utf8');
-        if (spec.lengthPrefix === 'uint8') {
-            offset = buffer.writeUInt8(byteLength + (spec.lengthIncludesPrefix ? 1 : 0), offset);
-        } else if (spec.lengthPrefix === 'uint16') {
-            offset = buffer.writeUInt16BE(byteLength + (spec.lengthIncludesPrefix ? 2 : 0), offset);
-        } else if (spec.lengthPrefix === 'uint32') {
-            offset = buffer.writeUInt32BE(byteLength + (spec.lengthIncludesPrefix ? 4 : 0), offset);
-        }
+        offset = match(spec.lengthPrefix)
+            .with('none', () => offset)
+            .with('uint8', () => buffer.writeUInt8(byteLength + (spec.lengthIncludesPrefix ? 1 : 0), offset))
+            .with('uint16', () => buffer.writeUInt16BE(byteLength + (spec.lengthIncludesPrefix ? 2 : 0), offset))
+            .with('uint32', () => buffer.writeUInt32BE(byteLength + (spec.lengthIncludesPrefix ? 4 : 0), offset))
+            .exhaustive();
         return offset + buffer.write(value, offset);
     },
 
@@ -313,13 +307,18 @@ function encodeWithOffset<T extends TlvPacketSchema>(
             offset = encodeWithOffset(field.type(), value, buffer, packetStartOffset);
             // ...then write it back
             const packetLength = offset - packetStartOffset;
-            if (field.lengthPrefix === 'uint8') {
-                buffer.writeUInt8(packetLength + (field.lengthIncludesPrefix ? 1 : 0), origOffset);
-            } else if (field.lengthPrefix === 'uint16') {
-                buffer.writeUInt16BE(packetLength + (field.lengthIncludesPrefix ? 2 : 0), origOffset);
-            } else if (field.lengthPrefix === 'uint32') {
-                buffer.writeUInt32BE(packetLength + (field.lengthIncludesPrefix ? 4 : 0), origOffset);
-            }
+            match(field.lengthPrefix)
+                .with('uint8', () => {
+                    buffer.writeUInt8(packetLength + (field.lengthIncludesPrefix ? 1 : 0), origOffset);
+                })
+                .with('uint16', () => {
+                    buffer.writeUInt16BE(packetLength + (field.lengthIncludesPrefix ? 2 : 0), origOffset);
+                })
+                .with('uint32', () => {
+                    buffer.writeUInt32BE(packetLength + (field.lengthIncludesPrefix ? 4 : 0), origOffset);
+                })
+                .with('none', () => { /* do nothing */ })
+                .exhaustive();
         } else {
             offset = serializers[field.type](
                 // @ts-ignore
@@ -386,22 +385,27 @@ const deserializers: {
     },
 
     bytes(buffer, offset, spec) {
-        let length: number;
-        if (spec.lengthPrefix === 'uint8') {
-            length = buffer.readUInt8(offset);
-            if (spec.lengthIncludesPrefix) length -= 1;
-            offset += 1;
-        } else if (spec.lengthPrefix === 'uint16') {
-            length = buffer.readUInt16BE(offset);
-            if (spec.lengthIncludesPrefix) length -= 2;
-            offset += 2;
-        } else if (spec.lengthPrefix === 'uint32') {
-            length = buffer.readUInt32BE(offset);
-            if (spec.lengthIncludesPrefix) length -= 4;
-            offset += 4;
-        } else {
-            length = buffer.length - offset; // read until the end of the buffer
-        }
+        let length: number = 0;
+        match(spec.lengthPrefix)
+            .with('uint8', () => {
+                length = buffer.readUInt8(offset);
+                if (spec.lengthIncludesPrefix) length -= 1;
+                offset += 1;
+            })
+            .with('uint16', () => {
+                length = buffer.readUInt16BE(offset);
+                if (spec.lengthIncludesPrefix) length -= 2;
+                offset += 2;
+            })
+            .with('uint32', () => {
+                length = buffer.readUInt32BE(offset);
+                if (spec.lengthIncludesPrefix) length -= 4;
+                offset += 4;
+            })
+            .with('none', () => {
+                length = buffer.length - offset; // read until the end of the buffer
+            })
+            .exhaustive();
         return [buffer.subarray(offset, offset + length), offset + length];
     },
 

@@ -61,6 +61,7 @@ export type LogListener = {
 /**
  * Bot 对象
  * @category Bot
+ * @see {@link Bot.create}
  */
 export class Bot {
     //#region Internal Field
@@ -119,7 +120,7 @@ export class Bot {
     private loggedIn = false;
     //#endregion
 
-    constructor(appInfo: BotAppInfo, deviceInfo: BotDeviceInfo, keystore: BotKeystore, signProvider: BotSignProvider) {
+    private constructor(appInfo: BotAppInfo, deviceInfo: BotDeviceInfo, keystore: BotKeystore, signProvider: BotSignProvider) {
         this[ctx] = new BotContext(appInfo, deviceInfo, keystore, signProvider);
         this[ctx].log.on('trace', (moduleName, message) => this[emitLog]('trace', moduleName, message));
         this[ctx].log.on('info', (moduleName, message) => this[emitLog]('info', moduleName, message));
@@ -538,7 +539,7 @@ export class Bot {
     //#region Factory
     /**
      * 创建一个新的 Bot 实例，并且完成必要的初始化。
-     * @param appInfo Bot 登录时使用的{@link BotAppInfo|App 信息}
+     * @param appInfo Bot 登录时使用的 {@link BotAppInfo|App 信息}
      * @param deviceInfo Bot 登录时使用的{@link BotDeviceInfo|设备信息}
      * @param keystore Bot 登录时使用的{@link BotKeystore|密钥存储}
      * @param signProvider Bot 登录时使用的{@link BotSignProvider|签名接口}

@@ -12,6 +12,7 @@ type CommonElem = InferProtoModel<typeof CommonElement.fields>;
  * @category 接收消息段 (IncomingSegment)
  */
 export class IncomingVideo {
+    /** @hidden */
     constructor(
         /**
          * 视频的文件 ID，可用于下载视频
@@ -48,6 +49,7 @@ export class IncomingVideo {
         return common.serviceType === 48 && (common.businessType === 21 || common.businessType === 11);
     }
 
+    /** @hidden */
     static tryParse(context: MessageParsingContext): IncomingVideo | null {
         const elem = context.peek();
         if (elem.common && this.verifyCommonElem(elem.common)) {

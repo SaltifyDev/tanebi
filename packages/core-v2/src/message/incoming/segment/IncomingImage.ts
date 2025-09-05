@@ -20,6 +20,7 @@ const LegacyBaseUrl = 'http://gchat.qpic.cn';
  * @category 接收消息段 (IncomingSegment)
  */
 export class IncomingImage {
+    /** @hidden */
     constructor(
         /**
          * 图片的文件 ID，可用于下载图片
@@ -99,6 +100,7 @@ export class IncomingImage {
         );
     }
 
+    /** @hidden */
     static tryParse(context: MessageParsingContext): IncomingImage | null {
         const elem = context.peek(); // offset = 0
 

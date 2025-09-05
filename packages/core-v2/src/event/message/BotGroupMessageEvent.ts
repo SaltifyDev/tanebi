@@ -16,6 +16,7 @@ function isGroupMessage(msg: BotIncomingMessage): msg is BotGroupIncomingMessage
  * @category 事件 (Event)
  */
 export class BotGroupMessageEvent extends BotEvent {
+    /** @hidden */
     constructor(
         /**
          * 收到的消息
@@ -35,6 +36,7 @@ export class BotGroupMessageEvent extends BotEvent {
         super();
     }
 
+    /** @hidden */
     static async tryParse({ bot, msg }: MsgPushParsingContext): Promise<BotGroupMessageEvent | null> {
         const message = parseMessage(bot, msg);
         if (!message) return null;

@@ -30,6 +30,7 @@ const ForwardXmlSchema = z.object({
  * @category 接收消息段 (IncomingSegment)
  */
 export class IncomingForward {
+    /** @hidden */
     constructor(
         /**
          * 合并转发的 ID，可用于获取转发内容
@@ -57,6 +58,7 @@ export class IncomingForward {
         return '[转发消息]';
     }
 
+    /** @hidden */
     static tryParse(context: MessageParsingContext): IncomingForward | null {
         const elem = context.peek();
         if (elem.richMsg && elem.richMsg.serviceId === 35 && elem.richMsg.template1 !== undefined) {

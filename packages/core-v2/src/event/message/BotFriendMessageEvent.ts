@@ -16,6 +16,7 @@ function isFriendMessage(msg: BotIncomingMessage): msg is BotFriendIncomingMessa
  * @category 事件 (Event)
  */
 export class BotFriendMessageEvent extends BotEvent {
+    /** @hidden */
     constructor(
         /**
          * 收到的消息
@@ -30,6 +31,7 @@ export class BotFriendMessageEvent extends BotEvent {
         super();
     }
 
+    /** @hidden */
     static async tryParse({ bot, msg }: MsgPushParsingContext): Promise<BotFriendMessageEvent | null> {
         const message = parseMessage(bot, msg);
         if (!message) return null;

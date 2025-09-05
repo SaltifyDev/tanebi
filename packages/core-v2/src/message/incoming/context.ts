@@ -48,7 +48,15 @@ const SegmentClasses = [
  * - {@link IncomingForward} 合并转发消息段
  * - {@link IncomingLightApp} 卡片消息段
  */
-export type IncomingSegment = InstanceType<(typeof SegmentClasses)[number]>;
+export type IncomingSegment = 
+    | IncomingText
+    | IncomingMention
+    | IncomingFace
+    | IncomingImage
+    | IncomingRecord
+    | IncomingVideo
+    | IncomingForward
+    | IncomingLightApp;
 
 export class MessageParsingContext {
     readonly elems: InferProtoModel<typeof Elem.fields>[];

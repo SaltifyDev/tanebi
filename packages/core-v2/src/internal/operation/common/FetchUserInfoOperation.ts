@@ -1,4 +1,4 @@
-import { BotUserInfoGender, BotFetchUserInfoKey } from '@/common';
+import { BotFetchUserInfoKey, BotFetchUserInfoGeneralReturn } from '@/common';
 import { defineOperation } from '@/internal/operation';
 import { UserInfoAvatar, UserInfoBusiness } from '@/internal/packet/common/UserInfo';
 import {
@@ -6,45 +6,6 @@ import {
     FetchUserInfoByUid,
     FetchUserInfoResponse,
 } from '@/internal/packet/oidb/0xfe1_2';
-
-export type EnumToStringKey = {
-    [BotFetchUserInfoKey.Avatar]: 'avatar';
-    [BotFetchUserInfoKey.Bio]: 'bio';
-    [BotFetchUserInfoKey.Remark]: 'remark';
-    [BotFetchUserInfoKey.Level]: 'level';
-    [BotFetchUserInfoKey.BusinessList]: 'businessList';
-    [BotFetchUserInfoKey.Nickname]: 'nickname';
-    [BotFetchUserInfoKey.Country]: 'country';
-    [BotFetchUserInfoKey.Gender]: 'gender';
-    [BotFetchUserInfoKey.City]: 'city';
-    [BotFetchUserInfoKey.School]: 'school';
-    [BotFetchUserInfoKey.RegisterTime]: 'registerTime';
-    [BotFetchUserInfoKey.Age]: 'age';
-    [BotFetchUserInfoKey.Qid]: 'qid';
-}
-
-export interface FetchUserInfoGeneralReturn {
-    uin: number;
-    avatar?: string;
-    bio?: string;
-    remark?: string;
-    level?: number;
-    businessList?: Array<{
-        type: number;
-        isYear: boolean;
-        level: number;
-        isPro: boolean;
-        icon: string;
-    }>;
-    nickname?: string;
-    country?: string;
-    gender?: BotUserInfoGender;
-    city?: string;
-    school?: string;
-    registerTime?: number;
-    age?: number;
-    qid?: string;
-}
 
 export const FetchUserInfoOperation = defineOperation(
     'OidbSvcTrpcTcp.0xfe1_2',
@@ -65,7 +26,7 @@ export const FetchUserInfoOperation = defineOperation(
     ]) => typeof uinOrUid === 'number' ?
         FetchUserInfoByUin.encode({ uin: uinOrUid, keys: keys.map(key => ({ key })) }) :
         FetchUserInfoByUid.encode({ uid: uinOrUid, keys: keys.map(key => ({ key })) }),
-    (ctx, payload): FetchUserInfoGeneralReturn => {
+    (ctx, payload): BotFetchUserInfoGeneralReturn => {
         const response = FetchUserInfoResponse.decodeBodyOrThrow(payload).body;
         const numberProps = new Map<number, number>(response.properties
             .numberProperties.map(p => [p.key, p.value]));

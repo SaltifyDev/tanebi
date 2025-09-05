@@ -7,6 +7,7 @@ import { MessageParsingContext } from '@/message/incoming/context';
  * @category 接收消息段 (IncomingSegment)
  */
 export class IncomingFace {
+    /** @hidden */
     constructor(
         /**
          * 表情 ID
@@ -28,6 +29,7 @@ export class IncomingFace {
         return this.displayText;
     }
 
+    /** @hidden */
     static tryParse(context: MessageParsingContext): IncomingFace | null {
         const elem = context.peek();
 

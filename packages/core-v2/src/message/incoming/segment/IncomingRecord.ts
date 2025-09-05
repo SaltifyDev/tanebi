@@ -12,6 +12,7 @@ type CommonElem = InferProtoModel<typeof CommonElement.fields>;
  * @category 接收消息段 (IncomingSegment)
  */
 export class IncomingRecord {
+    /** @hidden */
     constructor(
         /**
          * 语音的文件 ID，可用于下载语音
@@ -33,6 +34,7 @@ export class IncomingRecord {
         return common.serviceType === 48 && (common.businessType === 22 || common.businessType === 12);
     }
 
+    /** @hidden */
     static tryParse(context: MessageParsingContext): IncomingRecord | null {
         const elem = context.peek();
         if (elem.common && this.verifyCommonElem(elem.common)) {

@@ -5,6 +5,7 @@ import { MessageParsingContext } from '@/message/incoming/context';
  * @category 接收消息段 (IncomingSegment)
  */
 export class IncomingMention {
+    /** @hidden */
     constructor(
         /**
          * 被提及的用户名称
@@ -21,6 +22,7 @@ export class IncomingMention {
         return this.name;
     }
 
+    /** @hidden */
     static tryParse(context: MessageParsingContext): IncomingMention | null {
         const textElement = context.peek().text;
         if (!textElement?.attr6Buf || textElement.attr6Buf.length < 11) return null;

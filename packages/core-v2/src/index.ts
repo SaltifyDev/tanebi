@@ -8,6 +8,7 @@ import {
     BotSignProvider,
     BotQrCodeState,
     BotFaceDetail,
+    FetchUserInfoReturnOf,
 } from '@/common';
 import { BotFriend, BotFriendDataBinding, BotGroup, BotGroupDataBinding, BotGroupMember } from '@/entity';
 import { BotContext } from '@/internal';
@@ -17,11 +18,7 @@ import { BotIdentityService } from '@/service/BotIdentityService';
 import { BotCacheService } from '@/service/BotCacheService';
 import { BotIncomingForwardedMessage } from '@/message';
 import { FileId } from '@/internal/packet/highway/FileId';
-import {
-    EnumToStringKey,
-    FetchUserInfoGeneralReturn,
-    FetchUserInfoOperation,
-} from '@/internal/operation/common/FetchUserInfoOperation';
+import { FetchUserInfoOperation } from '@/internal/operation/common/FetchUserInfoOperation';
 import { QueryQrCodeResultOperation } from '@/internal/operation/system/QueryQrCodeResultOperation';
 import { FetchQrCodeOperation } from '@/internal/operation/system/FetchQrCodeOperation';
 import { WtLoginOperation } from '@/internal/operation/system/WtLoginOperation';
@@ -53,6 +50,14 @@ export const emitEvent = Symbol('Internal emit event');
 /** @hidden */
 export const emitLog = Symbol('Internal emit log');
 
+export type LogLevel = 'trace' | 'info' | 'warning' | 'fatal';
+export type LogListener = {
+    trace: (moduleName: string, message: string) => void;
+    info: (moduleName: string, message: string) => void;
+    warning: (moduleName: string, message: string, error?: unknown) => void;
+    fatal: (moduleName: string, message: string, error?: unknown) => void;
+};
+
 /**
  * Bot 对象
  * @category 实体 (Entity)
@@ -62,12 +67,7 @@ export class Bot {
     private readonly [ctx]: BotContext;
     private readonly [identityService] = new BotIdentityService(this);
     private readonly events = new EventEmitter();
-    private readonly log = new EventEmitter() as TypedEventEmitter<{
-        trace: (moduleName: string, message: string) => void;
-        info: (moduleName: string, message: string) => void;
-        warning: (moduleName: string, message: string, error?: unknown) => void;
-        fatal: (moduleName: string, message: string, error?: unknown) => void;
-    }>;
+    private readonly log = new EventEmitter() as TypedEventEmitter<LogListener>;
     private readonly friendCache = new BotCacheService<number, BotFriend>(
         this,
         async (bot) => {
@@ -418,6 +418,10 @@ export class Bot {
      * @param uinOrUid 用户的 uin 或 uid
      * @param keys 需要获取的字段
      * @returns 用户信息
+     * @example
+     * const userInfo = await bot.getUserInfo(10001, [BotFetchUserInfoKey.Nickname]);
+     * // type of userInfo: { uin: number; nickname?: string; }
+     * // returns { uin: 10001, nickname: 'Pony' }
      */
     async getUserInfo<const K extends BotFetchUserInfoKey[] = []>(uinOrUid: number | string, keys?: K) {
         const userInfo = await this[ctx].call(
@@ -427,7 +431,7 @@ export class Bot {
                 BotFetchUserInfoKey.Nickname, // at least one key is required
             ]
         );
-        return userInfo as Pick<FetchUserInfoGeneralReturn, 'uin' | EnumToStringKey[K[number]]>;
+        return userInfo as FetchUserInfoReturnOf<K>;
     }
 
     /**
@@ -514,15 +518,21 @@ export class Bot {
      * @param listener 日志监听器。
      * 对于 trace / info 级别，参数为 `(moduleName: string, message: string) => void` 的函数；
      * 对于 warning / fatal 级别，参数为 `(moduleName: string, message: string, error?: unknown) => void` 的函数
+     * @returns 传入的 listener 参数，方便后续调用 {@link offLog} 取消监听
      */
-    onLog = this.log.on.bind(this.log);
+    onLog<E extends LogLevel>(level: E, listener: LogListener[E]) {
+        this.log.on(level, listener);
+        return listener;
+    }
 
     /**
      * 取消监听日志。
      * @param level 日志级别，分为 trace、info、warning 和 fatal
      * @param listener 日志监听器，需要和 {@link onLog} 时的 listener 一致
      */
-    offLog = this.log.off.bind(this.log);
+    offLog<E extends LogLevel>(level: E, listener: LogListener[E]) {
+        this.log.off(level, listener);
+    }
     //#endregion
 
     //#region Factory

@@ -6,6 +6,7 @@ import { BotEvent } from '@/event/base';
  * @category 事件 (Event)
  */
 export class BotQrCodeStateQueryEvent extends BotEvent {
+    /** @hidden */
     constructor(
         /**
          * 发生状态的二维码链接

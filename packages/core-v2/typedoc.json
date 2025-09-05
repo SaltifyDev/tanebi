@@ -4,13 +4,18 @@
     "entryPoints": [
         "./src/index.ts"
     ],
+    "sort": [
+        "kind",
+        "instance-first",
+        "source-order"
+    ],
     "defaultCategory": "其他",
     "categoryOrder": [
+        "Bot",
         "实体 (Entity)",
         "事件 (Event)",
         "接收消息段 (IncomingSegment)",
-        "*",
-        "其他"
+        "*"
     ],
     "navigation": {
         "includeCategories": true

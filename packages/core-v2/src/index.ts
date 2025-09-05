@@ -60,7 +60,7 @@ export type LogListener = {
 
 /**
  * Bot 对象
- * @category 实体 (Entity)
+ * @category Bot
  */
 export class Bot {
     //#region Internal Field

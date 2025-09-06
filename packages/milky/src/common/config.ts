@@ -52,7 +52,7 @@ export const exampleConfig: Config = {
             level: 'info',
         },
     },
-    signApiUrl: 'https://sign.lagrangecore.org/api/sign/30366',
+    signApiUrl: 'https://sign.lagrangecore.org/api/sign/39038',
     reportSelfMessage: true,
     enableNtSilk: (process.platform === 'win32' || process.platform === 'linux')
         && process.arch === 'x64',

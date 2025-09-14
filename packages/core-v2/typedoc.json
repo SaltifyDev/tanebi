@@ -17,7 +17,12 @@
         "接收消息段 (IncomingSegment)",
         "*"
     ],
+    "readme": "none",
     "navigation": {
         "includeCategories": true
-    }
+    },
+    "navigationLinks": {
+        "返回主站": "/"
+    },
+    "customFooterHtml": "Copyright © <b>SaltifyDev</b> <script>document.write(new Date().getFullYear())</script>, Licensed under GPL-3.0"
 }

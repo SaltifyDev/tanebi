@@ -12,6 +12,7 @@ export const FetchFriendsOperation = defineOperation(
     (ctx, nextUin?: number, friendCount?: number) =>
         FetchFriends.encode({
             friendCount: friendCount ?? 300,
+            field6: 1,
             queried: [
                 {
                     type: 1,

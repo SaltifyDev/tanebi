@@ -340,7 +340,7 @@ export class Bot {
      * @param forceUpdate 是否强制更新缓存
      * @returns 全部好友的迭代器
      */
-    async getFriends(forceUpdate: boolean = false): Promise<Iterator<BotFriend>> {
+    async getFriends(forceUpdate: boolean = false): Promise<MapIterator<BotFriend>> {
         return this.friendCache.getAll(forceUpdate);
     }
 
@@ -368,7 +368,7 @@ export class Bot {
      * @param forceUpdate 是否强制更新缓存
      * @returns 全部群聊的迭代器
      */
-    async getGroups(forceUpdate: boolean = false): Promise<Iterator<BotGroup>> {
+    async getGroups(forceUpdate: boolean = false): Promise<MapIterator<BotGroup>> {
         return this.groupCache.getAll(forceUpdate);
     }
 
@@ -391,7 +391,7 @@ export class Bot {
     async getGroupMembers(
         groupUin: number,
         forceUpdateMembers: boolean = false
-    ): Promise<Iterator<BotGroupMember> | undefined> {
+    ): Promise<MapIterator<BotGroupMember> | undefined> {
         const group = await this.getGroup(groupUin);
         if (!group) return undefined;
         return group.getMembers(forceUpdateMembers);

@@ -111,7 +111,7 @@ export class BotGroup extends BotEntity<BotGroupDataBinding> implements BotGroup
      * @param forceUpdate 是否强制更新缓存
      * @returns 全部群聊成员的迭代器
      */
-    async getMembers(forceUpdate: boolean = false): Promise<Iterator<BotGroupMember>> {
+    async getMembers(forceUpdate: boolean = false): Promise<MapIterator<BotGroupMember>> {
         return this.memberCache.getAll(forceUpdate);
     }
 

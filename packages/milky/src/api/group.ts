@@ -214,7 +214,7 @@ export const RejectGroupRequest = defineApi(
             BigInt(payload.notification_seq),
             payload.is_filtered,
             GroupRequestOperation.Reject,
-            payload.reason,
+            payload.reason ?? undefined,
         );
         return Ok({});
     },

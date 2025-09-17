@@ -32,7 +32,7 @@ export async function transformOutgoingFriendMessage(
             b.reply(replied);
         } else if (segment.type === 'image') {
             const image = await resolveMilkyUri(segment.data.uri);
-            b.image(image, transformMilkyImageSubType(segment.data.sub_type), segment.data.summary);
+            b.image(image, transformMilkyImageSubType(segment.data.sub_type), segment.data.summary ?? undefined);
         } else if (segment.type === 'record') {
             const record = await resolveMilkyUri(segment.data.uri);
             if (app.ntSilkBinding) {
@@ -74,7 +74,7 @@ export async function transformOutgoingGroupMessage(
             b.reply(replied);
         } else if (segment.type === 'image') {
             const image = await resolveMilkyUri(segment.data.uri);
-            b.image(image, transformMilkyImageSubType(segment.data.sub_type), segment.data.summary);
+            b.image(image, transformMilkyImageSubType(segment.data.sub_type), segment.data.summary ?? undefined);
         } else if (segment.type === 'record') {
             const record = await resolveMilkyUri(segment.data.uri);
             if (app.ntSilkBinding) {
@@ -116,7 +116,7 @@ export async function transformOutgoingForwardSegments(
             b.face(segment.data.face_id);
         } else if (segment.type === 'image') {
             const image = await resolveMilkyUri(segment.data.uri);
-            b.image(image, transformMilkyImageSubType(segment.data.sub_type), segment.data.summary);
+            b.image(image, transformMilkyImageSubType(segment.data.sub_type), segment.data.summary ?? undefined);
         } else if (segment.type === 'forward') {
             b.forward(async (p) => {
                 await transformOutgoingForwardMessages(app, p, segment.data.messages as OutgoingForwardedMessage[]);

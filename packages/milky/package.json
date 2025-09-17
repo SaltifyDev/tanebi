@@ -27,7 +27,7 @@
   "devDependencies": {
     "@hono/node-server": "^1.19.1",
     "@hono/node-ws": "^1.2.0",
-    "@saltify/milky-types": "^1.0.0-draft.11",
+    "@saltify/milky-types": "^1.0.0-draft.16",
     "chalk": "^5.6.0",
     "hono": "^4.9.5",
     "music-metadata": "^11.8.3",

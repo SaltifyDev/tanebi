@@ -16,6 +16,7 @@ import {
     IncomingLightApp,
 } from '@/message/incoming/segment';
 import { PushMsgType } from '@/internal/packet/message/PushMsg';
+import { IncomingGroupFile } from '@/message/incoming/segment/IncomingGroupFile';
 
 type TCommonMessage = InferProtoModel<typeof CommonMessage.fields>;
 
@@ -33,6 +34,7 @@ const SegmentClasses = [
     IncomingImage,
     IncomingRecord,
     IncomingVideo,
+    IncomingGroupFile,
     IncomingForward,
     IncomingLightApp,
 ] satisfies readonly IncomingSegmentClass<{ toPreviewString(): string }>[];
@@ -45,6 +47,7 @@ const SegmentClasses = [
  * - {@link IncomingImage} 图片消息段
  * - {@link IncomingRecord} 语音消息段
  * - {@link IncomingVideo} 视频消息段
+ * - {@link IncomingGroupFile} 群文件消息段
  * - {@link IncomingForward} 合并转发消息段
  * - {@link IncomingLightApp} 卡片消息段
  */
@@ -55,6 +58,7 @@ export type IncomingSegment =
     | IncomingImage
     | IncomingRecord
     | IncomingVideo
+    | IncomingGroupFile
     | IncomingForward
     | IncomingLightApp;
 

@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import { Bot, fetchAppInfoFromSignUrl, newDeviceInfo, newKeystore, UrlSignProvider, serializeDeviceInfo, ctx, serializeKeystore } from 'tanebi';
 
-const signUrl = 'http://106.54.14.24:8084/api/sign/30366';
+const signUrl = 'http://106.54.14.24:8084/api/sign/39038';
 
 const bot = await Bot.create(
     await fetchAppInfoFromSignUrl(signUrl),

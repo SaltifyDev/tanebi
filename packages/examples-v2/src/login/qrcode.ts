@@ -12,7 +12,7 @@ import {
     BotKeystoreChangeEvent,
 } from '@saltify/tanebi';
 
-const signUrl = 'https://sign.lagrangecore.org/api/sign/30366';
+const signUrl = 'https://sign.lagrangecore.org/api/sign/39038';
 
 const bot = await Bot.create(
     await fetchAppInfoFromSignUrl(signUrl),

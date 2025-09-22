@@ -13,7 +13,7 @@ if (!fs.existsSync('temp/deviceInfo.json') || !fs.existsSync('temp/keystore.json
     process.exit(1);
 }
 
-const signUrl = 'http://106.54.14.24:8084/api/sign/30366';
+const signUrl = 'http://106.54.14.24:8084/api/sign/39038';
 
 const bot = await Bot.create(
     await fetchAppInfoFromSignUrl(signUrl),

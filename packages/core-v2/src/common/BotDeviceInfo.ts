@@ -1,38 +1,17 @@
-import { BufferSerialized, serializeBuffer, deserializeBuffer } from '@/util/serialize';
+import { zBuffer } from '@/util/serialize';
 import { randomBytes } from 'node:crypto';
+import z from 'zod';
 
-/**
- * 登录 QQ 所需的设备信息
- */
-export interface BotDeviceInfo {
-    /**
-     * 设备的 GUID
-     * @example Buffer.from('f47ac10b58cc4372a5670e02b2c3d479', 'hex')
-     */
-    guid: Buffer;
+export const zBotDeviceInfo = z.object({
+    guid: zBuffer,
+    macAddress: zBuffer,
+    deviceName: z.string(),
+    systemKernel: z.string(),
+    kernelVersion: z.string(),
+});
 
-    /**
-     * 6 字节的 MAC 地址
-     * @example Buffer.from([0x00, 0x1a, 0x2b, 0x3c, 0x4d, 0x5e])
-     */
-    macAddress: Buffer;
-
-    /**
-     * 设备名称
-     * @example 'Lagrange-0ABCDE'
-     */
-    deviceName: string;
-
-    /**
-     * @example 'Windows 10.0.19042'
-     */
-    systemKernel: string;
-
-    /**
-     * @example '10.0.19042.0'
-     */
-    kernelVersion: string;
-}
+export type BotDeviceInfo = z.infer<typeof zBotDeviceInfo>;
+export type BotDeviceInfoSerialized = z.input<typeof zBotDeviceInfo>;
 
 /**
  * 生成新的设备信息
@@ -48,30 +27,10 @@ export function newDeviceInfo(): BotDeviceInfo {
     };
 }
 
-export interface DeviceInfoSerialized {
-    guid: BufferSerialized;
-    macAddress: BufferSerialized;
-    deviceName: string;
-    systemKernel: string;
-    kernelVersion: string;
+export function serializeDeviceInfo(data: BotDeviceInfo): BotDeviceInfoSerialized {
+    return zBotDeviceInfo.encode(data);
 }
 
-export function serializeDeviceInfo(data: BotDeviceInfo): DeviceInfoSerialized {
-    return {
-        guid: serializeBuffer(data.guid)!,
-        macAddress: serializeBuffer(data.macAddress)!,
-        deviceName: data.deviceName,
-        systemKernel: data.systemKernel,
-        kernelVersion: data.kernelVersion,
-    };
-}
-
-export function deserializeDeviceInfo(data: DeviceInfoSerialized): BotDeviceInfo {
-    return {
-        guid: deserializeBuffer(data.guid)!,
-        macAddress: deserializeBuffer(data.macAddress)!,
-        deviceName: data.deviceName,
-        systemKernel: data.systemKernel,
-        kernelVersion: data.kernelVersion,
-    };
+export function deserializeDeviceInfo(data: BotDeviceInfoSerialized): BotDeviceInfo {
+    return zBotDeviceInfo.decode(data);
 }

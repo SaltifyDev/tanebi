@@ -1,22 +1,11 @@
-export type BufferSerialized = string;
-export type DateSerialized = string;
+import z from 'zod';
 
-export function serializeBuffer(data?: Buffer) {
-    return data ? data.toString('hex') : undefined;
-}
+export const zBuffer = z.codec(z.string().regex(/^[0-9a-fA-F]*$/), z.instanceof(Buffer), {
+    decode: (hexString) => Buffer.from(hexString, 'hex'),
+    encode: (buffer) => buffer.toString('hex'),
+});
 
-export function deserializeBuffer(data?: BufferSerialized) {
-    return data ? Buffer.from(data, 'hex') : undefined;
-}
-
-export function serializeDate(data: Date): DateSerialized;
-export function serializeDate(data: Date | undefined): DateSerialized | undefined;
-export function serializeDate(data?: Date) {
-    return data ? data.toISOString() : undefined;
-}
-
-export function deserializeDate(data: DateSerialized): Date;
-export function deserializeDate(data: DateSerialized | undefined): Date | undefined;
-export function deserializeDate(data?: DateSerialized) {
-    return data ? new Date(data) : undefined;
-}
+export const zIsoDateTime = z.codec(z.iso.datetime(), z.date(), {
+    decode: (isoString) => new Date(isoString),
+    encode: (date) => date.toISOString(),
+});

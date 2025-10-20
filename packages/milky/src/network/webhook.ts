@@ -19,7 +19,7 @@ export class MilkyWebhookHandler {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ msg }),
+                    body: msg,
                 });
             } catch (e) {
                 this.logger.warn(`Failed to send message to ${url}: ${e instanceof Error ? e.stack : e}`);

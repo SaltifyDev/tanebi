@@ -1,3 +1,13 @@
+## Out of Development & Looking for Maintainers
+
+由于作者启动了另一基于 Kotlin 的 NTQQ 协议实现项目——[Acidify](https://github.com/LagrangeDev/acidify)，tanebi 项目将不再维护，V2 的重构也一并暂停。
+
+Acidify 目前已经支持所有 tanebi 已实现的功能，并且在 npm 上也发布了对应的包 [`@acidify/core`](https://www.npmjs.com/package/@acidify/core)，可以直接基于该包使用 TypeScript 进行开发。此外，Acidify 的项目仓库也包含了一个完整的 Milky 协议实现——Yogurt，可以通过 [Releases 页面](https://github.com/LagrangeDev/acidify/releases) 下载对应平台的可执行文件，同时也以 [`@acidify/milky`](https://www.npmjs.com/package/@acidify/milky) 的形式发布在 npm 上。
+
+如果你有兴趣继续维护 tanebi 项目**并且进行 V2 重构**，欢迎通过 Issues、邮件等方式联系作者。
+
+---
+
 ![banner](https://socialify.git.ci/SaltifyDev/tanebi/image?custom_description=PC+NTQQ+%E5%8D%8F%E8%AE%AE%E7%9A%84+TypeScript+%E5%AE%9E%E7%8E%B0&description=1&font=Bitter&forks=1&issues=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F208890061%3Fs%3D400%26u%3D49580f4a3a7837cdd8d43a532d0789b2488a2ffb%26v%3D4&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Light)
 
 ## Packages

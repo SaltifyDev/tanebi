@@ -13,5 +13,8 @@
   "devDependencies": {
     "@types/node": "^24.12.2",
     "tanebi": "workspace:*"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

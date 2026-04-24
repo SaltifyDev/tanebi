@@ -3,12 +3,17 @@ import type { IncomingSsoPacket, OutgoingSsoPacket, PacketClient } from 'tanebi'
 import type {
   PMHQCallPayload,
   PMHQCallResponse,
-  PMHQClientOptions,
   PMHQRecvResponse,
   PMHQResponse,
   PMHQSelfInfo,
   PMHQSendPayload,
 } from './types';
+
+export interface PMHQClientOptions {
+  url: string;
+  httpUrl: string;
+  timeout: number;
+}
 
 interface PendingRequest<TResult> {
   resolve: (value: TResult) => void;
@@ -29,10 +34,10 @@ export class PMHQClient implements PacketClient {
   private readonly pending = new Map<string, PendingRequest<PMHQResponse>>();
   private readonly pushHandlers = new Set<(packet: IncomingSsoPacket) => void>();
 
-  constructor(options: PMHQClientOptions = {}) {
-    this.url = options.url ?? defaultUrl;
-    this.httpUrl = options.httpUrl ?? defaultHttpUrl;
-    this.timeout = options.timeout ?? defaultTimeout;
+  constructor(options?: Partial<PMHQClientOptions>) {
+    this.url = options?.url ?? defaultUrl;
+    this.httpUrl = options?.httpUrl ?? defaultHttpUrl;
+    this.timeout = options?.timeout ?? defaultTimeout;
   }
 
   async send(packet: OutgoingSsoPacket): Promise<IncomingSsoPacket> {

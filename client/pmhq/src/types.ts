@@ -1,9 +1,3 @@
-export interface PMHQClientOptions {
-  url?: string;
-  httpUrl?: string;
-  timeout?: number;
-}
-
 export interface PMHQSelfInfo {
   uin: string;
   uid: string;

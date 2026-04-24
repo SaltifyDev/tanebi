@@ -36,6 +36,19 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  client/tcp:
+    dependencies:
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      '@types/node':
+        specifier: ^24.12.2
+        version: 24.12.2
+      tanebi:
+        specifier: workspace:*
+        version: link:../../core
+
   core:
     dependencies:
       '@saltify/typeproto':

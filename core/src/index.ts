@@ -8,7 +8,6 @@ import {
   type PacketClient,
   type Service,
   ServiceError,
-  type SessionStore,
 } from './common';
 import { BotEntityHolder, BotFriend, type BotFriendData } from './entity';
 import { FetchFriendData } from './internal/service/system';
@@ -25,7 +24,6 @@ export class Bot {
 
   constructor(
     readonly appinfo: AppInfo,
-    readonly session: SessionStore,
     readonly client: PacketClient,
   ) {
     this.packetSeq = randomInt(10000, 100000);

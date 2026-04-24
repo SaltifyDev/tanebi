@@ -1,0 +1,20 @@
+{
+  "name": "@saltify/tanebi-client-tcp",
+  "type": "module",
+  "description": "TCP Socket Client for Tanebi",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.mjs",
+    "typings": "dist/index.mts"
+  },
+  "author": "SaltifyDev",
+  "license": "GPL-3.0-only",
+  "dependencies": {
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.2",
+    "tanebi": "workspace:*"
+  }
+}

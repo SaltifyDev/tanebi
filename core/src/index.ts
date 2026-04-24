@@ -14,7 +14,7 @@ import { FetchFriendData } from './internal/service/system';
 
 import { randomInt } from 'node:crypto';
 
-export class Bot {
+export class Bot<C extends PacketClient = PacketClient> {
   private packetSeq: number;
 
   private friendHolder;
@@ -24,7 +24,7 @@ export class Bot {
 
   constructor(
     readonly appinfo: AppInfo,
-    readonly client: PacketClient,
+    readonly client: C,
   ) {
     this.packetSeq = randomInt(10000, 100000);
 
@@ -64,7 +64,7 @@ export class Bot {
   }
 
   /** @hidden */
-  async callService<T extends Array<unknown>, R>(service: Service<T, R>, ...args: T): Promise<R> {
+  async callService<T extends Array<unknown>, R>(service: Service<T, R, C>, ...args: T): Promise<R> {
     const seq = this.packetSeq++;
     this.logger.debug(`Call ${service.command} with seq=${seq}`);
     const payload = service.build(this, ...args);

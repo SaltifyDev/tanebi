@@ -1,56 +1,14 @@
 import type { IncomingSsoPacket, OutgoingSsoPacket, PacketClient } from 'tanebi';
 
-export interface PMHQClientOptions {
-  url?: string;
-  httpUrl?: string;
-  timeout?: number;
-}
-
-export interface PMHQSelfInfo {
-  uin: string;
-  uid: string;
-}
-
-interface PMHQSendPayload {
-  type: 'send';
-  data: {
-    echo?: string;
-    cmd: string;
-    pb: string;
-  };
-}
-
-interface PMHQCallPayload<TArgs extends unknown[]> {
-  type: 'call';
-  data: {
-    echo?: string;
-    func: string;
-    args: TArgs;
-  };
-}
-
-interface PMHQRecvResponse {
-  type: 'recv';
-  data?: {
-    echo?: string;
-    cmd?: string;
-    pb?: string;
-  };
-  code?: number;
-  message?: string;
-}
-
-interface PMHQCallResponse<TResult> {
-  type: 'call';
-  data?: {
-    echo?: string;
-    result?: TResult;
-  };
-  code?: number;
-  message?: string;
-}
-
-type PMHQResponse = PMHQRecvResponse | PMHQCallResponse<unknown>;
+import type {
+  PMHQCallPayload,
+  PMHQCallResponse,
+  PMHQClientOptions,
+  PMHQRecvResponse,
+  PMHQResponse,
+  PMHQSelfInfo,
+  PMHQSendPayload,
+} from './types';
 
 interface PendingRequest<TResult> {
   resolve: (value: TResult) => void;
@@ -64,17 +22,11 @@ const defaultTimeout = 10_000;
 
 export class PMHQClient implements PacketClient {
   readonly url: string;
-
   readonly httpUrl: string;
-
   readonly timeout: number;
-
   private ws?: WebSocket;
-
   private connecting?: Promise<WebSocket>;
-
   private readonly pending = new Map<string, PendingRequest<PMHQResponse>>();
-
   private readonly pushHandlers = new Set<(packet: IncomingSsoPacket) => void>();
 
   constructor(options: PMHQClientOptions = {}) {
@@ -324,3 +276,5 @@ export class PMHQClient implements PacketClient {
     this.pending.clear();
   }
 }
+
+export * from './types';

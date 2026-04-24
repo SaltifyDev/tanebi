@@ -1,0 +1,17 @@
+{
+  "name": "@saltify/tanebi-client-pmhq",
+  "type": "module",
+  "description": "PMHQ Client for Tanebi",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.mjs",
+    "typings": "dist/index.mts"
+  },
+  "author": "SaltifyDev",
+  "license": "GPL-3.0-only",
+  "devDependencies": {
+    "@types/node": "^24.12.2",
+    "tanebi": "workspace:*"
+  }
+}

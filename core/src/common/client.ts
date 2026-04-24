@@ -30,7 +30,14 @@ export interface IncomingSsoPacket {
   extra: string;
 }
 
+export interface SelfInfo {
+  uin: string;
+  uid: string;
+}
+
 export interface PacketClient {
   send(packet: OutgoingSsoPacket): Promise<IncomingSsoPacket>;
   onPush(handler: (packet: IncomingSsoPacket) => void): void;
+  offPush(handler: (packet: IncomingSsoPacket) => void): void;
+  getSelfInfo(): Promise<SelfInfo>;
 }

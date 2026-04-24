@@ -1,4 +1,4 @@
-import type { IncomingSsoPacket, OutgoingSsoPacket, PacketClient } from 'tanebi';
+import type { IncomingSsoPacket, OutgoingSsoPacket, PacketClient, SelfInfo } from 'tanebi';
 
 import type {
   PMHQCallPayload,
@@ -40,6 +40,7 @@ export class PMHQClient implements PacketClient {
     this.timeout = options?.timeout ?? defaultTimeout;
   }
 
+  //#region implementation
   async send(packet: OutgoingSsoPacket): Promise<IncomingSsoPacket> {
     const echo = String(packet.sequence);
     const response = await this.request<PMHQRecvResponse>(echo, {
@@ -61,6 +62,12 @@ export class PMHQClient implements PacketClient {
   offPush(handler: (packet: IncomingSsoPacket) => void): void {
     this.pushHandlers.delete(handler);
   }
+
+  async getSelfInfo(): Promise<SelfInfo> {
+    const { uin, uid } = await this.call<[], PMHQSelfInfo>('getSelfInfo', []);
+    return { uin, uid };
+  }
+  //#endregion
 
   async sendHttp(packet: OutgoingSsoPacket): Promise<IncomingSsoPacket> {
     const response = await this.post<PMHQRecvResponse>({
@@ -90,10 +97,6 @@ export class PMHQClient implements PacketClient {
     }
 
     return response.data?.result as TResult;
-  }
-
-  getSelfInfo(): Promise<PMHQSelfInfo> {
-    return this.call<[], PMHQSelfInfo>('getSelfInfo', []);
   }
 
   close(): void {

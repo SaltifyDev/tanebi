@@ -1,0 +1,15 @@
+{
+	"private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "packageManager": "pnpm@10.33.1",
+  "devDependencies": {
+    "@biomejs/biome": "2.4.12",
+    "@types/node": "^24.12.2",
+    "globals": "^17.5.0",
+    "tsdown": "^0.21.9",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}

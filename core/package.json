@@ -1,0 +1,29 @@
+{
+  "name": "tanebi",
+  "type": "module",
+  "description": "NTQQ Protocol Implementation in TypeScript",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.mjs",
+    "typings": "dist/index.mts"
+  },
+  "keywords": [
+    "qq",
+    "oicq"
+  ],
+  "author": "SaltifyDev",
+  "license": "GPL-3.0-only",
+  "packageManager": "pnpm@10.33.0",
+  "dependencies": {
+    "@saltify/typeproto": "^0.4.0",
+    "async-mutex": "^0.5.0",
+    "mitt": "^3.0.1",
+    "smart-arraybuffer": "^1.0.0",
+    "ts-pattern": "^5.9.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.2"
+  }
+}

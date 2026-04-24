@@ -1,0 +1,7 @@
+node_modules/
+
+### IntelliJ IDEA ###
+.idea/
+
+### Mac OS ###
+.DS_Store

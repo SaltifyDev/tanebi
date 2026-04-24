@@ -1,0 +1,17 @@
+{
+  "Os": "Linux",
+  "Kernel": "Linux",
+  "VendorOs": "linux",
+  "CurrentVersion": "3.2.26-46494",
+  "MiscBitmap": 32764,
+  "PtVersion": "2.0.0",
+  "SsoVersion": 19,
+  "PackageName": "com.tencent.qq",
+  "WtLoginSdk": "nt.wtlogin.0.0.1",
+  "AppId": 1600001615,
+  "SubAppId": 537345891,
+  "AppClientVersion": 46494,
+  "MainSigMap": 169742560,
+  "SubSigMap": 0,
+  "NTLoginType": 1
+}

@@ -1,9 +1,9 @@
 import { BotUserInfoKey, defineOidbService } from '../../common';
 import type { BotFriendData, BotGroupData, BotGroupMemberData } from '../../entity';
-import { IncPullRequest, IncPullResponse } from '../packet/oidb/0xfd4';
-import { FetchUserInfoByUidRequest, FetchUserInfoResponse } from '../packet/oidb/0xfe1';
-import { FetchGroupDataRequest, FetchGroupDataResponse } from '../packet/oidb/0xfe5';
-import { FetchGroupMemberDataRequest, FetchGroupMemberDataResponse } from '../packet/oidb/0xfe7';
+import { IncPullRequest, IncPullResponse } from '../proto/oidb/0xfd4';
+import { FetchUserInfoByUidRequest, FetchUserInfoResponse } from '../proto/oidb/0xfe1';
+import { FetchGroupDataRequest, FetchGroupDataResponse } from '../proto/oidb/0xfe5';
+import { FetchGroupMemberDataRequest, FetchGroupMemberDataResponse } from '../proto/oidb/0xfe7';
 
 export const FetchFriendData = defineOidbService({
   command: 0xfd4,

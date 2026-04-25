@@ -1,5 +1,6 @@
+import { ProtoField, ProtoMessage } from '@saltify/typeproto';
+
 import { type Bot, OidbError, type PacketClient, type SsoPacketOverrides } from '..';
-import { OidbBase } from '../internal/packet/oidb/base';
 
 export interface Service<T extends Array<unknown>, R, C extends PacketClient> {
   command: string;
@@ -22,6 +23,15 @@ export interface OidbServiceInit<T extends Array<unknown>, R, C extends PacketCl
   reserved?: number;
   overrides?: Partial<SsoPacketOverrides>;
 }
+
+const OidbBase = ProtoMessage.of({
+  command: ProtoField(1, 'uint32'),
+  service: ProtoField(2, 'uint32'),
+  result: ProtoField(3, 'uint32'),
+  body: ProtoField(4, 'bytes'),
+  message: ProtoField(5, 'string'),
+  reserved: ProtoField(12, 'int32'),
+});
 
 export function defineOidbService<T extends Array<unknown>, R = undefined, C extends PacketClient = PacketClient>(
   init: OidbServiceInit<T, R, C>,

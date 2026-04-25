@@ -1,14 +1,14 @@
 import { defineOidbService } from '../../common';
-import { KickMemberRequest } from '../packet/oidb/0x8a0';
-import { SetMemberProfileRequest } from '../packet/oidb/0x8fc';
-import { FetchGroupNotificationsRequest, FetchGroupNotificationsResponse } from '../packet/oidb/0x10c0';
-import { SetGroupRequestRequest } from '../packet/oidb/0x10c8';
-import { SetGroupNameRequest, SetGroupWholeMuteRequest } from '../packet/oidb/0x89a';
-import { SetMemberAdminRequest } from '../packet/oidb/0x1096';
-import { QuitGroupRequest } from '../packet/oidb/0x1097';
-import { SetMemberMuteRequest } from '../packet/oidb/0x1253';
-import { SetGroupMessageReactionRequest } from '../packet/oidb/0x9082';
-import { SendNudgeRequest } from '../packet/oidb/0xed3';
+import { KickMemberRequest } from '../proto/oidb/0x8a0';
+import { SetMemberProfileRequest } from '../proto/oidb/0x8fc';
+import { FetchGroupNotificationsRequest, FetchGroupNotificationsResponse } from '../proto/oidb/0x10c0';
+import { SetGroupRequestRequest } from '../proto/oidb/0x10c8';
+import { SetGroupNameRequest, SetGroupWholeMuteRequest } from '../proto/oidb/0x89a';
+import { SetMemberAdminRequest } from '../proto/oidb/0x1096';
+import { QuitGroupRequest } from '../proto/oidb/0x1097';
+import { SetMemberMuteRequest } from '../proto/oidb/0x1253';
+import { SetGroupMessageReactionRequest } from '../proto/oidb/0x9082';
+import { SendNudgeRequest } from '../proto/oidb/0xed3';
 
 export const SetGroupName = defineOidbService({
   command: 0x89a,

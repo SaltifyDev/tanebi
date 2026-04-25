@@ -1,10 +1,10 @@
 import { defineOidbService } from '../../common';
-import { FetchFriendRequestsRequest, FetchFriendRequestsResponse } from '../packet/oidb/0x5cf';
-import { ProfileLikeRequest } from '../packet/oidb/0x7e5';
-import { DeleteFriendRequest } from '../packet/oidb/0x126b';
-import { SetFriendRequestRequest } from '../packet/oidb/0xb5d';
-import { FetchFilteredFriendRequestsRequest, FetchFilteredFriendRequestsResponse } from '../packet/oidb/0xd69';
-import { SetFilteredFriendRequestRequest } from '../packet/oidb/0xd72';
+import { FetchFriendRequestsRequest, FetchFriendRequestsResponse } from '../proto/oidb/0x5cf';
+import { ProfileLikeRequest } from '../proto/oidb/0x7e5';
+import { DeleteFriendRequest } from '../proto/oidb/0x126b';
+import { SetFriendRequestRequest } from '../proto/oidb/0xb5d';
+import { FetchFilteredFriendRequestsRequest, FetchFilteredFriendRequestsResponse } from '../proto/oidb/0xd69';
+import { SetFilteredFriendRequestRequest } from '../proto/oidb/0xd72';
 
 export const SendProfileLike = defineOidbService({
   command: 0x7e5,

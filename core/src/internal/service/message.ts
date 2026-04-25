@@ -1,5 +1,5 @@
 import { defineOidbService } from '../../common';
-import { SendNudgeRequest } from '../packet/oidb/0xed3';
+import { SendNudgeRequest } from '../proto/oidb/0xed3';
 
 export const SendFriendNudge = defineOidbService({
   command: 0xed3,

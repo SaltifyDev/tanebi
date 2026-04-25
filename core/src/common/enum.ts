@@ -26,3 +26,10 @@ export enum BotGroupMemberRole {
   Owner = 1,
   Admin = 2,
 }
+
+export enum RequestState {
+  Default = 0,
+  Pending = 1,
+  Accepted = 2,
+  Rejected = 3,
+}

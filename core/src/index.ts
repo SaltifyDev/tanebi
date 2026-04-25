@@ -7,6 +7,7 @@ import {
   type LogEmitter,
   type LogMessage,
   type PacketClient,
+  RequestState,
   type Service,
   ServiceError,
 } from './common';
@@ -14,12 +15,41 @@ import {
   BotEntityHolder,
   BotFriend,
   type BotFriendData,
+  type BotFriendRequest,
   BotGroup,
   type BotGroupData,
   type BotGroupMember,
   type BotGroupMemberData,
+  type BotGroupNotification,
 } from './entity';
+import {
+  DeleteFriend,
+  FetchFilteredFriendRequests,
+  FetchNormalFriendRequests,
+  SendProfileLike,
+  SetFilteredFriendRequest,
+  SetNormalFriendRequest,
+} from './internal/service/friend';
+import {
+  FetchGroupNotificationsFiltered,
+  FetchGroupNotificationsNormal,
+  KickMember,
+  QuitGroup,
+  SendGroupNudge,
+  SetGroupMessageReactionAdd,
+  SetGroupMessageReactionRemove,
+  SetGroupName,
+  SetGroupRequestFiltered,
+  SetGroupRequestNormal,
+  SetGroupWholeMute,
+  SetMemberAdmin,
+  SetMemberCard,
+  SetMemberMute,
+  SetMemberTitle,
+} from './internal/service/group';
+import { SendFriendNudge } from './internal/service/message';
 import { FetchFriendData, FetchGroupData, FetchGroupMemberData, FetchUserInfoByUid } from './internal/service/system';
+import { parseGroupNotification } from './internal/transform/notification';
 
 import { randomInt } from 'node:crypto';
 
@@ -165,6 +195,181 @@ export class Bot<C extends PacketClient = PacketClient> {
 
   getCachedUidByUin(uin: number): string | undefined {
     return this.uin2uidMap.get(uin);
+  }
+
+  async sendFriendNudge(friendUin: number, isSelf = false): Promise<void> {
+    const selfUin = Number((await this.client.getSelfInfo()).uin);
+    await this.callService(SendFriendNudge, friendUin, isSelf ? selfUin : friendUin);
+  }
+
+  async sendProfileLike(friendUin: number, count = 1): Promise<void> {
+    await this.callService(SendProfileLike, await this.getUidByUin(friendUin), count);
+  }
+
+  async deleteFriend(friendUin: number, block = false): Promise<void> {
+    await this.callService(DeleteFriend, await this.getUidByUin(friendUin), block);
+  }
+
+  async getFriendRequests(isFiltered = false, limit = 20): Promise<BotFriendRequest[]> {
+    const selfInfo = await this.client.getSelfInfo();
+    if (isFiltered) {
+      const requests = await this.callService(FetchFilteredFriendRequests, limit);
+      const parsed: Array<BotFriendRequest | undefined> = await Promise.all(
+        requests.map(async (request) => {
+          try {
+            return {
+              time: request.timestamp,
+              initiatorUin: await this.getUinByUid(request.sourceUid),
+              initiatorUid: request.sourceUid,
+              targetUserUin: Number(selfInfo.uin),
+              targetUserUid: selfInfo.uid,
+              state: RequestState.Pending,
+              comment: request.comment,
+              via: request.source,
+              isFiltered: true,
+            };
+          } catch {
+            return undefined;
+          }
+        }),
+      );
+      return parsed.filter((request) => request !== undefined);
+    }
+
+    const requests = await this.callService(FetchNormalFriendRequests, selfInfo.uid, limit);
+    const parsed: Array<BotFriendRequest | undefined> = await Promise.all(
+      requests.map(async (request) => {
+        try {
+          return {
+            time: request.timestamp,
+            initiatorUin: await this.getUinByUid(request.sourceUid),
+            initiatorUid: request.sourceUid,
+            targetUserUin: await this.getUinByUid(request.targetUid),
+            targetUserUid: request.targetUid,
+            state: request.state,
+            comment: request.comment,
+            via: request.source,
+            isFiltered: false,
+          };
+        } catch {
+          return undefined;
+        }
+      }),
+    );
+    return parsed.filter((request): request is BotFriendRequest => request !== undefined);
+  }
+
+  async setFriendRequest(initiatorUid: string, accept: boolean, isFiltered = false): Promise<void> {
+    if (isFiltered) {
+      if (accept) {
+        await this.callService(SetFilteredFriendRequest, (await this.client.getSelfInfo()).uid, initiatorUid);
+      }
+      return;
+    }
+
+    await this.callService(SetNormalFriendRequest, initiatorUid, accept);
+  }
+
+  async setGroupName(groupUin: number, groupName: string): Promise<void> {
+    await this.callService(SetGroupName, groupUin, groupName);
+  }
+
+  async setGroupMemberCard(groupUin: number, memberUin: number, card: string): Promise<void> {
+    await this.callService(SetMemberCard, groupUin, await this.getUidByUin(memberUin, groupUin), card);
+  }
+
+  async setGroupMemberSpecialTitle(groupUin: number, memberUin: number, specialTitle: string): Promise<void> {
+    if (Buffer.byteLength(specialTitle) > 18) {
+      throw new Error('Special title cannot exceed 18 bytes');
+    }
+    await this.callService(SetMemberTitle, groupUin, await this.getUidByUin(memberUin, groupUin), specialTitle);
+  }
+
+  async setGroupMemberAdmin(groupUin: number, memberUin: number, isAdmin: boolean): Promise<void> {
+    await this.callService(SetMemberAdmin, groupUin, await this.getUidByUin(memberUin, groupUin), isAdmin);
+  }
+
+  async setGroupMemberMute(groupUin: number, memberUin: number, duration: number): Promise<void> {
+    await this.callService(SetMemberMute, groupUin, await this.getUidByUin(memberUin, groupUin), duration);
+  }
+
+  async setGroupWholeMute(groupUin: number, isMute: boolean): Promise<void> {
+    await this.callService(SetGroupWholeMute, groupUin, isMute);
+  }
+
+  async kickGroupMember(groupUin: number, memberUin: number, rejectAddRequest = false, reason = ''): Promise<void> {
+    await this.callService(KickMember, groupUin, await this.getUidByUin(memberUin, groupUin), rejectAddRequest, reason);
+  }
+
+  async quitGroup(groupUin: number): Promise<void> {
+    await this.callService(QuitGroup, groupUin);
+  }
+
+  async setGroupMessageReaction(
+    groupUin: number,
+    sequence: number,
+    code: string,
+    type = 1,
+    isAdd = true,
+  ): Promise<void> {
+    await this.callService(
+      isAdd ? SetGroupMessageReactionAdd : SetGroupMessageReactionRemove,
+      groupUin,
+      sequence,
+      code,
+      type,
+    );
+  }
+
+  async sendGroupNudge(groupUin: number, targetUin: number): Promise<void> {
+    await this.callService(SendGroupNudge, groupUin, targetUin);
+  }
+
+  async getGroupNotifications(
+    startSequence: number | undefined = undefined,
+    isFiltered = false,
+    count = 20,
+  ): Promise<{ notifications: BotGroupNotification[]; nextSequence?: number }> {
+    const response = await this.callService(
+      isFiltered ? FetchGroupNotificationsFiltered : FetchGroupNotificationsNormal,
+      startSequence ?? 0,
+      count,
+    );
+    const parsed = await Promise.all(
+      response.notifications.map(async (notification) => {
+        try {
+          return await parseGroupNotification.call(this, notification, isFiltered);
+        } catch {
+          return undefined;
+        }
+      }),
+    );
+    return {
+      notifications: parsed.filter((notification) => notification !== undefined),
+      nextSequence: response.nextSequence || undefined,
+    };
+  }
+
+  async setGroupRequest(
+    groupUin: number,
+    sequence: number,
+    eventType: number,
+    accept: boolean,
+    isFiltered = false,
+    reason = '',
+  ): Promise<void> {
+    await this.callService(
+      isFiltered ? SetGroupRequestFiltered : SetGroupRequestNormal,
+      groupUin,
+      sequence,
+      eventType,
+      accept ? 1 : 2,
+      reason,
+    );
+  }
+
+  async setGroupInvitation(groupUin: number, invitationSeq: number, accept: boolean): Promise<void> {
+    await this.callService(SetGroupRequestNormal, groupUin, invitationSeq, 2, accept ? 1 : 2, '');
   }
 
   createLogger(module: string) {

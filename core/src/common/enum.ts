@@ -20,3 +20,9 @@ export enum BotUserInfoKey {
   Age = 20037,
   Qid = 27394,
 }
+
+export enum BotGroupMemberRole {
+  Member = 0,
+  Owner = 1,
+  Admin = 2,
+}

@@ -62,7 +62,7 @@ export class BotEntityHolder<K, E extends BotEntity<B>, B> {
   }
 
   acceptData(data: Map<K, B>) {
-    const map = new Map(this.map);
+    const map = new Map<K, E>();
     for (const [key, value] of data.entries()) {
       const entity = this.map.get(key);
       if (entity) {

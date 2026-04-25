@@ -27,6 +27,11 @@ export enum BotGroupMemberRole {
   Admin = 2,
 }
 
+export enum ImageSubType {
+  Normal = 0,
+  Sticker = 1,
+}
+
 export enum RequestState {
   Default = 0,
   Pending = 1,

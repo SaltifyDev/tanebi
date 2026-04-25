@@ -5,6 +5,7 @@ import { match } from 'ts-pattern';
 import {
   type AppInfo,
   createLogger,
+  type IncomingSsoPacket,
   type LogEmitter,
   type LogMessage,
   type PacketClient,
@@ -14,6 +15,7 @@ import {
 } from './common';
 import {
   BotEntityHolder,
+  type BotForwardedMessage,
   BotFriend,
   type BotFriendData,
   type BotFriendRequest,
@@ -22,9 +24,12 @@ import {
   type BotGroupMember,
   type BotGroupMemberData,
   type BotGroupNotification,
+  type BotHistoryMessages,
+  type BotIncomingMessage,
 } from './entity';
 import { FlashTransferClient } from './internal/flash-transfer';
 import { HighwayClient } from './internal/highway';
+import { PushMsg } from './internal/proto/message/common';
 import { FileId } from './internal/proto/misc';
 import {
   DeleteFriend,
@@ -36,6 +41,7 @@ import {
   SetNormalFriendRequest,
 } from './internal/service/friend';
 import {
+  FetchGroupExtraInfo,
   FetchGroupNotificationsFiltered,
   FetchGroupNotificationsNormal,
   KickMember,
@@ -54,6 +60,12 @@ import {
 } from './internal/service/group';
 import { RichMediaDownload } from './internal/service/media';
 import {
+  FetchFriendMessages,
+  FetchGroupMessages,
+  GetFriendLatestSequence,
+  RecvLongMsg,
+} from './internal/service/message';
+import {
   FetchFriendData,
   FetchGroupData,
   FetchGroupMemberData,
@@ -61,6 +73,7 @@ import {
   FetchUserInfoByUid,
 } from './internal/service/system';
 import { TicketHolder } from './internal/ticket';
+import { parseForwardedMessage, parseIncomingMessage } from './internal/transform/message';
 import {
   parseFilteredFriendRequest,
   parseFriendRequest,
@@ -83,7 +96,11 @@ export class Bot<C extends PacketClient = PacketClient> {
   private readonly uid2uinMap = new Map<string, number>();
 
   private readonly logBus: LogEmitter = mitt();
+  private readonly messageBus = mitt<{ message: BotIncomingMessage }>();
   private readonly logger = createLogger(this.logBus, this.constructor.name);
+  private readonly pushHandler = (packet: IncomingSsoPacket) => {
+    void this.handlePush(packet);
+  };
 
   get uin(): number {
     if (!this.selfInfo) {
@@ -131,6 +148,7 @@ export class Bot<C extends PacketClient = PacketClient> {
 
   async initialize(): Promise<void> {
     this.selfInfo = await this.client.getSelfInfo();
+    this.client.onPush(this.pushHandler);
 
     await this.ticketHolder.getSKey();
     await Promise.all([this.friendHolder.update(), this.groupHolder.update()]);
@@ -279,6 +297,52 @@ export class Bot<C extends PacketClient = PacketClient> {
       .otherwise(() => {
         throw new Error(`Unsupported resource type ${fileId.appId}`);
       });
+  }
+
+  async getFriendHistoryMessages(
+    friendUin: number,
+    limit: number,
+    startSequence?: number,
+  ): Promise<BotHistoryMessages> {
+    if (limit < 1 || limit > 30) {
+      throw new Error('limit must be between 1 and 30');
+    }
+
+    const friendUid = await this.getUidByUin(friendUin);
+    const endSequence = startSequence ?? (await this.callService(GetFriendLatestSequence, friendUid));
+    const start = Math.max(endSequence - limit + 1, 1);
+    const rawMessages = await this.callService(FetchFriendMessages, friendUid, start, endSequence);
+    const messages = rawMessages
+      .map((message) => parseIncomingMessage(message, this.uin))
+      .filter((message) => message !== undefined);
+
+    return {
+      messages,
+      nextStartSequence: start > 1 ? start - 1 : undefined,
+    };
+  }
+
+  async getGroupHistoryMessages(groupUin: number, limit: number, startSequence?: number): Promise<BotHistoryMessages> {
+    if (limit < 1 || limit > 30) {
+      throw new Error('limit must be between 1 and 30');
+    }
+
+    const endSequence = startSequence ?? (await this.callService(FetchGroupExtraInfo, groupUin)).latestMessageSeq;
+    const start = Math.max(endSequence - limit + 1, 1);
+    const rawMessages = await this.callService(FetchGroupMessages, groupUin, start, endSequence);
+    const messages = rawMessages
+      .map((message) => parseIncomingMessage(message, this.uin))
+      .filter((message) => message !== undefined);
+
+    return {
+      messages,
+      nextStartSequence: start > 1 ? start - 1 : undefined,
+    };
+  }
+
+  async getForwardedMessages(resId: string): Promise<BotForwardedMessage[]> {
+    const rawMessages = await this.callService(RecvLongMsg, resId);
+    return rawMessages.map((message) => parseForwardedMessage(message)).filter((message) => message !== undefined);
   }
 
   async sendFriendNudge(friendUin: number, isSelf = false): Promise<void> {
@@ -439,6 +503,14 @@ export class Bot<C extends PacketClient = PacketClient> {
     return createLogger(this.logBus, module);
   }
 
+  onMessage(handler: (message: BotIncomingMessage) => void): void {
+    this.messageBus.on('message', handler);
+  }
+
+  offMessage(handler: (message: BotIncomingMessage) => void): void {
+    this.messageBus.off('message', handler);
+  }
+
   onLog(handler: (logMessage: LogMessage) => void) {
     this.logBus.on('log', handler);
   }
@@ -465,6 +537,40 @@ export class Bot<C extends PacketClient = PacketClient> {
       return service.parse(this, responsePacket.payload);
     } else {
       return undefined as R;
+    }
+  }
+
+  private async handlePush(packet: IncomingSsoPacket): Promise<void> {
+    if (packet.command !== 'trpc.msg.olpush.OlPushService.MsgPush') {
+      return;
+    }
+    try {
+      const message = parseIncomingMessage(PushMsg.decode(packet.payload).message, this.uin);
+      if (message === undefined) {
+        return;
+      }
+      this.messageBus.emit('message', message);
+      if (message.scene === 'group' && message.extraInfo !== undefined) {
+        void this.refreshGroupMemberExtraInfo(message);
+      }
+    } catch (error) {
+      this.logger.warn(`处理消息推送失败, command=${packet.command}`, error);
+    }
+  }
+
+  private async refreshGroupMemberExtraInfo(message: BotIncomingMessage): Promise<void> {
+    try {
+      if (message.extraInfo === undefined) {
+        return;
+      }
+      const group = await this.getGroup(message.peerUin);
+      const member = await group?.getMember(message.senderUin);
+      member?.updateBinding({
+        ...member.data,
+        ...message.extraInfo,
+      });
+    } catch (error) {
+      this.logger.trace('刷新群成员消息元信息失败', error);
     }
   }
 

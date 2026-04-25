@@ -3,12 +3,15 @@ import { KickMemberRequest } from '../proto/oidb/0x8a0';
 import { SetMemberProfileRequest } from '../proto/oidb/0x8fc';
 import { FetchGroupNotificationsRequest, FetchGroupNotificationsResponse } from '../proto/oidb/0x10c0';
 import { SetGroupRequestRequest } from '../proto/oidb/0x10c8';
+import { FetchGroupExtraInfoRequest, FetchGroupExtraInfoResponse } from '../proto/oidb/0x88d';
 import { SetGroupNameRequest, SetGroupWholeMuteRequest } from '../proto/oidb/0x89a';
 import { SetMemberAdminRequest } from '../proto/oidb/0x1096';
 import { QuitGroupRequest } from '../proto/oidb/0x1097';
 import { SetMemberMuteRequest } from '../proto/oidb/0x1253';
 import { SetGroupMessageReactionRequest } from '../proto/oidb/0x9082';
 import { SendNudgeRequest } from '../proto/oidb/0xed3';
+
+import { randomInt } from 'node:crypto';
 
 export const SetGroupName = defineOidbService({
   command: 0x89a,
@@ -127,6 +130,27 @@ export const SendGroupNudge = defineOidbService({
       friendUin: 0,
       ext: 0,
     });
+  },
+});
+
+export const FetchGroupExtraInfo = defineOidbService({
+  command: 0x88d,
+  service: 0,
+  build(_, groupUin: number) {
+    return FetchGroupExtraInfoRequest.encode({
+      random: randomInt(-0x80000000, 0x80000000),
+      config: {
+        groupUin,
+        flags: {
+          latestMessageSeq: true,
+        },
+      },
+    });
+  },
+  parse(_, payload) {
+    return {
+      latestMessageSeq: FetchGroupExtraInfoResponse.decode(payload).info.results.latestMessageSeq,
+    };
   },
 });
 

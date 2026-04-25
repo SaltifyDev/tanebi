@@ -5,7 +5,7 @@ import type { Bot, Logger } from '..';
 export abstract class BotEntity<T> {
   constructor(
     public bot: Bot,
-    protected data: T,
+    public data: T,
   ) {}
 
   updateBinding(data: T) {

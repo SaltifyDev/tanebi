@@ -1,3 +1,5 @@
+import { match } from 'ts-pattern';
+
 import type { Bot } from '../..';
 import { RequestState } from '../../common';
 import type { BotFriendRequest, BotGroupNotification } from '../../entity';
@@ -47,8 +49,9 @@ export async function parseGroupNotification(
   const groupUin = raw.group.groupUin;
   const user1Uid = raw.user1.uid;
 
-  switch (raw.notifyType) {
-    case 1: {
+  return match(raw.notifyType)
+    .returnType<Promise<BotGroupNotification | undefined> | undefined>()
+    .with(1, async () => {
       const operatorUid = raw.user2?.uid;
       return {
         type: 'joinRequest',
@@ -62,9 +65,8 @@ export async function parseGroupNotification(
         operatorUid,
         comment: raw.comment,
       };
-    }
-    case 3:
-    case 16: {
+    })
+    .with(3, 16, async () => {
       if (!raw.user2) {
         return undefined;
       }
@@ -78,8 +80,8 @@ export async function parseGroupNotification(
         operatorUin: await this.getUinByUid(raw.user2.uid),
         operatorUid: raw.user2.uid,
       };
-    }
-    case 6: {
+    })
+    .with(6, async () => {
       const operator = raw.user2 ?? raw.user3;
       if (!operator) {
         return undefined;
@@ -93,8 +95,8 @@ export async function parseGroupNotification(
         operatorUin: await this.getUinByUid(operator.uid),
         operatorUid: operator.uid,
       };
-    }
-    case 13:
+    })
+    .with(13, async () => {
       return {
         type: 'quit',
         groupUin,
@@ -102,7 +104,8 @@ export async function parseGroupNotification(
         targetUserUin: await this.getUinByUid(user1Uid),
         targetUserUid: user1Uid,
       };
-    case 22: {
+    })
+    .with(22, async () => {
       if (!raw.user2) {
         return undefined;
       }
@@ -119,8 +122,6 @@ export async function parseGroupNotification(
         operatorUin: operatorUid ? await this.getUinByUid(operatorUid) : undefined,
         operatorUid,
       };
-    }
-    default:
-      return undefined;
-  }
+    })
+    .otherwise(() => undefined);
 }

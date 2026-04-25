@@ -1,5 +1,6 @@
 import { Mutex } from 'async-mutex';
 import mitt from 'mitt';
+import { match } from 'ts-pattern';
 
 import {
   type AppInfo,
@@ -268,22 +269,16 @@ export class Bot<C extends PacketClient = PacketClient> {
       ttl: fileId.ttl,
     };
 
-    switch (fileId.appId) {
-      case 1402:
-        return this.callService(RichMediaDownload.PrivateRecord, indexNode);
-      case 1403:
-        return this.callService(RichMediaDownload.GroupRecord, indexNode);
-      case 1406:
-        return this.callService(RichMediaDownload.PrivateImage, indexNode);
-      case 1407:
-        return this.callService(RichMediaDownload.GroupImage, indexNode);
-      case 1413:
-        return this.callService(RichMediaDownload.PrivateVideo, indexNode);
-      case 1415:
-        return this.callService(RichMediaDownload.GroupVideo, indexNode);
-      default:
+    return match(fileId.appId)
+      .with(1402, () => this.callService(RichMediaDownload.PrivateRecord, indexNode))
+      .with(1403, () => this.callService(RichMediaDownload.GroupRecord, indexNode))
+      .with(1406, () => this.callService(RichMediaDownload.PrivateImage, indexNode))
+      .with(1407, () => this.callService(RichMediaDownload.GroupImage, indexNode))
+      .with(1413, () => this.callService(RichMediaDownload.PrivateVideo, indexNode))
+      .with(1415, () => this.callService(RichMediaDownload.GroupVideo, indexNode))
+      .otherwise(() => {
         throw new Error(`Unsupported resource type ${fileId.appId}`);
-    }
+      });
   }
 
   async sendFriendNudge(friendUin: number, isSelf = false): Promise<void> {

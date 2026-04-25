@@ -7,7 +7,6 @@ import {
   type LogEmitter,
   type LogMessage,
   type PacketClient,
-  RequestState,
   type Service,
   ServiceError,
 } from './common';
@@ -49,7 +48,11 @@ import {
 } from './internal/service/group';
 import { SendFriendNudge } from './internal/service/message';
 import { FetchFriendData, FetchGroupData, FetchGroupMemberData, FetchUserInfoByUid } from './internal/service/system';
-import { parseGroupNotification } from './internal/transform/notification';
+import {
+  parseFilteredFriendRequest,
+  parseFriendRequest,
+  parseGroupNotification,
+} from './internal/transform/notification';
 
 import { randomInt } from 'node:crypto';
 
@@ -211,23 +214,12 @@ export class Bot<C extends PacketClient = PacketClient> {
   }
 
   async getFriendRequests(isFiltered = false, limit = 20): Promise<BotFriendRequest[]> {
-    const selfInfo = await this.client.getSelfInfo();
     if (isFiltered) {
       const requests = await this.callService(FetchFilteredFriendRequests, limit);
       const parsed: Array<BotFriendRequest | undefined> = await Promise.all(
         requests.map(async (request) => {
           try {
-            return {
-              time: request.timestamp,
-              initiatorUin: await this.getUinByUid(request.sourceUid),
-              initiatorUid: request.sourceUid,
-              targetUserUin: Number(selfInfo.uin),
-              targetUserUid: selfInfo.uid,
-              state: RequestState.Pending,
-              comment: request.comment,
-              via: request.source,
-              isFiltered: true,
-            };
+            return await parseFilteredFriendRequest.call(this, request);
           } catch {
             return undefined;
           }
@@ -236,21 +228,11 @@ export class Bot<C extends PacketClient = PacketClient> {
       return parsed.filter((request) => request !== undefined);
     }
 
-    const requests = await this.callService(FetchNormalFriendRequests, selfInfo.uid, limit);
+    const requests = await this.callService(FetchNormalFriendRequests, (await this.client.getSelfInfo()).uid, limit);
     const parsed: Array<BotFriendRequest | undefined> = await Promise.all(
       requests.map(async (request) => {
         try {
-          return {
-            time: request.timestamp,
-            initiatorUin: await this.getUinByUid(request.sourceUid),
-            initiatorUid: request.sourceUid,
-            targetUserUin: await this.getUinByUid(request.targetUid),
-            targetUserUid: request.targetUid,
-            state: request.state,
-            comment: request.comment,
-            via: request.source,
-            isFiltered: false,
-          };
+          return await parseFriendRequest.call(this, request);
         } catch {
           return undefined;
         }

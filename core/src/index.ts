@@ -60,13 +60,6 @@ export class Bot<C extends PacketClient = PacketClient> {
     );
   }
 
-  private updateUinUidCache(entries: Iterable<{ uin: number; uid: string }>) {
-    for (const entry of entries) {
-      this.uin2uidMap.set(entry.uin, entry.uid);
-      this.uid2uinMap.set(entry.uid, entry.uin);
-    }
-  }
-
   async fetchFriendData(): Promise<BotFriendData[]> {
     let nextUin: number | undefined;
     const dataList: BotFriendData[] = [];
@@ -204,6 +197,13 @@ export class Bot<C extends PacketClient = PacketClient> {
       return service.parse(this, responsePacket.payload);
     } else {
       return undefined as R;
+    }
+  }
+
+  private updateUinUidCache(entries: Iterable<{ uin: number; uid: string }>) {
+    for (const entry of entries) {
+      this.uin2uidMap.set(entry.uin, entry.uid);
+      this.uid2uinMap.set(entry.uid, entry.uin);
     }
   }
 }

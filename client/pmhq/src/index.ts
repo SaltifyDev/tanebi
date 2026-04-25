@@ -68,7 +68,10 @@ export class PMHQClient implements PacketClient {
 
   async getSelfInfo(): Promise<SelfInfo> {
     const { uin, uid } = await this.call<[], PMHQSelfInfo>('getSelfInfo', []);
-    return { uin, uid };
+    return {
+      uin: +uin,
+      uid,
+    };
   }
   //#endregion
 

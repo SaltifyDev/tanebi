@@ -31,7 +31,7 @@ export interface IncomingSsoPacket {
 }
 
 export interface SelfInfo {
-  uin: string;
+  uin: number;
   uid: string;
 }
 

@@ -7,6 +7,7 @@ import {
   type LogEmitter,
   type LogMessage,
   type PacketClient,
+  type SelfInfo,
   type Service,
   ServiceError,
 } from './common';
@@ -58,6 +59,7 @@ import { randomInt } from 'node:crypto';
 
 export class Bot<C extends PacketClient = PacketClient> {
   private packetSeq: number;
+  private selfInfo: SelfInfo | undefined;
 
   private readonly friendHolder: BotEntityHolder<number, BotFriend, BotFriendData>;
   private readonly groupHolder: BotEntityHolder<number, BotGroup, BotGroupData>;
@@ -67,6 +69,24 @@ export class Bot<C extends PacketClient = PacketClient> {
 
   private readonly logBus: LogEmitter = mitt();
   private readonly logger = createLogger(this.logBus, this.constructor.name);
+
+  get uin(): number {
+    if (!this.selfInfo) {
+      throw new Error('Bot is not initialized yet');
+    }
+    return this.selfInfo.uin;
+  }
+
+  get uid(): string {
+    if (!this.selfInfo) {
+      throw new Error('Bot is not initialized yet');
+    }
+    return this.selfInfo.uid;
+  }
+
+  get isInitialized(): boolean {
+    return this.selfInfo !== undefined;
+  }
 
   constructor(
     readonly appinfo: AppInfo,
@@ -91,6 +111,12 @@ export class Bot<C extends PacketClient = PacketClient> {
       },
       (currentBot, data) => new BotGroup(currentBot, data),
     );
+  }
+
+  async initialize(): Promise<void> {
+    this.selfInfo = await this.client.getSelfInfo();
+    this.logger.info(`Initialized with uin=${this.selfInfo.uin}, uid=${this.selfInfo.uid}`);
+    await Promise.all([this.friendHolder.update(), this.groupHolder.update()]);
   }
 
   async fetchFriendData(): Promise<BotFriendData[]> {

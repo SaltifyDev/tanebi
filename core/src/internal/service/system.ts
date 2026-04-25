@@ -6,6 +6,7 @@ import { IncPullRequest, IncPullResponse } from '../proto/oidb/0xfd4';
 import { FetchUserInfoByUidRequest, FetchUserInfoResponse } from '../proto/oidb/0xfe1';
 import { FetchGroupDataRequest, FetchGroupDataResponse } from '../proto/oidb/0xfe5';
 import { FetchGroupMemberDataRequest, FetchGroupMemberDataResponse } from '../proto/oidb/0xfe7';
+import { uint32ToIpv4 } from '../util/ipv4';
 
 export const FetchFriendData = defineOidbService({
   command: 0xfd4,
@@ -176,27 +177,25 @@ export const FetchGroupMemberData = defineOidbService({
   },
 });
 
-const fetchUserInfoKeys = [
-  BotUserInfoKey.Nickname,
-  BotUserInfoKey.Bio,
-  BotUserInfoKey.Gender,
-  BotUserInfoKey.Remark,
-  BotUserInfoKey.Level,
-  BotUserInfoKey.Country,
-  BotUserInfoKey.City,
-  BotUserInfoKey.School,
-  BotUserInfoKey.RegisterTime,
-  BotUserInfoKey.Age,
-  BotUserInfoKey.Qid,
-].map((key) => ({ key }));
-
 export const FetchUserInfoByUid = defineOidbService({
   command: 0xfe1,
   service: 2,
   build(_, uid: string) {
     return FetchUserInfoByUidRequest.encode({
       uid,
-      keys: fetchUserInfoKeys,
+      keys: [
+        BotUserInfoKey.Nickname,
+        BotUserInfoKey.Bio,
+        BotUserInfoKey.Gender,
+        BotUserInfoKey.Remark,
+        BotUserInfoKey.Level,
+        BotUserInfoKey.Country,
+        BotUserInfoKey.City,
+        BotUserInfoKey.School,
+        BotUserInfoKey.RegisterTime,
+        BotUserInfoKey.Age,
+        BotUserInfoKey.Qid,
+      ].map((key) => ({ key })),
     });
   },
   parse(_, payload) {
@@ -218,10 +217,6 @@ export const FetchUserInfoByUid = defineOidbService({
     };
   },
 });
-
-function uint32ToIpv4(value: number): string {
-  return [value & 0xff, (value >>> 8) & 0xff, (value >>> 16) & 0xff, (value >>> 24) & 0xff].join('.');
-}
 
 export const FetchHighwayInfo = defineService({
   command: 'HttpConn.0x6ff_501',

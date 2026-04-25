@@ -28,16 +28,23 @@ importers:
         version: 6.0.3
 
   client/pmhq:
+    dependencies:
+      mitt:
+        specifier: ^3.0.1
+        version: 3.0.1
+      tanebi:
+        specifier: workspace:^
+        version: link:../../core
     devDependencies:
       '@types/node':
         specifier: ^24.12.2
         version: 24.12.2
-      tanebi:
-        specifier: workspace:*
-        version: link:../../core
 
   client/tcp:
     dependencies:
+      tanebi:
+        specifier: workspace:^
+        version: link:../../core
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -45,9 +52,6 @@ importers:
       '@types/node':
         specifier: ^24.12.2
         version: 24.12.2
-      tanebi:
-        specifier: workspace:*
-        version: link:../../core
 
   core:
     dependencies:

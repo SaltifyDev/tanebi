@@ -11,10 +11,10 @@
   "author": "SaltifyDev",
   "license": "GPL-3.0-only",
   "dependencies": {
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "tanebi": "workspace:^"
   },
   "devDependencies": {
-    "@types/node": "^24.12.2",
-    "tanebi": "workspace:*"
+    "@types/node": "^24.12.2"
   }
 }

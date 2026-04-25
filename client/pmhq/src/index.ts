@@ -1,3 +1,4 @@
+import mitt from 'mitt';
 import type { IncomingSsoPacket, OutgoingSsoPacket, PacketClient, SelfInfo } from 'tanebi';
 
 import type {
@@ -32,7 +33,9 @@ export class PMHQClient implements PacketClient {
   private ws?: WebSocket;
   private connecting?: Promise<WebSocket>;
   private readonly pending = new Map<string, PendingRequest<PMHQResponse>>();
-  private readonly pushHandlers = new Set<(packet: IncomingSsoPacket) => void>();
+  private readonly events = mitt<{
+    push: IncomingSsoPacket;
+  }>();
 
   constructor(options?: Partial<PMHQClientOptions>) {
     this.url = options?.url ?? defaultUrl;
@@ -56,11 +59,11 @@ export class PMHQClient implements PacketClient {
   }
 
   onPush(handler: (packet: IncomingSsoPacket) => void): void {
-    this.pushHandlers.add(handler);
+    this.events.on('push', handler);
   }
 
   offPush(handler: (packet: IncomingSsoPacket) => void): void {
-    this.pushHandlers.delete(handler);
+    this.events.off('push', handler);
   }
 
   async getSelfInfo(): Promise<SelfInfo> {
@@ -261,9 +264,7 @@ export class PMHQClient implements PacketClient {
       extra: response.message ?? '',
     };
 
-    this.pushHandlers.forEach((handler) => {
-      handler(packet);
-    });
+    this.events.emit('push', packet);
   }
 
   private toIncomingPacket(packet: OutgoingSsoPacket, response: PMHQRecvResponse): IncomingSsoPacket {

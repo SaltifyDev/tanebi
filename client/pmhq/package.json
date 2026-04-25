@@ -10,9 +10,12 @@
   },
   "author": "SaltifyDev",
   "license": "GPL-3.0-only",
+  "dependencies": {
+    "mitt": "^3.0.1",
+    "tanebi": "workspace:^"
+  },
   "devDependencies": {
-    "@types/node": "^24.12.2",
-    "tanebi": "workspace:*"
+    "@types/node": "^24.12.2"
   },
   "engines": {
     "node": ">=22"

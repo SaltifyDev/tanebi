@@ -24,6 +24,7 @@ import {
 } from './entity';
 import { FlashTransferClient } from './internal/flash-transfer';
 import { HighwayClient } from './internal/highway';
+import { FileId } from './internal/proto/misc';
 import {
   DeleteFriend,
   FetchFilteredFriendRequests,
@@ -50,6 +51,7 @@ import {
   SetMemberMute,
   SetMemberTitle,
 } from './internal/service/group';
+import { RichMediaDownload } from './internal/service/media';
 import {
   FetchFriendData,
   FetchGroupData,
@@ -248,6 +250,40 @@ export class Bot<C extends PacketClient = PacketClient> {
 
   getCachedUidByUin(uin: number): string | undefined {
     return this.uin2uidMap.get(uin);
+  }
+
+  async getDownloadUrl(resourceId: string): Promise<string> {
+    if (resourceId.startsWith('http://') || resourceId.startsWith('https://')) {
+      return resourceId;
+    }
+
+    const normalizedBase64 = resourceId
+      .replaceAll('-', '+')
+      .replaceAll('_', '/')
+      .padEnd(Math.ceil(resourceId.length / 4) * 4, '=');
+    const fileId = FileId.decode(Buffer.from(normalizedBase64, 'base64'));
+    const indexNode = {
+      fileUuid: resourceId,
+      storeId: fileId.storeId,
+      ttl: fileId.ttl,
+    };
+
+    switch (fileId.appId) {
+      case 1402:
+        return this.callService(RichMediaDownload.PrivateRecord, indexNode);
+      case 1403:
+        return this.callService(RichMediaDownload.GroupRecord, indexNode);
+      case 1406:
+        return this.callService(RichMediaDownload.PrivateImage, indexNode);
+      case 1407:
+        return this.callService(RichMediaDownload.GroupImage, indexNode);
+      case 1413:
+        return this.callService(RichMediaDownload.PrivateVideo, indexNode);
+      case 1415:
+        return this.callService(RichMediaDownload.GroupVideo, indexNode);
+      default:
+        throw new Error(`Unsupported resource type ${fileId.appId}`);
+    }
   }
 
   async sendFriendNudge(friendUin: number, isSelf = false): Promise<void> {

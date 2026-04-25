@@ -26,6 +26,7 @@ import {
   DeleteFriend,
   FetchFilteredFriendRequests,
   FetchNormalFriendRequests,
+  SendFriendNudge,
   SendProfileLike,
   SetFilteredFriendRequest,
   SetNormalFriendRequest,
@@ -47,7 +48,6 @@ import {
   SetMemberMute,
   SetMemberTitle,
 } from './internal/service/group';
-import { SendFriendNudge } from './internal/service/message';
 import { FetchFriendData, FetchGroupData, FetchGroupMemberData, FetchUserInfoByUid } from './internal/service/system';
 import {
   parseFilteredFriendRequest,

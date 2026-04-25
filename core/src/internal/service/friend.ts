@@ -5,6 +5,20 @@ import { DeleteFriendRequest } from '../proto/oidb/0x126b';
 import { SetFriendRequestRequest } from '../proto/oidb/0xb5d';
 import { FetchFilteredFriendRequestsRequest, FetchFilteredFriendRequestsResponse } from '../proto/oidb/0xd69';
 import { SetFilteredFriendRequestRequest } from '../proto/oidb/0xd72';
+import { SendNudgeRequest } from '../proto/oidb/0xed3';
+
+export const SendFriendNudge = defineOidbService({
+  command: 0xed3,
+  service: 1,
+  build(_, friendUin: number, targetUin: number) {
+    return SendNudgeRequest.encode({
+      targetUin,
+      groupUin: 0,
+      friendUin,
+      ext: 0,
+    });
+  },
+});
 
 export const SendProfileLike = defineOidbService({
   command: 0x7e5,

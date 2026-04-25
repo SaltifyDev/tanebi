@@ -56,8 +56,8 @@ importers:
   core:
     dependencies:
       '@saltify/typeproto':
-        specifier: ^0.4.0
-        version: 0.4.0
+        specifier: ^0.4.1
+        version: 0.4.1
       async-mutex:
         specifier: ^0.5.0
         version: 0.5.0
@@ -446,8 +446,8 @@ packages:
   '@rolldown/pluginutils@1.0.0-rc.16':
     resolution: {integrity: sha512-45+YtqxLYKDWQouLKCrpIZhke+nXxhsw+qAHVzHDVwttyBlHNBVs2K25rDXrZzhpTp9w1FlAlvweV1H++fdZoA==}
 
-  '@saltify/typeproto@0.4.0':
-    resolution: {integrity: sha512-cIiXhaEgDgz4WgbIPoJu92jHxz9wYTjiplKyV4drVqFkQb5aQUNeMxkuEBzYqcWElEgpO30HFwxmzaxoX8Omgg==}
+  '@saltify/typeproto@0.4.1':
+    resolution: {integrity: sha512-pdT+fpJL4MjmwNwviMuP3A7XaOVx4Zt7qPkayjg7/UuaaNGW3tnyQh88nz3HJBS8VsPeXM2vSget2Mc1BflXww==}
 
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
@@ -894,7 +894,7 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.0-rc.16': {}
 
-  '@saltify/typeproto@0.4.0': {}
+  '@saltify/typeproto@0.4.1': {}
 
   '@tybys/wasm-util@0.10.1':
     dependencies:

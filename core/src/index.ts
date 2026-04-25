@@ -22,6 +22,7 @@ import {
   type BotGroupMemberData,
   type BotGroupNotification,
 } from './entity';
+import { FlashTransferClient } from './internal/flash-transfer';
 import { HighwayClient } from './internal/highway';
 import {
   DeleteFriend,
@@ -49,7 +50,13 @@ import {
   SetMemberMute,
   SetMemberTitle,
 } from './internal/service/group';
-import { FetchFriendData, FetchGroupData, FetchGroupMemberData, FetchHighwayInfo, FetchUserInfoByUid } from './internal/service/system';
+import {
+  FetchFriendData,
+  FetchGroupData,
+  FetchGroupMemberData,
+  FetchHighwayInfo,
+  FetchUserInfoByUid,
+} from './internal/service/system';
 import {
   parseFilteredFriendRequest,
   parseFriendRequest,
@@ -61,7 +68,8 @@ import { randomInt } from 'node:crypto';
 export class Bot<C extends PacketClient = PacketClient> {
   private packetSeq: number;
   private selfInfo: SelfInfo | undefined;
-  private highwayClient: HighwayClient | undefined = undefined;
+  private highwayClient: HighwayClient | undefined;
+  private readonly flashTransferClient = new FlashTransferClient();
 
   private readonly friendHolder: BotEntityHolder<number, BotFriend, BotFriendData>;
   private readonly groupHolder: BotEntityHolder<number, BotGroup, BotGroupData>;
@@ -124,12 +132,7 @@ export class Bot<C extends PacketClient = PacketClient> {
     if (serverInfo === undefined || serverInfo.length === 0) {
       throw new Error('No available highway server');
     }
-    this.highwayClient = new HighwayClient(
-      this.selfInfo.uin,
-      serverInfo[0].host,
-      serverInfo[0].port,
-      info.sigSession,
-    );
+    this.highwayClient = new HighwayClient(this.selfInfo.uin, serverInfo[0].host, serverInfo[0].port, info.sigSession);
     this.logger.info(`Highway 初始化完成, host=${serverInfo[0].host}, port=${serverInfo[0].port}`);
 
     this.logger.info(`初始化完成, uin=${this.selfInfo.uin}, uid=${this.selfInfo.uid}`);

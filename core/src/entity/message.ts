@@ -12,7 +12,7 @@ export interface BotIncomingMessage {
   senderUid: string;
   clientSequence: number;
   random: number;
-  messageUid: number;
+  messageUid: bigint;
   segments: BotIncomingSegment[];
   extraInfo?: BotIncomingMessageExtraInfo;
 }

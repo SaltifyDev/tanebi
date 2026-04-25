@@ -107,7 +107,7 @@ function buildDraftMessage(
         senderUid: routingHead.fromUid,
         clientSequence: contentHead.sequence,
         random: contentHead.random,
-        messageUid: Number(contentHead.msgUid),
+        messageUid: contentHead.msgUid,
       };
     })
     .with(PushMsgType.GroupMessage, () => ({
@@ -120,7 +120,7 @@ function buildDraftMessage(
       senderUid: routingHead.fromUid,
       clientSequence: contentHead.clientSequence,
       random: contentHead.random,
-      messageUid: Number(contentHead.msgUid),
+      messageUid: contentHead.msgUid,
     }))
     .otherwise(() => undefined);
 }

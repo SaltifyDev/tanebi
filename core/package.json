@@ -8,6 +8,10 @@
     "main": "dist/index.mjs",
     "typings": "dist/index.mts"
   },
+  "scripts": {
+    "build": "tsdown",
+    "prepack": "npm run build"
+  },
   "keywords": [
     "qq",
     "oicq"

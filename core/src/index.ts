@@ -128,7 +128,7 @@ export class Bot<C extends PacketClient = PacketClient> {
     await Promise.all([this.friendHolder.update(), this.groupHolder.update()]);
 
     const info = await this.callService(FetchHighwayInfo);
-    const serverInfo = info.servers.get(5) ?? info.servers.get(1);
+    const serverInfo = info.servers.get(1);
     if (serverInfo === undefined || serverInfo.length === 0) {
       throw new Error('No available highway server');
     }

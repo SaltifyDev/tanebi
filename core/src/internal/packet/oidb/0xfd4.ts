@@ -11,12 +11,9 @@ export const IncPullRequest = ProtoMessage.of({
   cookie: ProtoField(5, IncPullCookie, 'optional'),
   flag: ProtoField(6, 'uint32'),
   proxySeq: ProtoField(7, 'uint32'),
-  requestBiz: ProtoField(10001, [
-    'uint32',
-    {
-      extBusi: ProtoField(1, 'uint32', 'repeated'),
-    },
-  ]),
+  requestBiz: ProtoField(10001, ['uint32', {
+    extBusi: ProtoField(1, 'uint32', 'repeated'),
+  }]),
   extSnsFlagKey: ProtoField(10002, 'uint32'),
   extPrivateIdListKey: ProtoField(10003, 'uint32'),
 });
@@ -36,13 +33,10 @@ export const IncPullResponseFriend = ProtoMessage.of({
   uid: ProtoField(1, 'string'),
   categoryId: ProtoField(2, 'uint32'),
   uin: ProtoField(3, 'uint32'),
-  subBizMap: ProtoField(10001, [
-    'uint32',
-    {
-      numberProps: ProtoField(1, ['uint32', 'uint32']),
-      stringProps: ProtoField(2, ['uint32', 'string']),
-    },
-  ]),
+  subBizMap: ProtoField(10001, ['uint32', {
+    numberProps: ProtoField(1, ['uint32', 'uint32']),
+    stringProps: ProtoField(2, ['uint32', 'string']),
+  }]),
 });
 
 export const IncPullResponseCategory = ProtoMessage.of({

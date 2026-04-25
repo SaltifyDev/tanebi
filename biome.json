@@ -40,5 +40,13 @@
         }
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["core/src/internal/packet/**/*.ts"],
+      "formatter": {
+        "enabled": false
+      }
+    }
+  ]
 }

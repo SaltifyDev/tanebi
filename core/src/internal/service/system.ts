@@ -1,5 +1,6 @@
-import { BotUserInfoKey, defineOidbService } from '../../common';
+import { BotUserInfoKey, defineOidbService, defineService } from '../../common';
 import type { BotFriendData, BotGroupData, BotGroupMemberData } from '../../entity';
+import { FetchHighwayInfoRequest, FetchHighwayInfoResponse } from '../proto/httpconn';
 import { IncPullRequest, IncPullResponse } from '../proto/oidb/0xfd4';
 import { FetchUserInfoByUidRequest, FetchUserInfoResponse } from '../proto/oidb/0xfe1';
 import { FetchGroupDataRequest, FetchGroupDataResponse } from '../proto/oidb/0xfe5';
@@ -213,6 +214,47 @@ export const FetchUserInfoByUid = defineOidbService({
       registerTime: properties.numberProps.get(BotUserInfoKey.RegisterTime) ?? 0,
       age: properties.numberProps.get(BotUserInfoKey.Age) ?? 0,
       qid: properties.stringProps.get(BotUserInfoKey.Qid) ?? '',
+    };
+  },
+});
+
+function uint32ToIpv4(value: number): string {
+  return [value & 0xff, (value >>> 8) & 0xff, (value >>> 16) & 0xff, (value >>> 24) & 0xff].join('.');
+}
+
+export const FetchHighwayInfo = defineService({
+  command: 'HttpConn.0x6ff_501',
+  build(bot) {
+    return FetchHighwayInfoRequest.encode({
+      reqBody: {
+        uin: bot.uin,
+        idcId: 0,
+        appid: 16,
+        loginSigType: 1,
+        loginSigTicket: Buffer.alloc(0),
+        requestFlag: 3,
+        serviceTypes: [1, 5, 10, 21],
+        bid: 2,
+        field9: 9,
+        field10: 8,
+        field11: 0,
+        version: '1.0.1',
+      },
+    });
+  },
+  parse(_, payload): { sigSession: Buffer; servers: Map<number, { host: string; port: number }[]> } {
+    const response = FetchHighwayInfoResponse.decode(payload).respBody;
+    return {
+      sigSession: response.sigSession,
+      servers: new Map(
+        response.addrs.map((srvAddresses) => [
+          srvAddresses.serviceType,
+          srvAddresses.addrs.map((address) => ({
+            host: uint32ToIpv4(address.ip),
+            port: address.port,
+          })),
+        ]),
+      ),
     };
   },
 });

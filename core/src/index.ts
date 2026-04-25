@@ -22,6 +22,7 @@ import {
   type BotGroupMemberData,
   type BotGroupNotification,
 } from './entity';
+import { HighwayClient } from './internal/highway';
 import {
   DeleteFriend,
   FetchFilteredFriendRequests,
@@ -48,7 +49,7 @@ import {
   SetMemberMute,
   SetMemberTitle,
 } from './internal/service/group';
-import { FetchFriendData, FetchGroupData, FetchGroupMemberData, FetchUserInfoByUid } from './internal/service/system';
+import { FetchFriendData, FetchGroupData, FetchGroupMemberData, FetchHighwayInfo, FetchUserInfoByUid } from './internal/service/system';
 import {
   parseFilteredFriendRequest,
   parseFriendRequest,
@@ -60,6 +61,7 @@ import { randomInt } from 'node:crypto';
 export class Bot<C extends PacketClient = PacketClient> {
   private packetSeq: number;
   private selfInfo: SelfInfo | undefined;
+  private highwayClient: HighwayClient | undefined = undefined;
 
   private readonly friendHolder: BotEntityHolder<number, BotFriend, BotFriendData>;
   private readonly groupHolder: BotEntityHolder<number, BotGroup, BotGroupData>;
@@ -115,8 +117,22 @@ export class Bot<C extends PacketClient = PacketClient> {
 
   async initialize(): Promise<void> {
     this.selfInfo = await this.client.getSelfInfo();
-    this.logger.info(`Initialized with uin=${this.selfInfo.uin}, uid=${this.selfInfo.uid}`);
     await Promise.all([this.friendHolder.update(), this.groupHolder.update()]);
+
+    const info = await this.callService(FetchHighwayInfo);
+    const serverInfo = info.servers.get(5) ?? info.servers.get(1);
+    if (serverInfo === undefined || serverInfo.length === 0) {
+      throw new Error('No available highway server');
+    }
+    this.highwayClient = new HighwayClient(
+      this.selfInfo.uin,
+      serverInfo[0].host,
+      serverInfo[0].port,
+      info.sigSession,
+    );
+    this.logger.info(`Highway 初始化完成, host=${serverInfo[0].host}, port=${serverInfo[0].port}`);
+
+    this.logger.info(`初始化完成, uin=${this.selfInfo.uin}, uid=${this.selfInfo.uid}`);
   }
 
   async fetchFriendData(): Promise<BotFriendData[]> {
@@ -395,7 +411,7 @@ export class Bot<C extends PacketClient = PacketClient> {
   /** @hidden */
   async callService<T extends Array<unknown>, R>(service: Service<T, R, C>, ...args: T): Promise<R> {
     const seq = this.packetSeq++;
-    this.logger.debug(`Call ${service.command} with seq=${seq}`);
+    this.logger.trace(`发送 SSO 数据包 ${service.command}, seq=${seq}`);
     const payload = service.build(this, ...args);
     const responsePacket = await this.client.send({
       command: service.command,

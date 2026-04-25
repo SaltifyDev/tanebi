@@ -1,6 +1,7 @@
 import { BotUserInfoKey, defineOidbService, defineService } from '../../common';
 import type { BotFriendData, BotGroupData, BotGroupMemberData } from '../../entity';
 import { FetchHighwayInfoRequest, FetchHighwayInfoResponse } from '../proto/httpconn';
+import { FetchClientKeyResponse } from '../proto/oidb/0x102a';
 import { IncPullRequest, IncPullResponse } from '../proto/oidb/0xfd4';
 import { FetchUserInfoByUidRequest, FetchUserInfoResponse } from '../proto/oidb/0xfe1';
 import { FetchGroupDataRequest, FetchGroupDataResponse } from '../proto/oidb/0xfe5';
@@ -256,5 +257,16 @@ export const FetchHighwayInfo = defineService({
         ]),
       ),
     };
+  },
+});
+
+export const FetchClientKey = defineOidbService({
+  command: 0x102a,
+  service: 1,
+  build() {
+    return Buffer.alloc(0);
+  },
+  parse(_, payload) {
+    return FetchClientKeyResponse.decode(payload).clientKey;
   },
 });

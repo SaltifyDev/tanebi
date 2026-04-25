@@ -57,6 +57,7 @@ import {
   FetchHighwayInfo,
   FetchUserInfoByUid,
 } from './internal/service/system';
+import { TicketHolder } from './internal/ticket';
 import {
   parseFilteredFriendRequest,
   parseFriendRequest,
@@ -70,6 +71,7 @@ export class Bot<C extends PacketClient = PacketClient> {
   private selfInfo: SelfInfo | undefined;
   private highwayClient: HighwayClient | undefined;
   private readonly flashTransferClient = new FlashTransferClient();
+  private readonly ticketHolder: TicketHolder;
 
   private readonly friendHolder: BotEntityHolder<number, BotFriend, BotFriendData>;
   private readonly groupHolder: BotEntityHolder<number, BotGroup, BotGroupData>;
@@ -103,6 +105,7 @@ export class Bot<C extends PacketClient = PacketClient> {
     readonly client: C,
   ) {
     this.packetSeq = randomInt(10000, 100000);
+    this.ticketHolder = new TicketHolder(this);
 
     this.friendHolder = new BotEntityHolder(
       this,
@@ -125,6 +128,8 @@ export class Bot<C extends PacketClient = PacketClient> {
 
   async initialize(): Promise<void> {
     this.selfInfo = await this.client.getSelfInfo();
+
+    await this.ticketHolder.getSKey();
     await Promise.all([this.friendHolder.update(), this.groupHolder.update()]);
 
     const info = await this.callService(FetchHighwayInfo);

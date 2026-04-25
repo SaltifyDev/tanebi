@@ -16,9 +16,9 @@ export interface HighwayUploadResult {
   responseBody: Buffer;
 }
 
-export class HighwayClient {
-  static readonly maxBlockSize = 1024 * 1024;
+const maxBlockSize = 1024 * 1024;
 
+export class HighwayClient {
   constructor(
     readonly uin: number,
     readonly host: string,
@@ -31,7 +31,7 @@ export class HighwayClient {
     let offset = 0;
 
     do {
-      const block = options.data.subarray(offset, offset + HighwayClient.maxBlockSize);
+      const block = options.data.subarray(offset, offset + maxBlockSize);
       await this.uploadBlock(options, fileMd5, block, offset);
       offset += block.length;
     } while (offset < options.data.length);

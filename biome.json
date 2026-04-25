@@ -43,7 +43,7 @@
   },
   "overrides": [
     {
-      "includes": ["core/src/internal/packet/**/*.ts"],
+      "includes": ["core/src/internal/proto/**/*.ts"],
       "formatter": {
         "enabled": false
       }

@@ -78,6 +78,22 @@ importers:
         specifier: ^24.12.2
         version: 24.12.2
 
+  runner:
+    dependencies:
+      '@saltify/tanebi-client-pmhq':
+        specifier: workspace:*
+        version: link:../client/pmhq
+      '@saltify/tanebi-client-tcp':
+        specifier: workspace:*
+        version: link:../client/tcp
+      tanebi:
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^24.12.2
+        version: 24.12.2
+
 packages:
 
   '@babel/generator@8.0.0-rc.3':

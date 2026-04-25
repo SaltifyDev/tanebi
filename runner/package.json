@@ -1,0 +1,16 @@
+{
+  "name": "tanebi-runner",
+  "type": "module",
+  "private": true,
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "author": "SaltifyDev",
+  "dependencies": {
+    "@saltify/tanebi-client-pmhq": "workspace:*",
+    "@saltify/tanebi-client-tcp": "workspace:*",
+    "tanebi": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.2"
+  }
+}

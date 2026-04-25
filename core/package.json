@@ -1,7 +1,7 @@
 {
   "name": "tanebi",
   "type": "module",
-  "description": "PC NTQQ Protocol Library in TypeScript",
+  "description": "PC NTQQ Debugging Facade in TypeScript",
   "version": "1.0.0",
   "main": "src/index.ts",
   "publishConfig": {

@@ -4,6 +4,9 @@
   "description": "TCP Socket Client for Tanebi",
   "version": "0.1.0",
   "main": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "main": "dist/index.mjs",
     "typings": "dist/index.mts"

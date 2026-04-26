@@ -136,6 +136,7 @@ export const Elem = ProtoMessage.of({
   face: ProtoField(2, {
     index: ProtoField(1, 'uint32'),
   }, 'optional'),
+  notOnlineImage: ProtoField(4, 'bytes', 'optional'),
   transElemInfo: ProtoField(5, {
     elemType: ProtoField(1, 'uint32'),
     elemValue: ProtoField(2, 'bytes'),
@@ -154,6 +155,7 @@ export const Elem = ProtoMessage.of({
       field8: ProtoField(8, 'uint32'),
     }),
   }, 'optional'),
+  customFace: ProtoField(8, 'bytes', 'optional'),
   richMsg: ProtoField(12, {
     bytesTemplate1: ProtoField(1, 'bytes'),
     serviceId: ProtoField(2, 'uint32'),
@@ -210,4 +212,10 @@ export const SourceMsgPbReserve = ProtoMessage.of({
   senderUid: ProtoField(6, 'string'),
   receiverUid: ProtoField(7, 'string'),
   friendSequence: ProtoField(8, 'uint32'),
+});
+
+export const SourceMsgResvAttr = ProtoMessage.of({
+  oriMsgType: ProtoField(1, 'uint32'),
+  sourceMsgId: ProtoField(2, 'uint64'),
+  senderUid: ProtoField(3, 'string'),
 });

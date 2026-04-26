@@ -8,6 +8,7 @@ import {
   type IncomingSsoPacket,
   type LogEmitter,
   type LogMessage,
+  MessageSendError,
   type PacketClient,
   type SelfInfo,
   type Service,
@@ -26,6 +27,9 @@ import {
   type BotGroupNotification,
   type BotHistoryMessages,
   type BotIncomingMessage,
+  type BotOutgoingMessageOptions,
+  type BotOutgoingMessageResult,
+  type BotOutgoingSegment,
 } from './entity';
 import { FlashTransferClient } from './internal/flash-transfer';
 import { HighwayClient } from './internal/highway';
@@ -64,8 +68,12 @@ import {
   FetchGroupMessages,
   GetFriendLatestSequence,
   RecvLongMsg,
+  SendFriendMessage,
+  SendGroupMessage,
 } from './internal/service/message';
 import {
+  type BotFaceDetail,
+  FetchFaceDetails,
   FetchFriendData,
   FetchGroupData,
   FetchGroupMemberData,
@@ -73,7 +81,8 @@ import {
   FetchUserInfoByUid,
 } from './internal/service/system';
 import { TicketHolder } from './internal/ticket';
-import { parseForwardedMessage, parseIncomingMessage } from './internal/transform/message';
+import { parseForwardedMessage, parseIncomingMessage } from './internal/transform/message/incoming';
+import { encodeOutgoingMessage } from './internal/transform/message/outgoing';
 import {
   parseFilteredFriendRequest,
   parseFriendRequest,
@@ -94,6 +103,8 @@ export class Bot<C extends PacketClient = PacketClient> {
   private readonly idMapQueryMutex = new Mutex();
   private readonly uin2uidMap = new Map<number, string>();
   private readonly uid2uinMap = new Map<string, number>();
+  /** @hidden */
+  readonly faceDetailMap = new Map<string, BotFaceDetail>();
 
   private readonly logBus: LogEmitter = mitt();
   private readonly messageBus = mitt<{ message: BotIncomingMessage }>();
@@ -152,6 +163,12 @@ export class Bot<C extends PacketClient = PacketClient> {
 
     await this.ticketHolder.getSKey();
     await Promise.all([this.friendHolder.update(), this.groupHolder.update()]);
+
+    const faceDetails = await this.callService(FetchFaceDetails);
+    this.faceDetailMap.clear();
+    for (const detail of faceDetails) {
+      this.faceDetailMap.set(detail.qSid, detail);
+    }
 
     const info = await this.callService(FetchHighwayInfo);
     const serverInfo = info.servers.get(1);
@@ -343,6 +360,43 @@ export class Bot<C extends PacketClient = PacketClient> {
   async getForwardedMessages(resId: string): Promise<BotForwardedMessage[]> {
     const rawMessages = await this.callService(RecvLongMsg, resId);
     return rawMessages.map((message) => parseForwardedMessage(message)).filter((message) => message !== undefined);
+  }
+
+  async sendFriendMessage(
+    friendUin: number,
+    segments: BotOutgoingSegment[],
+    options: BotOutgoingMessageOptions = {},
+  ): Promise<BotOutgoingMessageResult> {
+    const clientSequence = options.clientSequence ?? randomInt(1, 0x7fffffff);
+    const random = options.random ?? randomInt(1, 0x7fffffff);
+    const friendUid = await this.getUidByUin(friendUin);
+    const elems = await encodeOutgoingMessage.call(this, 'friend', friendUin, friendUid, segments);
+    const response = await this.callService(SendFriendMessage, friendUin, friendUid, elems, clientSequence, random);
+    if (response.result !== 0) {
+      throw new MessageSendError(response.result, response.errMsg);
+    }
+    return {
+      sequence: response.sequence,
+      sendTime: response.sendTime,
+    };
+  }
+
+  async sendGroupMessage(
+    groupUin: number,
+    segments: BotOutgoingSegment[],
+    options: BotOutgoingMessageOptions = {},
+  ): Promise<BotOutgoingMessageResult> {
+    const clientSequence = options.clientSequence ?? randomInt(1, 0x7fffffff);
+    const random = options.random ?? randomInt(1, 0x7fffffff);
+    const elems = await encodeOutgoingMessage.call(this, 'group', groupUin, String(groupUin), segments);
+    const response = await this.callService(SendGroupMessage, groupUin, elems, clientSequence, random);
+    if (response.result !== 0) {
+      throw new MessageSendError(response.result, response.errMsg);
+    }
+    return {
+      sequence: response.sequence,
+      sendTime: response.sendTime,
+    };
   }
 
   async sendFriendNudge(friendUin: number, isSelf = false): Promise<void> {
@@ -538,6 +592,19 @@ export class Bot<C extends PacketClient = PacketClient> {
     } else {
       return undefined as R;
     }
+  }
+
+  /** @hidden */
+  async uploadHighway(commandId: number, data: Buffer, fileMd5: Buffer, extendInfo: Buffer): Promise<void> {
+    if (this.highwayClient === undefined) {
+      throw new Error('Highway client is not initialized yet');
+    }
+    await this.highwayClient.upload({ commandId, data, fileMd5, extendInfo });
+  }
+
+  /** @hidden */
+  async uploadFlashTransfer(uKey: string, appId: number, data: Buffer): Promise<boolean> {
+    return this.flashTransferClient.uploadFile({ uKey, appId, data });
   }
 
   private async handlePush(packet: IncomingSsoPacket): Promise<void> {

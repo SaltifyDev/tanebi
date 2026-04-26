@@ -8,8 +8,8 @@ import type {
   BotIncomingMessageExtraInfo,
   BotIncomingSegment,
   MessageScene,
-} from '../../entity';
-import { CommonMessage, PushMsgType } from '../proto/message/common';
+} from '../../../entity';
+import { CommonMessage, PushMsgType } from '../../proto/message/common';
 import {
   type Elem,
   GroupFileExtra,
@@ -19,7 +19,7 @@ import {
   QSmallFaceExtra,
   SourceMsgPbReserve,
   TextResvAttr,
-} from '../proto/message/elem';
+} from '../../proto/message/elem';
 
 import { inflateSync } from 'node:zlib';
 

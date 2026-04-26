@@ -18,3 +18,12 @@ export class OidbError extends Error {
     super(`OidbError when calling 0x${command.toString(16)}_${service}, code=${result}, message=${oidbMessage}`);
   }
 }
+
+export class MessageSendError extends Error {
+  constructor(
+    public readonly result: number,
+    public readonly sendMessage: string,
+  ) {
+    super(`MessageSendError, code=${result}, message=${sendMessage}`);
+  }
+}

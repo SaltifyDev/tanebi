@@ -1,4 +1,4 @@
-import type { ImageSubType } from '../common';
+import type { ImageFormat, ImageSubType } from '../common';
 
 export type MessageScene = 'friend' | 'group' | 'temp';
 
@@ -106,4 +106,75 @@ export interface BotForwardedMessage {
 export interface BotHistoryMessages {
   messages: BotIncomingMessage[];
   nextStartSequence?: number;
+}
+
+export type BotOutgoingSegment =
+  | {
+      type: 'text';
+      text: string;
+    }
+  | {
+      type: 'mention';
+      uin?: number;
+      name: string;
+    }
+  | {
+      type: 'face';
+      faceId: number;
+      isLarge?: boolean;
+    }
+  | {
+      type: 'reply';
+      sequence: number;
+    }
+  | {
+      type: 'image';
+      data: Buffer;
+      format: ImageFormat;
+      width: number;
+      height: number;
+      subType?: ImageSubType;
+      summary?: string;
+    }
+  | {
+      type: 'record';
+      data: Buffer;
+      duration: number;
+    }
+  | {
+      type: 'video';
+      data: Buffer;
+      width: number;
+      height: number;
+      duration: number;
+      thumb: Buffer;
+      thumbFormat: ImageFormat;
+    }
+  | {
+      type: 'forward';
+      nodes: BotOutgoingForwardNode[];
+      title?: string;
+      preview?: string[];
+      summary?: string;
+      prompt?: string;
+    }
+  | {
+      type: 'lightApp';
+      jsonPayload: string;
+    };
+
+export interface BotOutgoingForwardNode {
+  senderUin: number;
+  senderName: string;
+  segments: BotOutgoingSegment[];
+}
+
+export interface BotOutgoingMessageResult {
+  sequence: number;
+  sendTime: number;
+}
+
+export interface BotOutgoingMessageOptions {
+  clientSequence?: number;
+  random?: number;
 }

@@ -2,11 +2,27 @@ import { BotUserInfoKey, defineOidbService, defineService } from '../../common';
 import type { BotFriendData, BotGroupData, BotGroupMemberData } from '../../entity';
 import { FetchHighwayInfoRequest, FetchHighwayInfoResponse } from '../proto/httpconn';
 import { FetchClientKeyResponse } from '../proto/oidb/0x102a';
+import { FetchFaceDetailsRequest, FetchFaceDetailsResponse } from '../proto/oidb/0x9154';
 import { IncPullRequest, IncPullResponse } from '../proto/oidb/0xfd4';
 import { FetchUserInfoByUidRequest, FetchUserInfoResponse } from '../proto/oidb/0xfe1';
 import { FetchGroupDataRequest, FetchGroupDataResponse } from '../proto/oidb/0xfe5';
 import { FetchGroupMemberDataRequest, FetchGroupMemberDataResponse } from '../proto/oidb/0xfe7';
 import { uint32ToIpv4 } from '../util/ipv4';
+
+export interface BotFaceDetail {
+  qSid: string;
+  qDes: string;
+  emCode: string;
+  qCid: number;
+  aniStickerType: number;
+  aniStickerPackId: number;
+  aniStickerId: number;
+  baseUrl: string;
+  advUrl: string;
+  emojiNameAlias: string[];
+  aniStickerWidth: number;
+  aniStickerHeight: number;
+}
 
 export const FetchFriendData = defineOidbService({
   command: 0xfd4,
@@ -263,5 +279,38 @@ export const FetchClientKey = defineOidbService({
   },
   parse(_, payload) {
     return FetchClientKeyResponse.decode(payload).clientKey;
+  },
+});
+
+export const FetchFaceDetails = defineOidbService({
+  command: 0x9154,
+  service: 1,
+  build() {
+    return FetchFaceDetailsRequest.encode({
+      field1: 0,
+      field2: 7,
+      field3: '0',
+    });
+  },
+  parse(_, payload): BotFaceDetail[] {
+    const response = FetchFaceDetailsResponse.decode(payload);
+    return [
+      ...response.commonFace.emojiList.flatMap((list) => list.emojiDetail),
+      ...response.specialBigFace.emojiList.flatMap((list) => list.emojiDetail),
+      ...response.specialMagicFace.field1.emojiList,
+    ].map((face) => ({
+      qSid: face.qSid,
+      qDes: face.qDes,
+      emCode: face.emCode,
+      qCid: face.qCid,
+      aniStickerType: face.aniStickerType,
+      aniStickerPackId: face.aniStickerPackId,
+      aniStickerId: face.aniStickerId,
+      baseUrl: face.url.baseUrl,
+      advUrl: face.url.advUrl,
+      emojiNameAlias: face.emojiNameAlias,
+      aniStickerWidth: face.aniStickerWidth,
+      aniStickerHeight: face.aniStickerHeight,
+    }));
   },
 });

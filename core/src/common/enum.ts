@@ -32,6 +32,15 @@ export enum ImageSubType {
   Sticker = 1,
 }
 
+export enum ImageFormat {
+  PNG = 1001,
+  GIF = 2000,
+  JPEG = 1000,
+  BMP = 1005,
+  WEBP = 1002,
+  TIFF = 1006,
+}
+
 export enum RequestState {
   Default = 0,
   Pending = 1,

@@ -8,10 +8,16 @@
     "main": "dist/index.mjs",
     "typings": "dist/index.mts"
   },
+  "scripts": {
+    "build": "tsdown",
+    "prepack": "npm run build"
+  },
   "author": "SaltifyDev",
   "license": "GPL-3.0-only",
   "dependencies": {
-    "zod": "^4.3.6",
+    "zod": "^4.3.6"
+  },
+  "peerDependencies": {
     "tanebi": "workspace:^"
   },
   "devDependencies": {

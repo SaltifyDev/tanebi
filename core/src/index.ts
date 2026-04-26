@@ -288,32 +288,41 @@ export class Bot<C extends PacketClient = PacketClient> {
     return this.uin2uidMap.get(uin);
   }
 
-  async getDownloadUrl(resourceId: string): Promise<string> {
-    if (resourceId.startsWith('http://') || resourceId.startsWith('https://')) {
-      return resourceId;
+  async sendFriendMessage(
+    friendUin: number,
+    segments: BotOutgoingSegment[],
+    options: BotOutgoingMessageOptions = {},
+  ): Promise<BotOutgoingMessageResult> {
+    const clientSequence = options.clientSequence ?? randomInt(1, 0x7fffffff);
+    const random = options.random ?? randomInt(1, 0x7fffffff);
+    const friendUid = await this.getUidByUin(friendUin);
+    const elems = await encodeOutgoingMessage.call(this, 'friend', friendUin, friendUid, segments);
+    const response = await this.callService(SendFriendMessage, friendUin, friendUid, elems, clientSequence, random);
+    if (response.result !== 0) {
+      throw new MessageSendError(response.result, response.errMsg);
     }
-
-    const normalizedBase64 = resourceId
-      .replaceAll('-', '+')
-      .replaceAll('_', '/')
-      .padEnd(Math.ceil(resourceId.length / 4) * 4, '=');
-    const fileId = FileId.decode(Buffer.from(normalizedBase64, 'base64'));
-    const indexNode = {
-      fileUuid: resourceId,
-      storeId: fileId.storeId,
-      ttl: fileId.ttl,
+    return {
+      sequence: response.sequence,
+      sendTime: response.sendTime,
     };
+  }
 
-    return match(fileId.appId)
-      .with(1402, () => this.callService(RichMediaDownload.PrivateRecord, indexNode))
-      .with(1403, () => this.callService(RichMediaDownload.GroupRecord, indexNode))
-      .with(1406, () => this.callService(RichMediaDownload.PrivateImage, indexNode))
-      .with(1407, () => this.callService(RichMediaDownload.GroupImage, indexNode))
-      .with(1413, () => this.callService(RichMediaDownload.PrivateVideo, indexNode))
-      .with(1415, () => this.callService(RichMediaDownload.GroupVideo, indexNode))
-      .otherwise(() => {
-        throw new Error(`Unsupported resource type ${fileId.appId}`);
-      });
+  async sendGroupMessage(
+    groupUin: number,
+    segments: BotOutgoingSegment[],
+    options: BotOutgoingMessageOptions = {},
+  ): Promise<BotOutgoingMessageResult> {
+    const clientSequence = options.clientSequence ?? randomInt(1, 0x7fffffff);
+    const random = options.random ?? randomInt(1, 0x7fffffff);
+    const elems = await encodeOutgoingMessage.call(this, 'group', groupUin, String(groupUin), segments);
+    const response = await this.callService(SendGroupMessage, groupUin, elems, clientSequence, random);
+    if (response.result !== 0) {
+      throw new MessageSendError(response.result, response.errMsg);
+    }
+    return {
+      sequence: response.sequence,
+      sendTime: response.sendTime,
+    };
   }
 
   async getFriendHistoryMessages(
@@ -362,41 +371,32 @@ export class Bot<C extends PacketClient = PacketClient> {
     return rawMessages.map((message) => parseForwardedMessage(message)).filter((message) => message !== undefined);
   }
 
-  async sendFriendMessage(
-    friendUin: number,
-    segments: BotOutgoingSegment[],
-    options: BotOutgoingMessageOptions = {},
-  ): Promise<BotOutgoingMessageResult> {
-    const clientSequence = options.clientSequence ?? randomInt(1, 0x7fffffff);
-    const random = options.random ?? randomInt(1, 0x7fffffff);
-    const friendUid = await this.getUidByUin(friendUin);
-    const elems = await encodeOutgoingMessage.call(this, 'friend', friendUin, friendUid, segments);
-    const response = await this.callService(SendFriendMessage, friendUin, friendUid, elems, clientSequence, random);
-    if (response.result !== 0) {
-      throw new MessageSendError(response.result, response.errMsg);
+  async getDownloadUrl(resourceId: string): Promise<string> {
+    if (resourceId.startsWith('http://') || resourceId.startsWith('https://')) {
+      return resourceId;
     }
-    return {
-      sequence: response.sequence,
-      sendTime: response.sendTime,
-    };
-  }
 
-  async sendGroupMessage(
-    groupUin: number,
-    segments: BotOutgoingSegment[],
-    options: BotOutgoingMessageOptions = {},
-  ): Promise<BotOutgoingMessageResult> {
-    const clientSequence = options.clientSequence ?? randomInt(1, 0x7fffffff);
-    const random = options.random ?? randomInt(1, 0x7fffffff);
-    const elems = await encodeOutgoingMessage.call(this, 'group', groupUin, String(groupUin), segments);
-    const response = await this.callService(SendGroupMessage, groupUin, elems, clientSequence, random);
-    if (response.result !== 0) {
-      throw new MessageSendError(response.result, response.errMsg);
-    }
-    return {
-      sequence: response.sequence,
-      sendTime: response.sendTime,
+    const normalizedBase64 = resourceId
+      .replaceAll('-', '+')
+      .replaceAll('_', '/')
+      .padEnd(Math.ceil(resourceId.length / 4) * 4, '=');
+    const fileId = FileId.decode(Buffer.from(normalizedBase64, 'base64'));
+    const indexNode = {
+      fileUuid: resourceId,
+      storeId: fileId.storeId,
+      ttl: fileId.ttl,
     };
+
+    return match(fileId.appId)
+      .with(1402, () => this.callService(RichMediaDownload.PrivateRecord, indexNode))
+      .with(1403, () => this.callService(RichMediaDownload.GroupRecord, indexNode))
+      .with(1406, () => this.callService(RichMediaDownload.PrivateImage, indexNode))
+      .with(1407, () => this.callService(RichMediaDownload.GroupImage, indexNode))
+      .with(1413, () => this.callService(RichMediaDownload.PrivateVideo, indexNode))
+      .with(1415, () => this.callService(RichMediaDownload.GroupVideo, indexNode))
+      .otherwise(() => {
+        throw new Error(`Unsupported resource type ${fileId.appId}`);
+      });
   }
 
   async sendFriendNudge(friendUin: number, isSelf = false): Promise<void> {

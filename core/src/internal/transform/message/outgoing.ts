@@ -3,7 +3,12 @@ import { match } from 'ts-pattern';
 
 import type { Bot } from '../../..';
 import { ImageFormat, ImageSubType } from '../../../common';
-import type { BotOutgoingForwardNode, BotOutgoingSegment, MessageScene } from '../../../entity';
+import {
+  type BotOutgoingForwardNode,
+  type BotOutgoingSegment,
+  type MessageScene,
+  outgoingSegmentPreview,
+} from '../../../entity';
 import { type CommonMessage, PushMsgType } from '../../proto/message/common';
 import { type Elem, QBigFaceExtra, QSmallFaceExtra, SourceMsgResvAttr, TextResvAttr } from '../../proto/message/elem';
 import { NTV2RichMediaHighwayExt, RichMediaMsgInfo } from '../../proto/oidb/media';
@@ -384,7 +389,7 @@ const segmentEncoders: SegmentEncoder[] = [
                     segment.preview ??
                     segment.nodes
                       .slice(0, 4)
-                      .map((node) => `${node.senderName}: ${node.segments.map(segmentPreview).join('')}`)
+                      .map((node) => `${node.senderName}: ${node.segments.map(outgoingSegmentPreview).join('')}`)
                   ).map((text) => ({ text })),
                   resid: resId,
                   source: segment.title ?? '群聊的聊天记录',
@@ -534,20 +539,4 @@ function buildHighwayExtendInfo(uploadResp: RichMediaUploadResponse, sha1: Buffe
 
 function encodeLightAppData(jsonPayload: string): Buffer {
   return Buffer.concat([Buffer.from([0x01]), deflateSync(Buffer.from(jsonPayload))]);
-}
-
-function segmentPreview(segment: BotOutgoingSegment): string {
-  return match(segment)
-    .with({ type: 'text' }, (item) => item.text)
-    .with({ type: 'mention' }, (item) => `@${item.name}`)
-    .with({ type: 'face' }, () => '[表情]')
-    .with({ type: 'reply' }, () => '[引用消息]')
-    .with({ type: 'image' }, (item) => {
-      return item.summary ?? (item.subType === ImageSubType.Sticker ? '[动画表情]' : '[图片]');
-    })
-    .with({ type: 'record' }, (item) => `[语音 ${item.duration}s]`)
-    .with({ type: 'video' }, (item) => `[视频 ${item.width}x${item.height} ${item.duration}s]`)
-    .with({ type: 'forward' }, (item) => item.prompt ?? '[聊天记录]')
-    .with({ type: 'lightApp' }, () => '[小程序]')
-    .exhaustive();
 }

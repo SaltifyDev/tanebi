@@ -1,4 +1,6 @@
-import type { ImageFormat, ImageSubType } from '../common';
+import { match } from 'ts-pattern';
+
+import { type ImageFormat, ImageSubType } from '../common';
 
 export type MessageScene = 'friend' | 'group' | 'temp';
 
@@ -177,4 +179,36 @@ export interface BotOutgoingMessageResult {
 export interface BotOutgoingMessageOptions {
   clientSequence?: number;
   random?: number;
+}
+
+export function incomingSegmentPreview(segment: BotIncomingSegment): string {
+  return match(segment)
+    .with({ type: 'text' }, (item) => item.text)
+    .with({ type: 'mention' }, (item) => item.name)
+    .with({ type: 'face' }, (item) => item.summary)
+    .with({ type: 'reply' }, () => '[引用消息]')
+    .with({ type: 'image' }, (item) => item.summary)
+    .with({ type: 'record' }, (item) => `[语音 ${item.duration}s]`)
+    .with({ type: 'video' }, (item) => `[视频 ${item.width}x${item.height} ${item.duration}s]`)
+    .with({ type: 'file' }, (item) => `[文件 ${item.fileName}]`)
+    .with({ type: 'forward' }, () => '[转发消息]')
+    .with({ type: 'marketFace' }, (item) => item.summary)
+    .with({ type: 'lightApp' }, (item) => `[卡片消息 ${item.appName}]`)
+    .exhaustive();
+}
+
+export function outgoingSegmentPreview(segment: BotOutgoingSegment): string {
+  return match(segment)
+    .with({ type: 'text' }, (item) => item.text)
+    .with({ type: 'mention' }, (item) => `@${item.name}`)
+    .with({ type: 'face' }, () => '[表情]')
+    .with({ type: 'reply' }, () => '[引用消息]')
+    .with({ type: 'image' }, (item) => {
+      return item.summary ?? (item.subType === ImageSubType.Sticker ? '[动画表情]' : '[图片]');
+    })
+    .with({ type: 'record' }, (item) => `[语音 ${item.duration}s]`)
+    .with({ type: 'video' }, (item) => `[视频 ${item.width}x${item.height} ${item.duration}s]`)
+    .with({ type: 'forward' }, (item) => item.prompt ?? '[聊天记录]')
+    .with({ type: 'lightApp' }, () => '[小程序]')
+    .exhaustive();
 }

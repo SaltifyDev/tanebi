@@ -5,6 +5,7 @@ import { match } from 'ts-pattern';
 import {
   type AppInfo,
   createLogger,
+  ImageFormat,
   type IncomingSsoPacket,
   type LogEmitter,
   type LogMessage,
@@ -13,14 +14,17 @@ import {
   type SelfInfo,
   type Service,
   ServiceError,
+  WebApiError,
 } from './common';
 import {
   BotEntityHolder,
+  type BotEssenceMessageResult,
   type BotForwardedMessage,
   BotFriend,
   type BotFriendData,
   type BotFriendRequest,
   BotGroup,
+  type BotGroupAnnouncement,
   type BotGroupData,
   type BotGroupMember,
   type BotGroupMemberData,
@@ -33,6 +37,7 @@ import {
 } from './entity';
 import { FlashTransferClient } from './internal/flash-transfer';
 import { HighwayClient } from './internal/highway';
+import { GroupAvatarExtra } from './internal/proto/highway';
 import { PushMsg } from './internal/proto/message/common';
 import { FileId } from './internal/proto/misc';
 import {
@@ -51,6 +56,8 @@ import {
   KickMember,
   QuitGroup,
   SendGroupNudge,
+  SetGroupEssenceMessageSet,
+  SetGroupEssenceMessageUnset,
   SetGroupMessageReactionAdd,
   SetGroupMessageReactionRemove,
   SetGroupName,
@@ -67,6 +74,8 @@ import {
   FetchFriendMessages,
   FetchGroupMessages,
   GetFriendLatestSequence,
+  RecallFriendMessage,
+  RecallGroupMessage,
   RecvLongMsg,
   SendFriendMessage,
   SendGroupMessage,
@@ -81,6 +90,14 @@ import {
   FetchUserInfoByUid,
 } from './internal/service/system';
 import { TicketHolder } from './internal/ticket';
+import {
+  type GroupAnnounceFeed,
+  type GroupAnnounceImage,
+  type GroupEssenceMsgItem,
+  parseGroupAnnouncement,
+  parseGroupEssenceMessage,
+  unescapeHttp,
+} from './internal/transform/group';
 import { parseForwardedMessage, parseIncomingMessage } from './internal/transform/message/incoming';
 import { encodeOutgoingMessage } from './internal/transform/message/outgoing';
 import {
@@ -89,7 +106,7 @@ import {
   parseGroupNotification,
 } from './internal/transform/notification';
 
-import { randomInt } from 'node:crypto';
+import { createHash, randomInt } from 'node:crypto';
 
 export class Bot<C extends PacketClient = PacketClient> {
   private packetSeq: number;
@@ -288,6 +305,27 @@ export class Bot<C extends PacketClient = PacketClient> {
     return this.uin2uidMap.get(uin);
   }
 
+  async getSKey(): Promise<string> {
+    return this.ticketHolder.getSKey();
+  }
+
+  async getPSKey(domain: string): Promise<string> {
+    return this.ticketHolder.getPSKey(domain);
+  }
+
+  async getCookies(domain: string): Promise<Record<string, string>> {
+    return {
+      p_uin: `o${this.uin}`,
+      p_skey: await this.getPSKey(domain),
+      skey: await this.getSKey(),
+      uin: String(this.uin),
+    };
+  }
+
+  async getCsrfToken(): Promise<number> {
+    return this.ticketHolder.getCsrfToken();
+  }
+
   async sendFriendMessage(
     friendUin: number,
     segments: BotOutgoingSegment[],
@@ -323,6 +361,27 @@ export class Bot<C extends PacketClient = PacketClient> {
       sequence: response.sequence,
       sendTime: response.sendTime,
     };
+  }
+
+  async recallFriendMessage(friendUin: number, sequence: number): Promise<void> {
+    const friendUid = await this.getUidByUin(friendUin);
+    const raw = (await this.callService(FetchFriendMessages, friendUid, sequence, sequence))[0];
+    if (raw === undefined) {
+      throw new Error('Message not found');
+    }
+
+    await this.callService(
+      RecallFriendMessage,
+      friendUid,
+      raw.contentHead.sequence,
+      sequence,
+      raw.contentHead.random,
+      raw.contentHead.time,
+    );
+  }
+
+  async recallGroupMessage(groupUin: number, sequence: number): Promise<void> {
+    await this.callService(RecallGroupMessage, groupUin, sequence);
   }
 
   async getFriendHistoryMessages(
@@ -455,6 +514,23 @@ export class Bot<C extends PacketClient = PacketClient> {
     await this.callService(SetGroupName, groupUin, groupName);
   }
 
+  async setGroupAvatar(groupUin: number, imageData: Buffer): Promise<void> {
+    await this.uploadHighway(
+      3000,
+      imageData,
+      createHash('md5').update(imageData).digest(),
+      GroupAvatarExtra.encode({
+        type: 101,
+        groupUin,
+        field3: {
+          field1: 1,
+        },
+        field5: 3,
+        field6: 1,
+      }),
+    );
+  }
+
   async setGroupMemberCard(groupUin: number, memberUin: number, card: string): Promise<void> {
     await this.callService(SetMemberCard, groupUin, await this.getUidByUin(memberUin, groupUin), card);
   }
@@ -504,6 +580,121 @@ export class Bot<C extends PacketClient = PacketClient> {
 
   async sendGroupNudge(groupUin: number, targetUin: number): Promise<void> {
     await this.callService(SendGroupNudge, groupUin, targetUin);
+  }
+
+  async getGroupAnnouncements(groupUin: number): Promise<BotGroupAnnouncement[]> {
+    const url = new URL('https://web.qun.qq.com/cgi-bin/announce/get_t_list');
+    url.searchParams.set('qid', String(groupUin));
+    url.searchParams.set('ft', '23');
+    url.searchParams.set('ni', '1');
+    url.searchParams.set('i', '1');
+    url.searchParams.set('log_read', '1');
+    url.searchParams.set('platform', '1');
+    url.searchParams.set('s', '-1');
+    url.searchParams.set('n', '20');
+
+    const response = await this.fetchWebJson<{
+      feeds?: GroupAnnounceFeed[];
+      inst?: GroupAnnounceFeed[];
+    }>(url, 'qun.qq.com', '获取群公告失败');
+    return [...(response.feeds ?? []), ...(response.inst ?? [])].map((feed) => parseGroupAnnouncement(groupUin, feed));
+  }
+
+  async sendGroupAnnouncement(
+    groupUin: number,
+    content: string,
+    options: {
+      imageData?: Buffer;
+      imageFormat?: ImageFormat;
+      showEditCard?: boolean;
+      showTipWindow?: boolean;
+      confirmRequired?: boolean;
+      isPinned?: boolean;
+    } = {},
+  ): Promise<string> {
+    let announceImage: GroupAnnounceImage | undefined;
+    if (options.imageData !== undefined) {
+      if (options.imageFormat === undefined) {
+        throw new Error('imageFormat is required when imageData is provided');
+      }
+      announceImage = await this.uploadGroupAnnouncementImage(options.imageData, options.imageFormat);
+    }
+    const bkn = await this.getCsrfToken();
+    const body = new URLSearchParams({
+      qid: String(groupUin),
+      bkn: String(bkn),
+      text: content,
+      pinned: options.isPinned === true ? '1' : '0',
+      type: '1',
+      settings: JSON.stringify({
+        is_show_edit_card: options.showEditCard === true ? 1 : 0,
+        tip_window_type: options.showTipWindow === false ? 0 : 1,
+        confirm_required: options.confirmRequired === false ? 0 : 1,
+      }),
+    });
+    if (announceImage !== undefined) {
+      body.set('pic', announceImage.id ?? '');
+      body.set('imgWidth', announceImage.w ?? '');
+      body.set('imgHeight', announceImage.h ?? '');
+    }
+
+    const response = await this.fetchWebJson<{ new_fid?: string }>(
+      new URL('https://web.qun.qq.com/cgi-bin/announce/add_qun_notice'),
+      'qun.qq.com',
+      '发送群公告失败',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 7.1.2; PCRT00 Build/N2G48H)',
+        },
+        body,
+      },
+    );
+    return response.new_fid ?? '';
+  }
+
+  async deleteGroupAnnouncement(groupUin: number, announcementId: string): Promise<void> {
+    const url = new URL('https://web.qun.qq.com/cgi-bin/announce/del_feed');
+    url.searchParams.set('fid', announcementId);
+    url.searchParams.set('qid', String(groupUin));
+    url.searchParams.set('ft', '23');
+    url.searchParams.set('op', '1');
+    await this.fetchWeb(url, 'qun.qq.com', '删除群公告失败');
+  }
+
+  async getGroupEssenceMessages(
+    groupUin: number,
+    pageIndex: number,
+    pageSize: number,
+  ): Promise<BotEssenceMessageResult> {
+    const url = new URL('https://qun.qq.com/cgi-bin/group_digest/digest_list');
+    url.searchParams.set('random', '7800');
+    url.searchParams.set('X-CROSS-ORIGIN', 'fetch');
+    url.searchParams.set('group_code', String(groupUin));
+    url.searchParams.set('page_start', String(pageIndex));
+    url.searchParams.set('page_limit', String(pageSize));
+    const response = await this.fetchWebJson<{
+      data?: {
+        msg_list?: GroupEssenceMsgItem[];
+        is_end?: boolean;
+      };
+    }>(url, 'qun.qq.com', '获取群精华消息失败');
+
+    return {
+      messages: (response.data?.msg_list ?? [])
+        .map((item) => parseGroupEssenceMessage(groupUin, item))
+        .filter((message) => message !== undefined),
+      isEnd: response.data?.is_end ?? false,
+    };
+  }
+
+  async setGroupEssenceMessage(groupUin: number, sequence: number, isSet: boolean): Promise<void> {
+    const random = (await this.getGroupHistoryMessages(groupUin, 1, sequence)).messages[0]?.random;
+    if (random === undefined) {
+      throw new Error('Message not found, cannot resolve random field');
+    }
+    await this.callService(isSet ? SetGroupEssenceMessageSet : SetGroupEssenceMessageUnset, groupUin, sequence, random);
   }
 
   async getGroupNotifications(
@@ -605,6 +796,67 @@ export class Bot<C extends PacketClient = PacketClient> {
   /** @hidden */
   async uploadFlashTransfer(uKey: string, appId: number, data: Buffer): Promise<boolean> {
     return this.flashTransferClient.uploadFile({ uKey, appId, data });
+  }
+
+  private async uploadGroupAnnouncementImage(imageData: Buffer, imageFormat: ImageFormat): Promise<GroupAnnounceImage> {
+    const contentType = match(imageFormat)
+      .with(ImageFormat.PNG, () => 'image/png')
+      .with(ImageFormat.JPEG, () => 'image/jpeg')
+      .otherwise(() => {
+        throw new Error('Group announcement image only supports PNG and JPEG');
+      });
+    const extension = imageFormat === ImageFormat.PNG ? 'png' : 'jpg';
+    const body = new FormData();
+    body.set('bkn', String(await this.getCsrfToken()));
+    body.set('source', 'troopNotice');
+    body.set('m', '0');
+    body.set('pic_up', new Blob([imageData], { type: contentType }), `group-announcement.${extension}`);
+
+    const response = await this.fetchWebJson<{ ec?: number; id?: string }>(
+      new URL('https://web.qun.qq.com/cgi-bin/announce/upload_img'),
+      'qun.qq.com',
+      '上传群公告图片失败',
+      {
+        method: 'POST',
+        body,
+      },
+    );
+    if (response.ec !== 0) {
+      throw new WebApiError('上传群公告图片失败', response.ec ?? -1);
+    }
+    return JSON.parse(unescapeHttp(response.id ?? '{}')) as GroupAnnounceImage;
+  }
+
+  private async fetchWebJson<T>(
+    url: URL,
+    cookieDomain: string,
+    errorMessage: string,
+    init: RequestInit = {},
+  ): Promise<T> {
+    const response = await this.fetchWeb(url, cookieDomain, errorMessage, init);
+    return (await response.json()) as T;
+  }
+
+  private async fetchWeb(
+    url: URL,
+    cookieDomain: string,
+    errorMessage: string,
+    init: RequestInit = {},
+  ): Promise<Response> {
+    url.searchParams.set('bkn', String(await this.getCsrfToken()));
+    const cookies = await this.getCookies(cookieDomain);
+    const headers = new Headers(init.headers);
+    headers.set(
+      'Cookie',
+      Object.entries(cookies)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('; '),
+    );
+    const response = await fetch(url, { ...init, headers });
+    if (!response.ok) {
+      throw new WebApiError(errorMessage, response.status);
+    }
+    return response;
   }
 
   private async handlePush(packet: IncomingSsoPacket): Promise<void> {

@@ -1,7 +1,7 @@
 import { Mutex } from 'async-mutex';
 
 import type { Bot } from '..';
-import { FetchClientKey } from './service/system';
+import { FetchClientKey, FetchPSKey } from './service/system';
 
 class KeyWithLifetime {
   static dummy(): KeyWithLifetime {
@@ -32,7 +32,9 @@ class KeyWithLifetime {
 
 export class TicketHolder {
   private readonly currentSKey = KeyWithLifetime.dummy();
+  private readonly psKeyCache = new Map<string, KeyWithLifetime>();
   private readonly sKeyQueryMutex = new Mutex();
+  private readonly psKeyQueryMutex = new Mutex();
 
   constructor(private readonly bot: Bot) {}
 
@@ -82,6 +84,29 @@ export class TicketHolder {
       hash = (hash + (hash << 5) + sKey.charCodeAt(i)) | 0;
     }
     return hash & 0x7fffffff;
+  }
+
+  async getPSKey(domain: string): Promise<string> {
+    const cachedKey = this.psKeyCache.get(domain);
+    if (cachedKey?.isValid() === true) {
+      return cachedKey.value;
+    }
+
+    return this.psKeyQueryMutex.runExclusive(async () => {
+      const refreshedKey = this.psKeyCache.get(domain);
+      if (refreshedKey?.isValid() === true) {
+        return refreshedKey.value;
+      }
+
+      const keys = await this.bot.callService(FetchPSKey, [domain]);
+      const psKey = keys.get(domain);
+      if (psKey === undefined) {
+        throw new Error(`Failed to fetch PSKey for ${domain}`);
+      }
+
+      this.psKeyCache.set(domain, KeyWithLifetime.create(psKey, 86400));
+      return psKey;
+    });
   }
 }
 

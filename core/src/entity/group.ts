@@ -26,6 +26,15 @@ export interface BotGroupMemberData {
   role: BotGroupMemberRole;
 }
 
+export interface BotGroupAnnouncement {
+  groupUin: number;
+  announcementId: string;
+  senderId: number;
+  time: number;
+  content: string;
+  imageUrl?: string;
+}
+
 export class BotGroup extends BotEntity<BotGroupData> implements BotGroupData {
   private readonly memberHolder: BotEntityHolder<number, BotGroupMember, BotGroupMemberData>;
 

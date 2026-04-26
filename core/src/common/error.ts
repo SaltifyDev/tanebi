@@ -27,3 +27,12 @@ export class MessageSendError extends Error {
     super(`MessageSendError, code=${result}, message=${sendMessage}`);
   }
 }
+
+export class WebApiError extends Error {
+  constructor(
+    public readonly webMessage: string,
+    public readonly statusCode: number,
+  ) {
+    super(`${webMessage} (${statusCode})`);
+  }
+}

@@ -9,6 +9,7 @@ import { SetMemberAdminRequest } from '../proto/oidb/0x1096';
 import { QuitGroupRequest } from '../proto/oidb/0x1097';
 import { SetMemberMuteRequest } from '../proto/oidb/0x1253';
 import { SetGroupMessageReactionRequest } from '../proto/oidb/0x9082';
+import { SetGroupEssenceMessageRequest } from '../proto/oidb/0xeac';
 import { SendNudgeRequest } from '../proto/oidb/0xed3';
 
 import { randomInt } from 'node:crypto';
@@ -130,6 +131,22 @@ export const SendGroupNudge = defineOidbService({
       friendUin: 0,
       ext: 0,
     });
+  },
+});
+
+export const SetGroupEssenceMessageSet = defineOidbService({
+  command: 0xeac,
+  service: 1,
+  build(_, groupUin: number, sequence: number, random: number) {
+    return SetGroupEssenceMessageRequest.encode({ groupCode: groupUin, sequence, random });
+  },
+});
+
+export const SetGroupEssenceMessageUnset = defineOidbService({
+  command: 0xeac,
+  service: 2,
+  build(_, groupUin: number, sequence: number, random: number) {
+    return SetGroupEssenceMessageRequest.encode({ groupCode: groupUin, sequence, random });
   },
 });
 

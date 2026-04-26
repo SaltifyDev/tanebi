@@ -76,6 +76,37 @@ export const PbSendMsgResponse = ProtoMessage.of({
   clientSequence: ProtoField(14, 'uint32'),
 });
 
+export const C2CRecallMsg = ProtoMessage.of({
+  type: ProtoField(1, 'uint32'),
+  targetUid: ProtoField(3, 'string'),
+  info: ProtoField(4, {
+    clientSequence: ProtoField(1, 'uint32'),
+    random: ProtoField(2, 'int32'),
+    messageId: ProtoField(3, 'uint64'),
+    timestamp: ProtoField(4, 'uint32'),
+    field5: ProtoField(5, 'uint32'),
+    messageSequence: ProtoField(6, 'uint32'),
+  }, 'optional'),
+  settings: ProtoField(5, {
+    field1: ProtoField(1, 'bool'),
+    field2: ProtoField(2, 'bool'),
+  }, 'optional'),
+  field6: ProtoField(6, 'bool'),
+});
+
+export const GroupRecallMsg = ProtoMessage.of({
+  type: ProtoField(1, 'uint32'),
+  groupUin: ProtoField(2, 'uint32'),
+  info: ProtoField(3, {
+    sequence: ProtoField(1, 'uint32'),
+    random: ProtoField(2, 'int32'),
+    field3: ProtoField(3, 'uint32'),
+  }, 'optional'),
+  field4: ProtoField(4, {
+    field1: ProtoField(1, 'uint32'),
+  }, 'optional'),
+});
+
 export const LongMsgInterfaceRequest = ProtoMessage.of({
   recvReq: ProtoField(1, {
     peerInfo: ProtoField(1, {

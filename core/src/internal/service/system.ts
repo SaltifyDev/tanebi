@@ -1,7 +1,7 @@
 import { BotUserInfoKey, defineOidbService, defineService } from '../../common';
 import type { BotFriendData, BotGroupData, BotGroupMemberData } from '../../entity';
 import { FetchHighwayInfoRequest, FetchHighwayInfoResponse } from '../proto/httpconn';
-import { FetchClientKeyResponse } from '../proto/oidb/0x102a';
+import { FetchClientKeyResponse, FetchPSKeyRequest, FetchPSKeyResponse } from '../proto/oidb/0x102a';
 import { FetchFaceDetailsRequest, FetchFaceDetailsResponse } from '../proto/oidb/0x9154';
 import { IncPullRequest, IncPullResponse } from '../proto/oidb/0xfd4';
 import { FetchUserInfoByUidRequest, FetchUserInfoResponse } from '../proto/oidb/0xfe1';
@@ -279,6 +279,17 @@ export const FetchClientKey = defineOidbService({
   },
   parse(_, payload) {
     return FetchClientKeyResponse.decode(payload).clientKey;
+  },
+});
+
+export const FetchPSKey = defineOidbService({
+  command: 0x102a,
+  service: 0,
+  build(_, domains: string[]) {
+    return FetchPSKeyRequest.encode({ domains });
+  },
+  parse(_, payload) {
+    return FetchPSKeyResponse.decode(payload).psKeyEntries;
   },
 });
 

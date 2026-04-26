@@ -110,6 +110,41 @@ export interface BotHistoryMessages {
   nextStartSequence?: number;
 }
 
+export type BotEssenceSegment =
+  | {
+      type: 'text';
+      text: string;
+    }
+  | {
+      type: 'face';
+      faceId: number;
+    }
+  | {
+      type: 'image';
+      imageUrl: string;
+    }
+  | {
+      type: 'video';
+      thumbnailUrl: string;
+    };
+
+export interface BotEssenceMessage {
+  groupUin: number;
+  messageSeq: number;
+  messageTime: number;
+  senderUin: number;
+  senderName: string;
+  operatorUin: number;
+  operatorName: string;
+  operationTime: number;
+  segments: BotEssenceSegment[];
+}
+
+export interface BotEssenceMessageResult {
+  messages: BotEssenceMessage[];
+  isEnd: boolean;
+}
+
 export type BotOutgoingSegment =
   | {
       type: 'text';

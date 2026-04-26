@@ -3,6 +3,8 @@ import { match } from 'ts-pattern';
 
 import { defineService } from '../../common';
 import {
+  C2CRecallMsg,
+  GroupRecallMsg,
   LongMsgInterfaceRequest,
   LongMsgInterfaceResponse,
   PbMultiMsgTransmit,
@@ -136,6 +138,46 @@ export const SendGroupMessage = defineService({
       sendTime: response.sendTime,
       sequence: response.sequence,
     };
+  },
+});
+
+export const RecallFriendMessage = defineService({
+  command: 'trpc.msg.msg_svc.MsgService.SsoC2CRecallMsg',
+  build(_, targetUid: string, clientSequence: number, messageSequence: number, random: number, timestamp: number) {
+    return C2CRecallMsg.encode({
+      type: 1,
+      targetUid,
+      info: {
+        clientSequence,
+        random,
+        messageId: (0x01000000n << 32n) | BigInt(random >>> 0),
+        timestamp,
+        field5: 0,
+        messageSequence,
+      },
+      settings: {
+        field1: false,
+        field2: false,
+      },
+      field6: false,
+    });
+  },
+});
+
+export const RecallGroupMessage = defineService({
+  command: 'trpc.msg.msg_svc.MsgService.SsoGroupRecallMsg',
+  build(_, groupUin: number, sequence: number) {
+    return GroupRecallMsg.encode({
+      type: 1,
+      groupUin,
+      info: {
+        sequence,
+        field3: 0,
+      },
+      field4: {
+        field1: 0,
+      },
+    });
   },
 });
 

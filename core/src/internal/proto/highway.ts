@@ -1,5 +1,15 @@
 import { ProtoField, ProtoMessage } from '@saltify/typeproto';
 
+export const GroupAvatarExtra = ProtoMessage.of({
+  type: ProtoField(1, 'uint32'),
+  groupUin: ProtoField(2, 'uint32'),
+  field3: ProtoField(3, {
+    field1: ProtoField(1, 'uint32'),
+  }),
+  field5: ProtoField(5, 'uint32'),
+  field6: ProtoField(6, 'uint32'),
+});
+
 export const DataHighwayHead = ProtoMessage.of({
   version: ProtoField(1, 'uint32'),
   uin: ProtoField(2, 'string'),

@@ -19,6 +19,10 @@
     "qq",
     "oicq"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SaltifyDev/tanebi.git"
+  },
   "author": "SaltifyDev",
   "license": "GPL-3.0-only",
   "dependencies": {

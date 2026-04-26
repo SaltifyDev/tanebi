@@ -20,6 +20,7 @@ import {
 import {
   BotEntityHolder,
   type BotEssenceMessageResult,
+  type BotEvent,
   type BotForwardedMessage,
   BotFriend,
   type BotFriendData,
@@ -108,6 +109,7 @@ import {
   parseFriendRequest,
   parseGroupNotification,
 } from './internal/transform/notification';
+import { parsePushEvents } from './internal/transform/event';
 
 import { createHash, randomInt } from 'node:crypto';
 
@@ -127,7 +129,11 @@ export class Bot<C extends PacketClient = PacketClient> {
   readonly faceDetailMap = new Map<string, BotFaceDetail>();
 
   private readonly logBus: LogEmitter = mitt();
-  private readonly messageBus = mitt<{ message: BotIncomingMessage }>();
+  private readonly eventBus = mitt<{ [K in keyof BotEvent]: BotEvent[K] }>();
+  private readonly messageHandlerMap = new WeakMap<
+    (message: BotIncomingMessage) => void,
+    (event: BotEvent['messageReceive']) => void
+  >();
   private readonly logger = createLogger(this.logBus, this.constructor.name);
   private readonly pushHandler = (packet: IncomingSsoPacket) => {
     void this.handlePush(packet);
@@ -744,12 +750,35 @@ export class Bot<C extends PacketClient = PacketClient> {
     return createLogger(this.logBus, module);
   }
 
+  onEvent<K extends keyof BotEvent>(type: K, handler: (event: BotEvent[K]) => void): void {
+    this.eventBus.on(type, handler);
+  }
+
+  offEvent<K extends keyof BotEvent>(type: K, handler: (event: BotEvent[K]) => void): void {
+    this.eventBus.off(type, handler);
+  }
+
   onMessage(handler: (message: BotIncomingMessage) => void): void {
-    this.messageBus.on('message', handler);
+    const existingHandler = this.messageHandlerMap.get(handler);
+    if (existingHandler !== undefined) {
+      this.eventBus.off('messageReceive', existingHandler);
+    }
+
+    const eventHandler = (event: BotEvent['messageReceive']) => {
+      handler(event.message);
+    };
+    this.messageHandlerMap.set(handler, eventHandler);
+    this.eventBus.on('messageReceive', eventHandler);
   }
 
   offMessage(handler: (message: BotIncomingMessage) => void): void {
-    this.messageBus.off('message', handler);
+    const eventHandler = this.messageHandlerMap.get(handler);
+    if (eventHandler === undefined) {
+      return;
+    }
+
+    this.eventBus.off('messageReceive', eventHandler);
+    this.messageHandlerMap.delete(handler);
   }
 
   onLog(handler: (logMessage: LogMessage) => void) {
@@ -862,13 +891,12 @@ export class Bot<C extends PacketClient = PacketClient> {
       return;
     }
     try {
-      const message = parseIncomingMessage(PushMsg.decode(packet.payload).message, this.uin);
-      if (message === undefined) {
-        return;
-      }
-      this.messageBus.emit('message', message);
-      if (message.scene === 'group' && message.extraInfo !== undefined) {
-        void this.refreshGroupMemberExtraInfo(message);
+      const events = await parsePushEvents.call(this, PushMsg.decode(packet.payload).message);
+      for (const event of events) {
+        this.eventBus.emit(event.type, event.payload);
+        if (event.type === 'messageReceive' && event.payload.message.scene === 'group') {
+          void this.refreshGroupMemberExtraInfo(event.payload.message);
+        }
       }
     } catch (error) {
       this.logger.warn(`处理消息推送失败, command=${packet.command}`, error);

@@ -1,6 +1,7 @@
 import type { InferProtoModel } from '@saltify/typeproto';
 import { XMLParser } from 'fast-xml-parser';
 import { match } from 'ts-pattern';
+import z from 'zod';
 
 import type {
   BotForwardedMessage,
@@ -45,6 +46,22 @@ const forwardXmlParser = new XMLParser({
   ignoreAttributes: true,
   parseTagValue: false,
   trimValues: false,
+});
+
+const ForwardLightAppPayload = z.object({
+  app: z.literal('com.tencent.multimsg'),
+  meta: z.object({
+    detail: z.object({
+      resid: z.string(),
+      source: z.string(),
+      news: z.array(z.object({ text: z.string() })),
+      summary: z.string(),
+    }),
+  }),
+});
+
+const LightAppPayloadSchema = z.object({
+  app: z.string(),
 });
 
 export function parseIncomingMessage(raw: RawMessage, selfUin: number): BotIncomingMessage | undefined {
@@ -432,25 +449,16 @@ const segmentParsers: SegmentParser[] = [
     }
 
     const jsonPayload = inflateSync(elem.bytesData.subarray(1)).toString();
-    const payload = JSON.parse(jsonPayload) as {
-      app?: string;
-      meta?: { detail?: { resid?: string; source?: string; news?: Array<{ text?: string }>; summary?: string } };
-    };
-    if (payload.app !== 'com.tencent.multimsg') {
-      return undefined;
-    }
+    const payload = ForwardLightAppPayload.parse(JSON.parse(jsonPayload));
 
     ctx.consume();
-    const detail = payload.meta?.detail;
-    if (detail === undefined) {
-      return undefined;
-    }
+    const detail = payload.meta.detail;
 
     return {
-      resId: detail.resid ?? '',
-      title: detail.source ?? '',
-      preview: detail.news?.map((item) => item.text ?? '') ?? [],
-      summary: detail.summary ?? '',
+      resId: detail.resid,
+      title: detail.source,
+      preview: detail.news.map((item) => item.text),
+      summary: detail.summary,
     };
   }),
 
@@ -487,10 +495,7 @@ const segmentParsers: SegmentParser[] = [
     }
 
     const jsonPayload = inflateSync(elem.bytesData.subarray(1)).toString();
-    const payload = JSON.parse(jsonPayload) as { app?: string };
-    if (payload.app === undefined) {
-      return undefined;
-    }
+    const payload = LightAppPayloadSchema.parse(JSON.parse(jsonPayload));
 
     return {
       appName: payload.app,

@@ -1,6 +1,7 @@
 import { Mutex } from 'async-mutex';
 import mitt from 'mitt';
 import { match } from 'ts-pattern';
+import type { ZodType } from 'zod';
 
 import {
   type AppInfo,
@@ -91,9 +92,11 @@ import {
 } from './internal/service/system';
 import { TicketHolder } from './internal/ticket';
 import {
-  type GroupAnnounceFeed,
-  type GroupAnnounceImage,
-  type GroupEssenceMsgItem,
+  GroupAnnounceImage,
+  GroupAnnounceResponse,
+  GroupAnnounceSendResponse,
+  GroupAnnounceUploadResponse,
+  GroupEssenceResponse,
   parseGroupAnnouncement,
   parseGroupEssenceMessage,
   unescapeHttp,
@@ -593,11 +596,8 @@ export class Bot<C extends PacketClient = PacketClient> {
     url.searchParams.set('s', '-1');
     url.searchParams.set('n', '20');
 
-    const response = await this.fetchWebJson<{
-      feeds?: GroupAnnounceFeed[];
-      inst?: GroupAnnounceFeed[];
-    }>(url, 'qun.qq.com', '获取群公告失败');
-    return [...(response.feeds ?? []), ...(response.inst ?? [])].map((feed) => parseGroupAnnouncement(groupUin, feed));
+    const response = await this.fetchWebJson(url, 'qun.qq.com', '获取群公告失败', GroupAnnounceResponse);
+    return [...response.feeds, ...response.inst].map((feed) => parseGroupAnnouncement(groupUin, feed));
   }
 
   async sendGroupAnnouncement(
@@ -638,10 +638,11 @@ export class Bot<C extends PacketClient = PacketClient> {
       body.set('imgHeight', announceImage.h ?? '');
     }
 
-    const response = await this.fetchWebJson<{ new_fid?: string }>(
+    const response = await this.fetchWebJson(
       new URL('https://web.qun.qq.com/cgi-bin/announce/add_qun_notice'),
       'qun.qq.com',
       '发送群公告失败',
+      GroupAnnounceSendResponse,
       {
         method: 'POST',
         headers: {
@@ -651,7 +652,7 @@ export class Bot<C extends PacketClient = PacketClient> {
         body,
       },
     );
-    return response.new_fid ?? '';
+    return response.new_fid;
   }
 
   async deleteGroupAnnouncement(groupUin: number, announcementId: string): Promise<void> {
@@ -674,18 +675,13 @@ export class Bot<C extends PacketClient = PacketClient> {
     url.searchParams.set('group_code', String(groupUin));
     url.searchParams.set('page_start', String(pageIndex));
     url.searchParams.set('page_limit', String(pageSize));
-    const response = await this.fetchWebJson<{
-      data?: {
-        msg_list?: GroupEssenceMsgItem[];
-        is_end?: boolean;
-      };
-    }>(url, 'qun.qq.com', '获取群精华消息失败');
+    const response = await this.fetchWebJson(url, 'qun.qq.com', '获取群精华消息失败', GroupEssenceResponse);
 
     return {
-      messages: (response.data?.msg_list ?? [])
+      messages: (response.data.msg_list ?? [])
         .map((item) => parseGroupEssenceMessage(groupUin, item))
         .filter((message) => message !== undefined),
-      isEnd: response.data?.is_end ?? false,
+      isEnd: response.data.is_end,
     };
   }
 
@@ -812,29 +808,31 @@ export class Bot<C extends PacketClient = PacketClient> {
     body.set('m', '0');
     body.set('pic_up', new Blob([imageData], { type: contentType }), `group-announcement.${extension}`);
 
-    const response = await this.fetchWebJson<{ ec?: number; id?: string }>(
+    const response = await this.fetchWebJson(
       new URL('https://web.qun.qq.com/cgi-bin/announce/upload_img'),
       'qun.qq.com',
       '上传群公告图片失败',
+      GroupAnnounceUploadResponse,
       {
         method: 'POST',
         body,
       },
     );
     if (response.ec !== 0) {
-      throw new WebApiError('上传群公告图片失败', response.ec ?? -1);
+      throw new WebApiError('上传群公告图片失败', response.ec);
     }
-    return JSON.parse(unescapeHttp(response.id ?? '{}')) as GroupAnnounceImage;
+    return GroupAnnounceImage.parse(JSON.parse(unescapeHttp(response.id)));
   }
 
   private async fetchWebJson<T>(
     url: URL,
     cookieDomain: string,
     errorMessage: string,
+    schema: ZodType<T>,
     init: RequestInit = {},
   ): Promise<T> {
     const response = await this.fetchWeb(url, cookieDomain, errorMessage, init);
-    return (await response.json()) as T;
+    return schema.parse(await response.json());
   }
 
   private async fetchWeb(

@@ -1,66 +1,109 @@
 import { match } from 'ts-pattern';
+import z from 'zod';
 
 import type { BotEssenceMessage, BotEssenceSegment, BotGroupAnnouncement } from '../../entity';
 
-export interface GroupAnnounceImage {
-  h?: string;
-  w?: string;
-  id?: string;
-}
+export const GroupAnnounceImage = z.object({
+  h: z.string(),
+  w: z.string(),
+  id: z.string(),
+});
+export type GroupAnnounceImage = z.infer<typeof GroupAnnounceImage>;
 
-export interface GroupAnnounceFeed {
-  fid?: string;
-  u?: number;
-  pubt?: number;
-  msg?: {
-    text?: string;
-    pics?: GroupAnnounceImage[];
-  };
-}
+const GroupAnnounceFeed = z.object({
+  fid: z.string(),
+  u: z.number(),
+  pubt: z.number(),
+  msg: z.object({
+    text: z.string(),
+    pics: z.array(GroupAnnounceImage),
+  }),
+});
+export type GroupAnnounceFeed = z.infer<typeof GroupAnnounceFeed>;
 
-export interface GroupEssenceMsgItem {
-  msg_seq?: number;
-  sender_uin?: string;
-  sender_nick?: string;
-  sender_time?: number;
-  add_digest_uin?: string;
-  add_digest_nick?: string;
-  add_digest_time?: number;
-  msg_content?: Array<Record<string, unknown>>;
-}
+export const GroupAnnounceResponse = z.object({
+  feeds: z.array(GroupAnnounceFeed),
+  inst: z.array(GroupAnnounceFeed),
+});
+
+export const GroupAnnounceSendResponse = z.object({
+  new_fid: z.string(),
+});
+
+export const GroupAnnounceUploadResponse = z.object({
+  ec: z.number(),
+  id: z.string(),
+});
+
+const GroupEssenceSegment = z.discriminatedUnion('msg_type', [
+  z.object({
+    msg_type: z.literal(1),
+    text: z.string(),
+  }),
+  z.object({
+    msg_type: z.literal(2),
+    face_index: z.number(),
+  }),
+  z.object({
+    msg_type: z.literal(3),
+    image_url: z.string(),
+  }),
+  z.object({
+    msg_type: z.literal(4),
+    file_thumbnail_url: z.string(),
+  }),
+]);
+
+const GroupEssenceMsgItem = z.object({
+  msg_seq: z.number(),
+  sender_uin: z.string(),
+  sender_nick: z.string(),
+  sender_time: z.number(),
+  add_digest_uin: z.string(),
+  add_digest_nick: z.string(),
+  add_digest_time: z.number(),
+  msg_content: z.array(GroupEssenceSegment),
+});
+export type GroupEssenceMsgItem = z.infer<typeof GroupEssenceMsgItem>;
+
+export const GroupEssenceResponse = z.object({
+  data: z.object({
+    msg_list: z.array(GroupEssenceMsgItem).nullable(),
+    is_end: z.boolean(),
+  }),
+});
 
 export function parseGroupAnnouncement(groupUin: number, feed: GroupAnnounceFeed): BotGroupAnnouncement {
-  const imageId = feed.msg?.pics?.[0]?.id;
+  const imageId = feed.msg.pics[0]?.id;
   return {
     groupUin,
-    announcementId: feed.fid ?? '',
-    senderId: feed.u ?? 0,
-    time: feed.pubt ?? 0,
-    content: unescapeHttp(feed.msg?.text ?? ''),
+    announcementId: feed.fid,
+    senderId: feed.u,
+    time: feed.pubt,
+    content: unescapeHttp(feed.msg.text),
     imageUrl: imageId === undefined ? undefined : `https://gdynamic.qpic.cn/gdynamic/${imageId}/0`,
   };
 }
 
 export function parseGroupEssenceMessage(groupUin: number, item: GroupEssenceMsgItem): BotEssenceMessage | undefined {
-  const segments = (item.msg_content ?? [])
+  const segments = item.msg_content
     .map((element): BotEssenceSegment | undefined => {
-      const msgType = typeof element.msg_type === 'number' ? element.msg_type : undefined;
-      return match(msgType)
+      return match(element)
         .returnType<BotEssenceSegment | undefined>()
-        .with(1, () => ({ type: 'text', text: typeof element.text === 'string' ? element.text : '' }))
-        .with(2, () => ({
+        .with({ msg_type: 1 }, (content) => ({ type: 'text', text: content.text }))
+        .with({ msg_type: 2 }, (content) => ({
           type: 'face',
-          faceId: typeof element.face_index === 'number' ? element.face_index : 0,
+          faceId: content.face_index,
         }))
-        .with(3, () => ({
+        .with({ msg_type: 3 }, (content) => ({
           type: 'image',
-          imageUrl: typeof element.image_url === 'string' ? element.image_url : '',
+          imageUrl: content.image_url,
         }))
-        .with(4, () => ({
+        .with({ msg_type: 4 }, (content) => ({
           type: 'video',
-          thumbnailUrl: typeof element.file_thumbnail_url === 'string' ? element.file_thumbnail_url : '',
+          thumbnailUrl: content.file_thumbnail_url,
         }))
-        .otherwise(() => undefined);
+        .exhaustive();
     })
     .filter((segment) => segment !== undefined);
   if (segments.length === 0) {
@@ -69,13 +112,13 @@ export function parseGroupEssenceMessage(groupUin: number, item: GroupEssenceMsg
 
   return {
     groupUin,
-    messageSeq: item.msg_seq ?? 0,
-    messageTime: item.sender_time ?? 0,
-    senderUin: Number(item.sender_uin ?? 0),
-    senderName: item.sender_nick ?? '',
-    operatorUin: Number(item.add_digest_uin ?? 0),
-    operatorName: item.add_digest_nick ?? '',
-    operationTime: item.add_digest_time ?? 0,
+    messageSeq: item.msg_seq,
+    messageTime: item.sender_time,
+    senderUin: Number(item.sender_uin),
+    senderName: item.sender_nick,
+    operatorUin: Number(item.add_digest_uin),
+    operatorName: item.add_digest_nick,
+    operationTime: item.add_digest_time,
     segments,
   };
 }

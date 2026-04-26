@@ -49,13 +49,75 @@ await bot.initialize();
 
 ## 调用业务操作
 
-`Bot` 提供了一系列 API 来调用 PC NTQQ 的业务操作，例如发送消息、获取好友和群列表、管理群成员等。
+`Bot` 提供了一系列 API 来调用 PC NTQQ 的业务操作。下面是一些示例：
 
-> WIP
+```typescript
+const friends = await bot.getFriends();
+const groups = await bot.getGroups();
+const members = await bot.getGroupMembers(groupUin);
 
-## 接收与发送消息
+const uid = await bot.getUidByUin(userUin, groupUin);
+const uin = await bot.getUinByUid(uid);
 
-要监听消息事件，可以使用 `Bot.onMessage` 方法：
+const history = await bot.getGroupHistoryMessages(groupUin, 20);
+const forwarded = await bot.getForwardedMessages(resId);
+const downloadUrl = await bot.getDownloadUrl(resourceId);
+
+await bot.setGroupName(groupUin, "新的群名");
+await bot.setGroupMemberCard(groupUin, memberUin, "新的群名片");
+await bot.setGroupMemberMute(groupUin, memberUin, 60);
+await bot.setGroupWholeMute(groupUin, true);
+await bot.setGroupMessageReaction(groupUin, sequence, "66", 1, true);
+```
+
+要发送消息，可以调用 `Bot.sendFriendMessage` 和 `Bot.sendGroupMessage` 方法：
+
+```typescript
+await bot.sendFriendMessage(friendUin, [
+  { type: "text", text: "Hello, " },
+  { type: "face", faceId: 14 },
+]);
+
+await bot.sendGroupMessage(groupUin, [
+  {
+    type: "mention",
+    uin: memberUin,
+    name: "Alice",
+  },
+  {
+    type: "text",
+    text: " 你好",
+  },
+  {
+    type: "image",
+    data: imageBuffer,
+    format: ImageFormat.PNG,
+    width: 640,
+    height: 480,
+  },
+]);
+```
+
+## 监听事件与消息
+
+可以使用 `onEvent` / `offEvent` 监听 `BotEvent` 中定义的事件：
+
+```typescript
+bot.onEvent("messageReceive", (event) => {
+  const message = event.message;
+  // Do something with the incoming message
+});
+
+bot.onEvent("messageRecall", (event) => {
+  console.log(event.scene, event.peerUin, event.messageSeq);
+});
+
+bot.onEvent("groupMemberIncrease", (event) => {
+  console.log(event.groupUin, event.userUin);
+});
+```
+
+要监听消息事件，可以使用 `Bot.onMessage` 方法，这是 `onEvent("messageReceive")` 的包装，直接提供了消息内容：
 
 ```typescript
 bot.onMessage((message) => {
@@ -63,13 +125,15 @@ bot.onMessage((message) => {
 });
 ```
 
-要发送消息，可以调用 `Bot.sendFriendMessage` 和 `Bot.sendGroupMessage` 方法：
+## 日志
 
-> WIP
+可以通过 `onLog` / `offLog` 监听内部日志：
 
-## 监听事件
-
-> WIP
+```typescript
+bot.onLog((log) => {
+  console.log(`[${log.level}] ${log.module}: ${log.message}`);
+});
+```
 
 ## Special Thanks
 
